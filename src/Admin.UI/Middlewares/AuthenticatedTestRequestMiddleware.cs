@@ -7,29 +7,28 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 
-namespace Skoruba.Duende.IdentityServer.Admin.UI.Middlewares
+namespace Skoruba.Duende.IdentityServer.Admin.UI.Middlewares;
+
+public class AuthenticatedTestRequestMiddleware
 {
-    public class AuthenticatedTestRequestMiddleware
+    private readonly RequestDelegate _next;
+    public static readonly string TestAuthorizationHeader = "FakeAuthorization";
+    public AuthenticatedTestRequestMiddleware(RequestDelegate next)
     {
-        private readonly RequestDelegate _next;
-        public static readonly string TestAuthorizationHeader = "FakeAuthorization";
-        public AuthenticatedTestRequestMiddleware(RequestDelegate next)
+        _next = next;
+    }
+
+    public async Task Invoke(HttpContext context)
+    {
+        if (context.Request.Headers.Keys.Contains(TestAuthorizationHeader))
         {
-            _next = next;
+            var token = context.Request.Headers[TestAuthorizationHeader].Single();
+            var jwt = new JwtSecurityToken(token);
+            var claimsIdentity = new ClaimsIdentity(jwt.Claims, "Cookies");
+            var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
+            context.User = claimsPrincipal;
         }
 
-        public async Task Invoke(HttpContext context)
-        {
-            if (context.Request.Headers.Keys.Contains(TestAuthorizationHeader))
-            {
-                var token = context.Request.Headers[TestAuthorizationHeader].Single();
-                var jwt = new JwtSecurityToken(token);
-                var claimsIdentity = new ClaimsIdentity(jwt.Claims, "Cookies");
-                var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
-                context.User = claimsPrincipal;
-            }
-
-            await _next(context);
-        }
+        await _next(context);
     }
 }

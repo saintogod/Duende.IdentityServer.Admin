@@ -5,137 +5,136 @@ using System;
 using Bogus;
 using Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Identity.Dtos.Identity;
 
-namespace Skoruba.Duende.IdentityServer.Admin.UnitTests.Mocks
+namespace Skoruba.Duende.IdentityServer.Admin.UnitTests.Mocks;
+
+public class IdentityDtoMock<TKey>
 {
-    public class IdentityDtoMock<TKey>
+    public static Faker<UserDto<TKey>> GetUserFaker(TKey id)
     {
-        public static Faker<UserDto<TKey>> GetUserFaker(TKey id)
-        {
-            var userFaker = new Faker<UserDto<TKey>>()
-                .RuleFor(o => o.Id, id)
-                .RuleFor(o => o.UserName, f => Guid.NewGuid().ToString())
-                .RuleFor(o => o.Email, f => f.Internet.Email())
-                .RuleFor(o => o.AccessFailedCount, f => f.Random.Int())
-                .RuleFor(o => o.EmailConfirmed, f => f.Random.Bool())
-                .RuleFor(o => o.PhoneNumberConfirmed, f => f.Random.Bool())
-                .RuleFor(o => o.TwoFactorEnabled, f => f.Random.Bool())
-                .RuleFor(o => o.LockoutEnd, f => f.Date.Future())
-                .RuleFor(o => o.LockoutEnabled, f => true)
-                .RuleFor(o => o.PhoneNumber, f => f.Random.Number().ToString());
+        var userFaker = new Faker<UserDto<TKey>>()
+            .RuleFor(o => o.Id, id)
+            .RuleFor(o => o.UserName, f => Guid.NewGuid().ToString())
+            .RuleFor(o => o.Email, f => f.Internet.Email())
+            .RuleFor(o => o.AccessFailedCount, f => f.Random.Int())
+            .RuleFor(o => o.EmailConfirmed, f => f.Random.Bool())
+            .RuleFor(o => o.PhoneNumberConfirmed, f => f.Random.Bool())
+            .RuleFor(o => o.TwoFactorEnabled, f => f.Random.Bool())
+            .RuleFor(o => o.LockoutEnd, f => f.Date.Future())
+            .RuleFor(o => o.LockoutEnabled, f => true)
+            .RuleFor(o => o.PhoneNumber, f => f.Random.Number().ToString());
 
-            return userFaker;
-        }
+        return userFaker;
+    }
 
-        public static Faker<RoleDto<TKey>> GetRoleFaker(TKey id)
-        {
-            var roleFaker = new Faker<RoleDto<TKey>>()
-                .RuleFor(o => o.Id, id)
-                .RuleFor(o => o.Name, f => Guid.NewGuid().ToString());
+    public static Faker<RoleDto<TKey>> GetRoleFaker(TKey id)
+    {
+        var roleFaker = new Faker<RoleDto<TKey>>()
+            .RuleFor(o => o.Id, id)
+            .RuleFor(o => o.Name, f => Guid.NewGuid().ToString());
 
-            return roleFaker;
-        }
+        return roleFaker;
+    }
 
-        public static Faker<UserChangePasswordDto<TKey>> GetUserChangePasswordFaker(TKey id, string password)
-        {
-            var roleFaker = new Faker<UserChangePasswordDto<TKey>>()
-                .RuleFor(o => o.UserId, id)
-                .RuleFor(o => o.Password, f => password)
-                .RuleFor(o => o.ConfirmPassword, f => password);
+    public static Faker<UserChangePasswordDto<TKey>> GetUserChangePasswordFaker(TKey id, string password)
+    {
+        var roleFaker = new Faker<UserChangePasswordDto<TKey>>()
+            .RuleFor(o => o.UserId, id)
+            .RuleFor(o => o.Password, f => password)
+            .RuleFor(o => o.ConfirmPassword, f => password);
 
-            return roleFaker;
-        }
+        return roleFaker;
+    }
 
-        public static UserChangePasswordDto<TKey> GenerateRandomUserChangePassword(TKey id, string password)
-        {
-            var userChangePassword = GetUserChangePasswordFaker(id, password).Generate();
+    public static UserChangePasswordDto<TKey> GenerateRandomUserChangePassword(TKey id, string password)
+    {
+        var userChangePassword = GetUserChangePasswordFaker(id, password).Generate();
 
-            return userChangePassword;
-        }
+        return userChangePassword;
+    }
 
-        public static UserDto<TKey> GenerateRandomUser(TKey id = default(TKey))        
-        {
-            var user = GetUserFaker(id).Generate();
+    public static UserDto<TKey> GenerateRandomUser(TKey id = default(TKey))
+    {
+        var user = GetUserFaker(id).Generate();
 
-            return user;
-        }
+        return user;
+    }
 
-        public static RoleDto<TKey> GenerateRandomRole(TKey id = default(TKey))
-        {
-            var role = GetRoleFaker(id).Generate();
+    public static RoleDto<TKey> GenerateRandomRole(TKey id = default(TKey))
+    {
+        var role = GetRoleFaker(id).Generate();
 
-            return role;
-        }
+        return role;
+    }
 
-        public static Faker<UserClaimsDto<UserClaimDto<TKey>, TKey>> GetUserClaimsFaker(int id, TKey userId)
-        {
-            var userClaimFaker = new Faker<UserClaimsDto<UserClaimDto<TKey>, TKey>>()
-                .RuleFor(o => o.ClaimId, id)
-                .RuleFor(o => o.ClaimType, f => Guid.NewGuid().ToString())
-                .RuleFor(o => o.ClaimValue, f => Guid.NewGuid().ToString())
-                .RuleFor(o => o.UserId, userId);
+    public static Faker<UserClaimsDto<UserClaimDto<TKey>, TKey>> GetUserClaimsFaker(int id, TKey userId)
+    {
+        var userClaimFaker = new Faker<UserClaimsDto<UserClaimDto<TKey>, TKey>>()
+            .RuleFor(o => o.ClaimId, id)
+            .RuleFor(o => o.ClaimType, f => Guid.NewGuid().ToString())
+            .RuleFor(o => o.ClaimValue, f => Guid.NewGuid().ToString())
+            .RuleFor(o => o.UserId, userId);
 
-            return userClaimFaker;
-        }
+        return userClaimFaker;
+    }
 
-        public static UserClaimsDto<UserClaimDto<TKey>, TKey> GenerateRandomUserClaim(int id, TKey userId = default(TKey))
-        {
-            var userClaim = GetUserClaimsFaker(id, userId).Generate();
+    public static UserClaimsDto<UserClaimDto<TKey>, TKey> GenerateRandomUserClaim(int id, TKey userId = default(TKey))
+    {
+        var userClaim = GetUserClaimsFaker(id, userId).Generate();
 
-            return userClaim;
-        }
+        return userClaim;
+    }
 
-        public static Faker<UserRolesDto<TRoleDto, TKey>> GetUserRoleFaker<TRoleDto>(TKey id, TKey userId)
-            where TRoleDto : RoleDto<TKey>
-        {
-            var userRoleFaker = new Faker<UserRolesDto<TRoleDto, TKey>>()
-                .RuleFor(o => o.RoleId, id)
-                .RuleFor(o => o.UserId, userId);
+    public static Faker<UserRolesDto<TRoleDto, TKey>> GetUserRoleFaker<TRoleDto>(TKey id, TKey userId)
+        where TRoleDto : RoleDto<TKey>
+    {
+        var userRoleFaker = new Faker<UserRolesDto<TRoleDto, TKey>>()
+            .RuleFor(o => o.RoleId, id)
+            .RuleFor(o => o.UserId, userId);
 
-            return userRoleFaker;
-        }
+        return userRoleFaker;
+    }
 
-        public static UserRolesDto<TRoleDto, TKey> GenerateRandomUserRole<TRoleDto>(TKey id, TKey userId)
-            where TRoleDto : RoleDto<TKey>
-        {
-            var userRole = GetUserRoleFaker<TRoleDto>(id, userId).Generate();
+    public static UserRolesDto<TRoleDto, TKey> GenerateRandomUserRole<TRoleDto>(TKey id, TKey userId)
+        where TRoleDto : RoleDto<TKey>
+    {
+        var userRole = GetUserRoleFaker<TRoleDto>(id, userId).Generate();
 
-            return userRole;
-        }
+        return userRole;
+    }
 
-        public static Faker<UserProvidersDto<UserProviderDto<TKey>,TKey>> GetUserProvidersFaker(string key, string loginProvider, TKey userId)
-        {
-            var userProvidersFaker = new Faker<UserProvidersDto<UserProviderDto<TKey>, TKey>>()
-                .RuleFor(o => o.LoginProvider, f => loginProvider)
-                .RuleFor(o => o.ProviderKey, f => key)
-                .RuleFor(o => o.ProviderDisplayName, f => Guid.NewGuid().ToString())
-                .RuleFor(o => o.UserId, userId);
+    public static Faker<UserProvidersDto<UserProviderDto<TKey>, TKey>> GetUserProvidersFaker(string key, string loginProvider, TKey userId)
+    {
+        var userProvidersFaker = new Faker<UserProvidersDto<UserProviderDto<TKey>, TKey>>()
+            .RuleFor(o => o.LoginProvider, f => loginProvider)
+            .RuleFor(o => o.ProviderKey, f => key)
+            .RuleFor(o => o.ProviderDisplayName, f => Guid.NewGuid().ToString())
+            .RuleFor(o => o.UserId, userId);
 
-            return userProvidersFaker;
-        }
+        return userProvidersFaker;
+    }
 
-        public static UserProvidersDto<UserProviderDto<TKey>, TKey> GenerateRandomUserProviders(string key, string loginProvider, TKey userId)
-        {
-            var provider = GetUserProvidersFaker(key, loginProvider, userId).Generate();
+    public static UserProvidersDto<UserProviderDto<TKey>, TKey> GenerateRandomUserProviders(string key, string loginProvider, TKey userId)
+    {
+        var provider = GetUserProvidersFaker(key, loginProvider, userId).Generate();
 
-            return provider;
-        }
+        return provider;
+    }
 
-        public static Faker<RoleClaimsDto<RoleClaimDto<TKey>, TKey>> GetRoleClaimFaker(int id, TKey roleId)
-        {
-            var roleClaimFaker = new Faker<RoleClaimsDto<RoleClaimDto<TKey>, TKey>>()
-                .RuleFor(o => o.ClaimType, f => Guid.NewGuid().ToString())
-                .RuleFor(o => o.ClaimValue, f => Guid.NewGuid().ToString())
-                .RuleFor(o => o.RoleId, roleId)
-                .RuleFor(o => o.ClaimId, id);
+    public static Faker<RoleClaimsDto<RoleClaimDto<TKey>, TKey>> GetRoleClaimFaker(int id, TKey roleId)
+    {
+        var roleClaimFaker = new Faker<RoleClaimsDto<RoleClaimDto<TKey>, TKey>>()
+            .RuleFor(o => o.ClaimType, f => Guid.NewGuid().ToString())
+            .RuleFor(o => o.ClaimValue, f => Guid.NewGuid().ToString())
+            .RuleFor(o => o.RoleId, roleId)
+            .RuleFor(o => o.ClaimId, id);
 
-            return roleClaimFaker;
-        }
+        return roleClaimFaker;
+    }
 
-        public static RoleClaimsDto<RoleClaimDto<TKey>, TKey> GenerateRandomRoleClaim(int id, TKey roleId)
-        {
-            var roleClaim = GetRoleClaimFaker(id, roleId).Generate();
+    public static RoleClaimsDto<RoleClaimDto<TKey>, TKey> GenerateRandomRoleClaim(int id, TKey roleId)
+    {
+        var roleClaim = GetRoleClaimFaker(id, roleId).Generate();
 
-            return roleClaim;
-        }
+        return roleClaim;
     }
 }

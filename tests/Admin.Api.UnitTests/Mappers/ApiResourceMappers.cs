@@ -6,96 +6,95 @@ using Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Dtos.Configuration;
 using Skoruba.Duende.IdentityServer.Admin.UnitTests.Mocks;
 using Xunit;
 
-namespace Skoruba.Duende.IdentityServer.Admin.Api.UnitTests.Mappers
+namespace Skoruba.Duende.IdentityServer.Admin.Api.UnitTests.Mappers;
+
+public class ApiResourceMappers
 {
-    public class ApiResourceMappers
+    [Fact]
+    public void CanMapApiResourceApiDtoToApiResourceDto()
     {
-        [Fact]
-        public void CanMapApiResourceApiDtoToApiResourceDto()
-        {
-            var apiResourceApiDto = ApiResourceApiDtoMock.GenerateRandomApiResource(1);
-            
-            var apiResourceDto = apiResourceApiDto.ToApiResourceApiModel<ApiResourceDto>();
+        var apiResourceApiDto = ApiResourceApiDtoMock.GenerateRandomApiResource(1);
 
-            apiResourceDto.Should().NotBeNull();
+        var apiResourceDto = apiResourceApiDto.ToApiResourceApiModel<ApiResourceDto>();
 
-            apiResourceDto.Should().BeEquivalentTo(apiResourceApiDto);
-        }
-        
-        [Fact]
-        public void CanMapApiResourceDtoToApiResourceApiDto()
-        {
-            var apiResourceDto = ApiResourceDtoMock.GenerateRandomApiResource(1);
+        apiResourceDto.Should().NotBeNull();
 
-            var apiResourceApiDto = apiResourceDto.ToApiResourceApiModel<ApiResourceApiDto>();
+        apiResourceDto.Should().BeEquivalentTo(apiResourceApiDto);
+    }
 
-            apiResourceApiDto.Should().BeEquivalentTo(apiResourceDto, options => options
-                .Excluding(x => x.AllowedAccessTokenSigningAlgorithmsItems)
-                .Excluding(x=> x.ScopesItems)
-                .Excluding(x=> x.UserClaimsItems));
-        }
+    [Fact]
+    public void CanMapApiResourceDtoToApiResourceApiDto()
+    {
+        var apiResourceDto = ApiResourceDtoMock.GenerateRandomApiResource(1);
 
-        [Fact]
-        public void CanMapApiResourceSecretApiDtoToApiResourceSecretDto()
-        {
-            var apiSecretApiDto = ApiResourceApiDtoMock.GenerateRandomApiSecret(1);
+        var apiResourceApiDto = apiResourceDto.ToApiResourceApiModel<ApiResourceApiDto>();
 
-            var apiSecretsDto = apiSecretApiDto.ToApiResourceApiModel<ApiSecretsDto>();
+        apiResourceApiDto.Should().BeEquivalentTo(apiResourceDto, options => options
+            .Excluding(x => x.AllowedAccessTokenSigningAlgorithmsItems)
+            .Excluding(x => x.ScopesItems)
+            .Excluding(x => x.UserClaimsItems));
+    }
 
-            apiSecretApiDto.Id.Should().Be(apiSecretsDto.ApiSecretId);
+    [Fact]
+    public void CanMapApiResourceSecretApiDtoToApiResourceSecretDto()
+    {
+        var apiSecretApiDto = ApiResourceApiDtoMock.GenerateRandomApiSecret(1);
 
-            apiSecretsDto.Should().BeEquivalentTo(apiSecretApiDto, options => options.Excluding(x=> x.Id));
-        }
+        var apiSecretsDto = apiSecretApiDto.ToApiResourceApiModel<ApiSecretsDto>();
 
-        [Fact]
-        public void CanMapApiResourceSecretDtoToApiResourceSecretApiDto()
-        {
-            var apiResourceSecret = ApiResourceDtoMock.GenerateRandomApiSecret(1, 1);
+        apiSecretApiDto.Id.Should().Be(apiSecretsDto.ApiSecretId);
 
-            var apiResourceApiDto = apiResourceSecret.ToApiResourceApiModel<ApiSecretApiDto>();
+        apiSecretsDto.Should().BeEquivalentTo(apiSecretApiDto, options => options.Excluding(x => x.Id));
+    }
 
-            apiResourceSecret.ApiResourceId.Should().Be(apiResourceApiDto.Id);
+    [Fact]
+    public void CanMapApiResourceSecretDtoToApiResourceSecretApiDto()
+    {
+        var apiResourceSecret = ApiResourceDtoMock.GenerateRandomApiSecret(1, 1);
 
-            apiResourceApiDto.Should().BeEquivalentTo(apiResourceSecret, options =>
-                options.Excluding(x => x.ApiResourceId)
-                    .Excluding(x => x.ApiSecrets)
-                    .Excluding(x => x.ApiResourceName)
-                    .Excluding(x => x.PageSize)
-                    .Excluding(x => x.HashTypes)
-                    .Excluding(x => x.ApiSecretId)
-                    .Excluding(x => x.HashTypeEnum)
-                    .Excluding(x => x.TypeList)
-                    .Excluding(x => x.TotalCount));
-        }
+        var apiResourceApiDto = apiResourceSecret.ToApiResourceApiModel<ApiSecretApiDto>();
 
-        [Fact]
-        public void CanMapApiResourcePropertyApiDtoToApiResourcePropertyDto()
-        {
-            var apiResourcePropertyApiDto = ApiResourceApiDtoMock.GenerateRandomApiResourceProperty(1);
+        apiResourceSecret.ApiResourceId.Should().Be(apiResourceApiDto.Id);
 
-            var apiResourcePropertiesDto = apiResourcePropertyApiDto.ToApiResourceApiModel<ApiResourcePropertiesDto>();
+        apiResourceApiDto.Should().BeEquivalentTo(apiResourceSecret, options =>
+            options.Excluding(x => x.ApiResourceId)
+                .Excluding(x => x.ApiSecrets)
+                .Excluding(x => x.ApiResourceName)
+                .Excluding(x => x.PageSize)
+                .Excluding(x => x.HashTypes)
+                .Excluding(x => x.ApiSecretId)
+                .Excluding(x => x.HashTypeEnum)
+                .Excluding(x => x.TypeList)
+                .Excluding(x => x.TotalCount));
+    }
 
-            apiResourcePropertyApiDto.Id.Should().Be(apiResourcePropertiesDto.ApiResourcePropertyId);
+    [Fact]
+    public void CanMapApiResourcePropertyApiDtoToApiResourcePropertyDto()
+    {
+        var apiResourcePropertyApiDto = ApiResourceApiDtoMock.GenerateRandomApiResourceProperty(1);
 
-            apiResourcePropertiesDto.Should().BeEquivalentTo(apiResourcePropertyApiDto, options => options.Excluding(x=> x.Id));
-        }
+        var apiResourcePropertiesDto = apiResourcePropertyApiDto.ToApiResourceApiModel<ApiResourcePropertiesDto>();
 
-        [Fact]
-        public void CanMapApiResourcePropertyDtoToApiResourcePropertyApiDto()
-        {
-            var apiResourcePropertyDto = ApiResourceDtoMock.GenerateRandomApiResourceProperty(1, 1);
+        apiResourcePropertyApiDto.Id.Should().Be(apiResourcePropertiesDto.ApiResourcePropertyId);
 
-            var apiResourcePropertyApiDto = apiResourcePropertyDto.ToApiResourceApiModel<ApiResourcePropertyApiDto>();
+        apiResourcePropertiesDto.Should().BeEquivalentTo(apiResourcePropertyApiDto, options => options.Excluding(x => x.Id));
+    }
 
-            apiResourcePropertyDto.ApiResourcePropertyId.Should().Be(apiResourcePropertyApiDto.Id);
+    [Fact]
+    public void CanMapApiResourcePropertyDtoToApiResourcePropertyApiDto()
+    {
+        var apiResourcePropertyDto = ApiResourceDtoMock.GenerateRandomApiResourceProperty(1, 1);
 
-            apiResourcePropertyApiDto.Should().BeEquivalentTo(apiResourcePropertyDto, options =>
-                options.Excluding(x => x.ApiResourceId)
-                    .Excluding(x => x.ApiResourceName)
-                    .Excluding(x => x.PageSize)
-                    .Excluding(x => x.TotalCount)
-                    .Excluding(x => x.ApiResourcePropertyId)
-                    .Excluding(x => x.ApiResourceProperties));
-        }
+        var apiResourcePropertyApiDto = apiResourcePropertyDto.ToApiResourceApiModel<ApiResourcePropertyApiDto>();
+
+        apiResourcePropertyDto.ApiResourcePropertyId.Should().Be(apiResourcePropertyApiDto.Id);
+
+        apiResourcePropertyApiDto.Should().BeEquivalentTo(apiResourcePropertyDto, options =>
+            options.Excluding(x => x.ApiResourceId)
+                .Excluding(x => x.ApiResourceName)
+                .Excluding(x => x.PageSize)
+                .Excluding(x => x.TotalCount)
+                .Excluding(x => x.ApiResourcePropertyId)
+                .Excluding(x => x.ApiResourceProperties));
     }
 }

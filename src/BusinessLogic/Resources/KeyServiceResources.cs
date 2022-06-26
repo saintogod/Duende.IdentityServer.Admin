@@ -3,17 +3,16 @@
 
 using Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Helpers;
 
-namespace Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Resources
+namespace Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Resources;
+
+public class KeyServiceResources : IKeyServiceResources
 {
-    public class KeyServiceResources : IKeyServiceResources
+    public ResourceMessage KeyDoesNotExist()
     {
-        public ResourceMessage KeyDoesNotExist()
+        return new ResourceMessage()
         {
-            return new ResourceMessage()
-            {
-                Code = nameof(KeyDoesNotExist),
-                Description = KeyServiceResource.KeyDoesNotExist
-            };
-        }
+            Code = nameof(KeyDoesNotExist),
+            Description = KeyServiceResource.KeyDoesNotExist
+        };
     }
 }

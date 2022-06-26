@@ -8,26 +8,25 @@ using Skoruba.Duende.IdentityServer.Admin.Api.Configuration;
 using Skoruba.Duende.IdentityServer.Admin.Api.IntegrationTests.Common;
 using Xunit;
 
-namespace Skoruba.Duende.IdentityServer.Admin.Api.IntegrationTests.Tests.Base
+namespace Skoruba.Duende.IdentityServer.Admin.Api.IntegrationTests.Tests.Base;
+
+public class BaseClassFixture : IClassFixture<TestFixture>
 {
-    public class BaseClassFixture : IClassFixture<TestFixture>
+    protected readonly HttpClient Client;
+    protected readonly TestServer TestServer;
+
+    public BaseClassFixture(TestFixture fixture)
     {
-        protected readonly HttpClient Client;
-        protected readonly TestServer TestServer;
+        Client = fixture.Client;
+        TestServer = fixture.TestServer;
+    }
 
-        public BaseClassFixture(TestFixture fixture)
+    protected virtual void SetupAdminClaimsViaHeaders()
+    {
+        using (var scope = TestServer.Services.CreateScope())
         {
-            Client = fixture.Client;
-            TestServer = fixture.TestServer;
-        }
-
-        protected virtual void SetupAdminClaimsViaHeaders()
-        {
-            using (var scope = TestServer.Services.CreateScope())
-            {
-                var configuration = scope.ServiceProvider.GetRequiredService<AdminApiConfiguration>();
-                Client.SetAdminClaimsViaHeaders(configuration);
-            }
+            var configuration = scope.ServiceProvider.GetRequiredService<AdminApiConfiguration>();
+            Client.SetAdminClaimsViaHeaders(configuration);
         }
     }
 }

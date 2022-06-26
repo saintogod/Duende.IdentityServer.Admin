@@ -3,12 +3,11 @@
 
 using Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Identity.Dtos.Identity.Interfaces;
 
-namespace Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Identity.Dtos.Identity.Base
-{
-    public class BaseUserChangePasswordDto<TUserId> : IBaseUserChangePasswordDto
-    {
-        public TUserId UserId { get; set; }
+namespace Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Identity.Dtos.Identity.Base;
 
-        object IBaseUserChangePasswordDto.UserId => UserId;
-    }
+public class BaseUserChangePasswordDto<TUserId> : IBaseUserChangePasswordDto
+{
+    public TUserId UserId { get; set; }
+
+    object IBaseUserChangePasswordDto.UserId => UserId;
 }

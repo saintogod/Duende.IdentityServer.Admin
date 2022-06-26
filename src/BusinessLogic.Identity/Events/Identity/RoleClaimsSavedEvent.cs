@@ -3,15 +3,14 @@
 
 using Skoruba.AuditLogging.Events;
 
-namespace Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Identity.Events.Identity
-{
-    public class RoleClaimsSavedEvent<TRoleClaimsDto> : AuditEvent
-    {
-        public TRoleClaimsDto Claims { get; set; }
+namespace Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Identity.Events.Identity;
 
-        public RoleClaimsSavedEvent(TRoleClaimsDto claims)
-        {
-            Claims = claims;
-        }
+public class RoleClaimsSavedEvent<TRoleClaimsDto> : AuditEvent
+{
+    public TRoleClaimsDto Claims { get; set; }
+
+    public RoleClaimsSavedEvent(TRoleClaimsDto claims)
+    {
+        Claims = claims;
     }
 }

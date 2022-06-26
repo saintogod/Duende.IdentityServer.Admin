@@ -14,256 +14,255 @@ using Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Shared.ExceptionHandling
 using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Helpers;
 using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Repositories.Interfaces;
 
-namespace Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Services
+namespace Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Services;
+
+public class ApiResourceService : IApiResourceService
 {
-    public class ApiResourceService : IApiResourceService
+    protected readonly IApiResourceRepository ApiResourceRepository;
+    protected readonly IApiResourceServiceResources ApiResourceServiceResources;
+    protected readonly IClientService ClientService;
+    protected readonly IAuditEventLogger AuditEventLogger;
+    private const string SharedSecret = "SharedSecret";
+
+    public ApiResourceService(IApiResourceRepository apiResourceRepository,
+        IApiResourceServiceResources apiResourceServiceResources,
+        IClientService clientService,
+        IAuditEventLogger auditEventLogger)
     {
-        protected readonly IApiResourceRepository ApiResourceRepository;
-        protected readonly IApiResourceServiceResources ApiResourceServiceResources;
-        protected readonly IClientService ClientService;
-        protected readonly IAuditEventLogger AuditEventLogger;
-        private const string SharedSecret = "SharedSecret";
+        ApiResourceRepository = apiResourceRepository;
+        ApiResourceServiceResources = apiResourceServiceResources;
+        ClientService = clientService;
+        AuditEventLogger = auditEventLogger;
+    }
 
-        public ApiResourceService(IApiResourceRepository apiResourceRepository,
-            IApiResourceServiceResources apiResourceServiceResources,
-            IClientService clientService,
-            IAuditEventLogger auditEventLogger)
+    public virtual async Task<ApiResourcesDto> GetApiResourcesAsync(string search, int page = 1, int pageSize = 10)
+    {
+        var pagedList = await ApiResourceRepository.GetApiResourcesAsync(search, page, pageSize);
+        var apiResourcesDto = pagedList.ToModel();
+
+        await AuditEventLogger.LogEventAsync(new ApiResourcesRequestedEvent(apiResourcesDto));
+
+        return apiResourcesDto;
+    }
+
+    public virtual async Task<ApiResourcePropertiesDto> GetApiResourcePropertiesAsync(int apiResourceId, int page = 1, int pageSize = 10)
+    {
+        var apiResource = await ApiResourceRepository.GetApiResourceAsync(apiResourceId);
+        if (apiResource == null) throw new UserFriendlyErrorPageException(string.Format(ApiResourceServiceResources.ApiResourceDoesNotExist().Description, apiResourceId), ApiResourceServiceResources.ApiResourceDoesNotExist().Description);
+
+        var pagedList = await ApiResourceRepository.GetApiResourcePropertiesAsync(apiResourceId, page, pageSize);
+        var apiResourcePropertiesDto = pagedList.ToModel();
+        apiResourcePropertiesDto.ApiResourceId = apiResourceId;
+        apiResourcePropertiesDto.ApiResourceName = await ApiResourceRepository.GetApiResourceNameAsync(apiResourceId);
+
+        await AuditEventLogger.LogEventAsync(new ApiResourcePropertiesRequestedEvent(apiResourceId, apiResourcePropertiesDto));
+
+        return apiResourcePropertiesDto;
+    }
+
+    public virtual async Task<ApiResourcePropertiesDto> GetApiResourcePropertyAsync(int apiResourcePropertyId)
+    {
+        var apiResourceProperty = await ApiResourceRepository.GetApiResourcePropertyAsync(apiResourcePropertyId);
+        if (apiResourceProperty == null) throw new UserFriendlyErrorPageException(string.Format(ApiResourceServiceResources.ApiResourcePropertyDoesNotExist().Description, apiResourcePropertyId));
+
+        var apiResourcePropertiesDto = apiResourceProperty.ToModel();
+        apiResourcePropertiesDto.ApiResourceId = apiResourceProperty.ApiResourceId;
+        apiResourcePropertiesDto.ApiResourceName = await ApiResourceRepository.GetApiResourceNameAsync(apiResourceProperty.ApiResourceId);
+
+        await AuditEventLogger.LogEventAsync(new ApiResourcePropertyRequestedEvent(apiResourcePropertyId, apiResourcePropertiesDto));
+
+        return apiResourcePropertiesDto;
+    }
+
+    public virtual async Task<int> AddApiResourcePropertyAsync(ApiResourcePropertiesDto apiResourceProperties)
+    {
+        var canInsert = await CanInsertApiResourcePropertyAsync(apiResourceProperties);
+        if (!canInsert)
         {
-            ApiResourceRepository = apiResourceRepository;
-            ApiResourceServiceResources = apiResourceServiceResources;
-            ClientService = clientService;
-            AuditEventLogger = auditEventLogger;
+            await BuildApiResourcePropertiesViewModelAsync(apiResourceProperties);
+            throw new UserFriendlyViewException(string.Format(ApiResourceServiceResources.ApiResourcePropertyExistsValue().Description, apiResourceProperties.Key), ApiResourceServiceResources.ApiResourcePropertyExistsKey().Description, apiResourceProperties);
         }
 
-        public virtual async Task<ApiResourcesDto> GetApiResourcesAsync(string search, int page = 1, int pageSize = 10)
+        var apiResourceProperty = apiResourceProperties.ToEntity();
+
+        var saved = await ApiResourceRepository.AddApiResourcePropertyAsync(apiResourceProperties.ApiResourceId, apiResourceProperty);
+
+        await AuditEventLogger.LogEventAsync(new ApiResourcePropertyAddedEvent(apiResourceProperties));
+
+        return saved;
+    }
+
+    public virtual async Task<int> DeleteApiResourcePropertyAsync(ApiResourcePropertiesDto apiResourceProperty)
+    {
+        var propertyEntity = apiResourceProperty.ToEntity();
+
+        var deleted = await ApiResourceRepository.DeleteApiResourcePropertyAsync(propertyEntity);
+
+        await AuditEventLogger.LogEventAsync(new ApiResourcePropertyDeletedEvent(apiResourceProperty));
+
+        return deleted;
+    }
+
+    public virtual async Task<bool> CanInsertApiResourcePropertyAsync(ApiResourcePropertiesDto apiResourceProperty)
+    {
+        var resource = apiResourceProperty.ToEntity();
+
+        return await ApiResourceRepository.CanInsertApiResourcePropertyAsync(resource);
+    }
+
+    private void HashApiSharedSecret(ApiSecretsDto apiSecret)
+    {
+        if (apiSecret.Type != SharedSecret) return;
+
+        if (apiSecret.HashTypeEnum == HashType.Sha256)
         {
-            var pagedList = await ApiResourceRepository.GetApiResourcesAsync(search, page, pageSize);
-            var apiResourcesDto = pagedList.ToModel();
+            apiSecret.Value = apiSecret.Value.Sha256();
+        }
+        else if (apiSecret.HashTypeEnum == HashType.Sha512)
+        {
+            apiSecret.Value = apiSecret.Value.Sha512();
+        }
+    }
 
-            await AuditEventLogger.LogEventAsync(new ApiResourcesRequestedEvent(apiResourcesDto));
+    public virtual ApiSecretsDto BuildApiSecretsViewModel(ApiSecretsDto apiSecrets)
+    {
+        apiSecrets.HashTypes = ClientService.GetHashTypes();
+        apiSecrets.TypeList = ClientService.GetSecretTypes();
 
-            return apiResourcesDto;
+        return apiSecrets;
+    }
+
+    public virtual async Task<ApiResourceDto> GetApiResourceAsync(int apiResourceId)
+    {
+        var apiResource = await ApiResourceRepository.GetApiResourceAsync(apiResourceId);
+        if (apiResource == null) throw new UserFriendlyErrorPageException(ApiResourceServiceResources.ApiResourceDoesNotExist().Description, ApiResourceServiceResources.ApiResourceDoesNotExist().Description);
+        var apiResourceDto = apiResource.ToModel();
+
+        await AuditEventLogger.LogEventAsync(new ApiResourceRequestedEvent(apiResourceId, apiResourceDto));
+
+        return apiResourceDto;
+    }
+
+    public virtual async Task<int> AddApiResourceAsync(ApiResourceDto apiResource)
+    {
+        var canInsert = await CanInsertApiResourceAsync(apiResource);
+        if (!canInsert)
+        {
+            throw new UserFriendlyViewException(string.Format(ApiResourceServiceResources.ApiResourceExistsValue().Description, apiResource.Name), ApiResourceServiceResources.ApiResourceExistsKey().Description, apiResource);
         }
 
-        public virtual async Task<ApiResourcePropertiesDto> GetApiResourcePropertiesAsync(int apiResourceId, int page = 1, int pageSize = 10)
+        var resource = apiResource.ToEntity();
+
+        var added = await ApiResourceRepository.AddApiResourceAsync(resource);
+
+        await AuditEventLogger.LogEventAsync(new ApiResourceAddedEvent(apiResource));
+
+        return added;
+    }
+
+    public virtual async Task<int> UpdateApiResourceAsync(ApiResourceDto apiResource)
+    {
+        var canInsert = await CanInsertApiResourceAsync(apiResource);
+        if (!canInsert)
         {
-            var apiResource = await ApiResourceRepository.GetApiResourceAsync(apiResourceId);
-            if (apiResource == null) throw new UserFriendlyErrorPageException(string.Format(ApiResourceServiceResources.ApiResourceDoesNotExist().Description, apiResourceId), ApiResourceServiceResources.ApiResourceDoesNotExist().Description);
-
-            var pagedList = await ApiResourceRepository.GetApiResourcePropertiesAsync(apiResourceId, page, pageSize);
-            var apiResourcePropertiesDto = pagedList.ToModel();
-            apiResourcePropertiesDto.ApiResourceId = apiResourceId;
-            apiResourcePropertiesDto.ApiResourceName = await ApiResourceRepository.GetApiResourceNameAsync(apiResourceId);
-
-            await AuditEventLogger.LogEventAsync(new ApiResourcePropertiesRequestedEvent(apiResourceId, apiResourcePropertiesDto));
-
-            return apiResourcePropertiesDto;
+            throw new UserFriendlyViewException(string.Format(ApiResourceServiceResources.ApiResourceExistsValue().Description, apiResource.Name), ApiResourceServiceResources.ApiResourceExistsKey().Description, apiResource);
         }
 
-        public virtual async Task<ApiResourcePropertiesDto> GetApiResourcePropertyAsync(int apiResourcePropertyId)
-        {
-            var apiResourceProperty = await ApiResourceRepository.GetApiResourcePropertyAsync(apiResourcePropertyId);
-            if (apiResourceProperty == null) throw new UserFriendlyErrorPageException(string.Format(ApiResourceServiceResources.ApiResourcePropertyDoesNotExist().Description, apiResourcePropertyId));
+        var resource = apiResource.ToEntity();
 
-            var apiResourcePropertiesDto = apiResourceProperty.ToModel();
-            apiResourcePropertiesDto.ApiResourceId = apiResourceProperty.ApiResourceId;
-            apiResourcePropertiesDto.ApiResourceName = await ApiResourceRepository.GetApiResourceNameAsync(apiResourceProperty.ApiResourceId);
+        var originalApiResource = await GetApiResourceAsync(apiResource.Id);
 
-            await AuditEventLogger.LogEventAsync(new ApiResourcePropertyRequestedEvent(apiResourcePropertyId, apiResourcePropertiesDto));
+        var updated = await ApiResourceRepository.UpdateApiResourceAsync(resource);
 
-            return apiResourcePropertiesDto;
-        }
+        await AuditEventLogger.LogEventAsync(new ApiResourceUpdatedEvent(originalApiResource, apiResource));
 
-        public virtual async Task<int> AddApiResourcePropertyAsync(ApiResourcePropertiesDto apiResourceProperties)
-        {
-            var canInsert = await CanInsertApiResourcePropertyAsync(apiResourceProperties);
-            if (!canInsert)
-            {
-                await BuildApiResourcePropertiesViewModelAsync(apiResourceProperties);
-                throw new UserFriendlyViewException(string.Format(ApiResourceServiceResources.ApiResourcePropertyExistsValue().Description, apiResourceProperties.Key), ApiResourceServiceResources.ApiResourcePropertyExistsKey().Description, apiResourceProperties);
-            }
+        return updated;
+    }
 
-            var apiResourceProperty = apiResourceProperties.ToEntity();
+    public virtual async Task<int> DeleteApiResourceAsync(ApiResourceDto apiResource)
+    {
+        var resource = apiResource.ToEntity();
 
-            var saved = await ApiResourceRepository.AddApiResourcePropertyAsync(apiResourceProperties.ApiResourceId, apiResourceProperty);
+        var deleted = await ApiResourceRepository.DeleteApiResourceAsync(resource);
 
-            await AuditEventLogger.LogEventAsync(new ApiResourcePropertyAddedEvent(apiResourceProperties));
+        await AuditEventLogger.LogEventAsync(new ApiResourceDeletedEvent(apiResource));
 
-            return saved;
-        }
+        return deleted;
+    }
 
-        public virtual async Task<int> DeleteApiResourcePropertyAsync(ApiResourcePropertiesDto apiResourceProperty)
-        {
-            var propertyEntity = apiResourceProperty.ToEntity();
+    public virtual async Task<bool> CanInsertApiResourceAsync(ApiResourceDto apiResource)
+    {
+        var resource = apiResource.ToEntity();
 
-            var deleted = await ApiResourceRepository.DeleteApiResourcePropertyAsync(propertyEntity);
+        return await ApiResourceRepository.CanInsertApiResourceAsync(resource);
+    }
 
-            await AuditEventLogger.LogEventAsync(new ApiResourcePropertyDeletedEvent(apiResourceProperty));
+    private async Task BuildApiResourcePropertiesViewModelAsync(ApiResourcePropertiesDto apiResourceProperties)
+    {
+        var apiResourcePropertiesDto = await GetApiResourcePropertiesAsync(apiResourceProperties.ApiResourceId);
+        apiResourceProperties.ApiResourceProperties.AddRange(apiResourcePropertiesDto.ApiResourceProperties);
+        apiResourceProperties.TotalCount = apiResourcePropertiesDto.TotalCount;
+    }
 
-            return deleted;
-        }
+    public virtual async Task<ApiSecretsDto> GetApiSecretsAsync(int apiResourceId, int page = 1, int pageSize = 10)
+    {
+        var apiResource = await ApiResourceRepository.GetApiResourceAsync(apiResourceId);
+        if (apiResource == null) throw new UserFriendlyErrorPageException(string.Format(ApiResourceServiceResources.ApiResourceDoesNotExist().Description, apiResourceId), ApiResourceServiceResources.ApiResourceDoesNotExist().Description);
 
-        public virtual async Task<bool> CanInsertApiResourcePropertyAsync(ApiResourcePropertiesDto apiResourceProperty)
-        {
-            var resource = apiResourceProperty.ToEntity();
+        var pagedList = await ApiResourceRepository.GetApiSecretsAsync(apiResourceId, page, pageSize);
 
-            return await ApiResourceRepository.CanInsertApiResourcePropertyAsync(resource);
-        }
+        var apiSecretsDto = pagedList.ToModel();
+        apiSecretsDto.ApiResourceId = apiResourceId;
+        apiSecretsDto.ApiResourceName = await ApiResourceRepository.GetApiResourceNameAsync(apiResourceId);
 
-        private void HashApiSharedSecret(ApiSecretsDto apiSecret)
-        {
-            if (apiSecret.Type != SharedSecret) return;
+        // remove secret value from dto
+        apiSecretsDto.ApiSecrets.ForEach(x => x.Value = null);
 
-            if (apiSecret.HashTypeEnum == HashType.Sha256)
-            {
-                apiSecret.Value = apiSecret.Value.Sha256();
-            }
-            else if (apiSecret.HashTypeEnum == HashType.Sha512)
-            {
-                apiSecret.Value = apiSecret.Value.Sha512();
-            }
-        }
+        await AuditEventLogger.LogEventAsync(new ApiSecretsRequestedEvent(apiSecretsDto.ApiResourceId, apiSecretsDto.ApiSecrets.Select(x => (x.Id, x.Type, x.Expiration)).ToList()));
 
-        public virtual ApiSecretsDto BuildApiSecretsViewModel(ApiSecretsDto apiSecrets)
-        {
-            apiSecrets.HashTypes = ClientService.GetHashTypes();
-            apiSecrets.TypeList = ClientService.GetSecretTypes();
+        return apiSecretsDto;
+    }
 
-            return apiSecrets;
-        }
+    public virtual async Task<int> AddApiSecretAsync(ApiSecretsDto apiSecret)
+    {
+        HashApiSharedSecret(apiSecret);
 
-        public virtual async Task<ApiResourceDto> GetApiResourceAsync(int apiResourceId)
-        {
-            var apiResource = await ApiResourceRepository.GetApiResourceAsync(apiResourceId);
-            if (apiResource == null) throw new UserFriendlyErrorPageException(ApiResourceServiceResources.ApiResourceDoesNotExist().Description, ApiResourceServiceResources.ApiResourceDoesNotExist().Description);
-            var apiResourceDto = apiResource.ToModel();
+        var secret = apiSecret.ToEntity();
 
-            await AuditEventLogger.LogEventAsync(new ApiResourceRequestedEvent(apiResourceId, apiResourceDto));
+        var added = await ApiResourceRepository.AddApiSecretAsync(apiSecret.ApiResourceId, secret);
 
-            return apiResourceDto;
-        }
+        await AuditEventLogger.LogEventAsync(new ApiSecretAddedEvent(apiSecret.ApiResourceId, apiSecret.Type, apiSecret.Expiration));
 
-        public virtual async Task<int> AddApiResourceAsync(ApiResourceDto apiResource)
-        {
-            var canInsert = await CanInsertApiResourceAsync(apiResource);
-            if (!canInsert)
-            {
-                throw new UserFriendlyViewException(string.Format(ApiResourceServiceResources.ApiResourceExistsValue().Description, apiResource.Name), ApiResourceServiceResources.ApiResourceExistsKey().Description, apiResource);
-            }
+        return added;
+    }
 
-            var resource = apiResource.ToEntity();
+    public virtual async Task<ApiSecretsDto> GetApiSecretAsync(int apiSecretId)
+    {
+        var apiSecret = await ApiResourceRepository.GetApiSecretAsync(apiSecretId);
+        if (apiSecret == null) throw new UserFriendlyErrorPageException(string.Format(ApiResourceServiceResources.ApiSecretDoesNotExist().Description, apiSecretId), ApiResourceServiceResources.ApiSecretDoesNotExist().Description);
+        var apiSecretsDto = apiSecret.ToModel();
 
-            var added = await ApiResourceRepository.AddApiResourceAsync(resource);
+        // remove secret value for dto
+        apiSecretsDto.Value = null;
 
-            await AuditEventLogger.LogEventAsync(new ApiResourceAddedEvent(apiResource));
+        await AuditEventLogger.LogEventAsync(new ApiSecretRequestedEvent(apiSecretsDto.ApiResourceId, apiSecretsDto.ApiSecretId, apiSecretsDto.Type, apiSecretsDto.Expiration));
 
-            return added;
-        }
+        return apiSecretsDto;
+    }
 
-        public virtual async Task<int> UpdateApiResourceAsync(ApiResourceDto apiResource)
-        {
-            var canInsert = await CanInsertApiResourceAsync(apiResource);
-            if (!canInsert)
-            {
-                throw new UserFriendlyViewException(string.Format(ApiResourceServiceResources.ApiResourceExistsValue().Description, apiResource.Name), ApiResourceServiceResources.ApiResourceExistsKey().Description, apiResource);
-            }
+    public virtual async Task<int> DeleteApiSecretAsync(ApiSecretsDto apiSecret)
+    {
+        var secret = apiSecret.ToEntity();
 
-            var resource = apiResource.ToEntity();
+        var deleted = await ApiResourceRepository.DeleteApiSecretAsync(secret);
 
-            var originalApiResource = await GetApiResourceAsync(apiResource.Id);
+        await AuditEventLogger.LogEventAsync(new ApiSecretDeletedEvent(apiSecret.ApiResourceId, apiSecret.ApiSecretId));
 
-            var updated = await ApiResourceRepository.UpdateApiResourceAsync(resource);
+        return deleted;
+    }
 
-            await AuditEventLogger.LogEventAsync(new ApiResourceUpdatedEvent(originalApiResource, apiResource));
-
-            return updated;
-        }
-
-        public virtual async Task<int> DeleteApiResourceAsync(ApiResourceDto apiResource)
-        {
-            var resource = apiResource.ToEntity();
-
-            var deleted = await ApiResourceRepository.DeleteApiResourceAsync(resource);
-
-            await AuditEventLogger.LogEventAsync(new ApiResourceDeletedEvent(apiResource));
-
-            return deleted;
-        }
-
-        public virtual async Task<bool> CanInsertApiResourceAsync(ApiResourceDto apiResource)
-        {
-            var resource = apiResource.ToEntity();
-
-            return await ApiResourceRepository.CanInsertApiResourceAsync(resource);
-        }
-
-        private async Task BuildApiResourcePropertiesViewModelAsync(ApiResourcePropertiesDto apiResourceProperties)
-        {
-            var apiResourcePropertiesDto = await GetApiResourcePropertiesAsync(apiResourceProperties.ApiResourceId);
-            apiResourceProperties.ApiResourceProperties.AddRange(apiResourcePropertiesDto.ApiResourceProperties);
-            apiResourceProperties.TotalCount = apiResourcePropertiesDto.TotalCount;
-        }
-
-        public virtual async Task<ApiSecretsDto> GetApiSecretsAsync(int apiResourceId, int page = 1, int pageSize = 10)
-        {
-            var apiResource = await ApiResourceRepository.GetApiResourceAsync(apiResourceId);
-            if (apiResource == null) throw new UserFriendlyErrorPageException(string.Format(ApiResourceServiceResources.ApiResourceDoesNotExist().Description, apiResourceId), ApiResourceServiceResources.ApiResourceDoesNotExist().Description);
-
-            var pagedList = await ApiResourceRepository.GetApiSecretsAsync(apiResourceId, page, pageSize);
-
-            var apiSecretsDto = pagedList.ToModel();
-            apiSecretsDto.ApiResourceId = apiResourceId;
-            apiSecretsDto.ApiResourceName = await ApiResourceRepository.GetApiResourceNameAsync(apiResourceId);
-
-            // remove secret value from dto
-            apiSecretsDto.ApiSecrets.ForEach(x => x.Value = null);
-
-            await AuditEventLogger.LogEventAsync(new ApiSecretsRequestedEvent(apiSecretsDto.ApiResourceId, apiSecretsDto.ApiSecrets.Select(x => (x.Id, x.Type, x.Expiration)).ToList()));
-
-            return apiSecretsDto;
-        }
-
-        public virtual async Task<int> AddApiSecretAsync(ApiSecretsDto apiSecret)
-        {
-            HashApiSharedSecret(apiSecret);
-
-            var secret = apiSecret.ToEntity();
-
-            var added = await ApiResourceRepository.AddApiSecretAsync(apiSecret.ApiResourceId, secret);
-
-            await AuditEventLogger.LogEventAsync(new ApiSecretAddedEvent(apiSecret.ApiResourceId, apiSecret.Type, apiSecret.Expiration));
-
-            return added;
-        }
-
-        public virtual async Task<ApiSecretsDto> GetApiSecretAsync(int apiSecretId)
-        {
-            var apiSecret = await ApiResourceRepository.GetApiSecretAsync(apiSecretId);
-            if (apiSecret == null) throw new UserFriendlyErrorPageException(string.Format(ApiResourceServiceResources.ApiSecretDoesNotExist().Description, apiSecretId), ApiResourceServiceResources.ApiSecretDoesNotExist().Description);
-            var apiSecretsDto = apiSecret.ToModel();
-
-            // remove secret value for dto
-            apiSecretsDto.Value = null;
-
-            await AuditEventLogger.LogEventAsync(new ApiSecretRequestedEvent(apiSecretsDto.ApiResourceId, apiSecretsDto.ApiSecretId, apiSecretsDto.Type, apiSecretsDto.Expiration));
-
-            return apiSecretsDto;
-        }
-
-        public virtual async Task<int> DeleteApiSecretAsync(ApiSecretsDto apiSecret)
-        {
-            var secret = apiSecret.ToEntity();
-
-            var deleted = await ApiResourceRepository.DeleteApiSecretAsync(secret);
-
-            await AuditEventLogger.LogEventAsync(new ApiSecretDeletedEvent(apiSecret.ApiResourceId, apiSecret.ApiSecretId));
-
-            return deleted;
-        }
-
-        public virtual async Task<string> GetApiResourceNameAsync(int apiResourceId)
-        {
-            return await ApiResourceRepository.GetApiResourceNameAsync(apiResourceId);
-        }
+    public virtual async Task<string> GetApiResourceNameAsync(int apiResourceId)
+    {
+        return await ApiResourceRepository.GetApiResourceNameAsync(apiResourceId);
     }
 }

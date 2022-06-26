@@ -3,20 +3,19 @@
 
 using Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Helpers;
 
-namespace Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Resources
+namespace Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Resources;
+
+public interface IClientServiceResources
 {
-    public interface IClientServiceResources
-    {
-        ResourceMessage ClientClaimDoesNotExist();
+    ResourceMessage ClientClaimDoesNotExist();
 
-        ResourceMessage ClientDoesNotExist();
+    ResourceMessage ClientDoesNotExist();
 
-        ResourceMessage ClientExistsKey();
+    ResourceMessage ClientExistsKey();
 
-        ResourceMessage ClientExistsValue();
+    ResourceMessage ClientExistsValue();
 
-        ResourceMessage ClientPropertyDoesNotExist();
+    ResourceMessage ClientPropertyDoesNotExist();
 
-        ResourceMessage ClientSecretDoesNotExist();
-    }
+    ResourceMessage ClientSecretDoesNotExist();
 }

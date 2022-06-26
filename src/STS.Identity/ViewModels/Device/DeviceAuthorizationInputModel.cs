@@ -6,10 +6,9 @@
 
 using Skoruba.Duende.IdentityServer.STS.Identity.ViewModels.Consent;
 
-namespace Skoruba.Duende.IdentityServer.STS.Identity.ViewModels.Device
+namespace Skoruba.Duende.IdentityServer.STS.Identity.ViewModels.Device;
+
+public class DeviceAuthorizationInputModel : ConsentInputModel
 {
-    public class DeviceAuthorizationInputModel : ConsentInputModel
-    {
-        public string UserCode { get; set; }
-    }
+    public string UserCode { get; set; }
 }

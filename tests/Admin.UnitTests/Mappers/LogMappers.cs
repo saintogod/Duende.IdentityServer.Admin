@@ -6,39 +6,38 @@ using Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Mappers;
 using Skoruba.Duende.IdentityServer.Admin.UnitTests.Mocks;
 using Xunit;
 
-namespace Skoruba.Duende.IdentityServer.Admin.UnitTests.Mappers
+namespace Skoruba.Duende.IdentityServer.Admin.UnitTests.Mappers;
+
+public class LogMappers
 {
-    public class LogMappers
+    [Fact]
+    public void CanMapIdentityResourceToModel()
     {
-        [Fact]
-        public void CanMapIdentityResourceToModel()
-        {
-            //Generate entity
-            var log = LogMock.GenerateRandomLog(1);
+        //Generate entity
+        var log = LogMock.GenerateRandomLog(1);
 
-            //Try map to DTO
-            var logDto = log.ToModel();
+        //Try map to DTO
+        var logDto = log.ToModel();
 
-            //Asert
-            logDto.Should().NotBeNull();
+        //Asert
+        logDto.Should().NotBeNull();
 
-            logDto.Should().BeEquivalentTo(log, options =>
-                options.Excluding(o => o.PropertiesXml));
-        }
+        logDto.Should().BeEquivalentTo(log, options =>
+            options.Excluding(o => o.PropertiesXml));
+    }
 
-        [Fact]
-        public void CanMapIdentityResourceDtoToEntity()
-        {
-            //Generate DTO
-            var logDto = LogDtoMock.GenerateRandomLog(1);
+    [Fact]
+    public void CanMapIdentityResourceDtoToEntity()
+    {
+        //Generate DTO
+        var logDto = LogDtoMock.GenerateRandomLog(1);
 
-            //Try map to entity
-            var log = logDto.ToEntity();
+        //Try map to entity
+        var log = logDto.ToEntity();
 
-            log.Should().NotBeNull();
+        log.Should().NotBeNull();
 
-            logDto.Should().BeEquivalentTo(log, options =>
-                options.Excluding(o => o.PropertiesXml));
-        }
+        logDto.Should().BeEquivalentTo(log, options =>
+            options.Excluding(o => o.PropertiesXml));
     }
 }

@@ -12,120 +12,119 @@ using Newtonsoft.Json;
 using Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Shared.ExceptionHandling;
 using Skoruba.Duende.IdentityServer.Admin.UI.Helpers;
 
-namespace Skoruba.Duende.IdentityServer.Admin.UI.ExceptionHandling
+namespace Skoruba.Duende.IdentityServer.Admin.UI.ExceptionHandling;
+
+public class ControllerExceptionFilterAttribute : ExceptionFilterAttribute
 {
-    public class ControllerExceptionFilterAttribute : ExceptionFilterAttribute
+    private readonly ITempDataDictionaryFactory _tempDataDictionaryFactory;
+    private readonly IModelMetadataProvider _modelMetadataProvider;
+
+    public ControllerExceptionFilterAttribute(ITempDataDictionaryFactory tempDataDictionaryFactory,
+        IModelMetadataProvider modelMetadataProvider)
     {
-        private readonly ITempDataDictionaryFactory _tempDataDictionaryFactory;
-        private readonly IModelMetadataProvider _modelMetadataProvider;
+        _tempDataDictionaryFactory = tempDataDictionaryFactory;
+        _modelMetadataProvider = modelMetadataProvider;
+    }
 
-        public ControllerExceptionFilterAttribute(ITempDataDictionaryFactory tempDataDictionaryFactory,
-            IModelMetadataProvider modelMetadataProvider)
+    public override void OnException(ExceptionContext context)
+    {
+        if (!(context.Exception is UserFriendlyErrorPageException) &&
+            !(context.Exception is UserFriendlyViewException)) return;
+
+        //Create toastr notification
+        if (CreateNotification(context, out var tempData)) return;
+
+        HandleUserFriendlyViewException(context);
+        ProcessException(context, tempData);
+
+        //Clear toastr notification from temp
+        ClearNotification(tempData);
+    }
+
+    private void ClearNotification(ITempDataDictionary tempData)
+    {
+        tempData.Remove(NotificationHelpers.NotificationKey);
+    }
+
+    private bool CreateNotification(ExceptionContext context, out ITempDataDictionary tempData)
+    {
+        tempData = _tempDataDictionaryFactory.GetTempData(context.HttpContext);
+        CreateNotification(NotificationHelpers.AlertType.Error, tempData, context.Exception.Message);
+
+        return !tempData.ContainsKey(NotificationHelpers.NotificationKey);
+    }
+
+    private void ProcessException(ExceptionContext context, ITempDataDictionary tempData)
+    {
+        if (!(context.ActionDescriptor is ControllerActionDescriptor controllerActionDescriptor)) return;
+
+        const string errorViewName = "Error";
+
+        var result = new ViewResult
         {
-            _tempDataDictionaryFactory = tempDataDictionaryFactory;
-            _modelMetadataProvider = modelMetadataProvider;
+            ViewName = context.Exception is UserFriendlyViewException
+                ? controllerActionDescriptor.ActionName
+                : errorViewName,
+            TempData = tempData,
+            ViewData = new ViewDataDictionary(_modelMetadataProvider, context.ModelState)
+            {
+                {"Notifications", tempData[NotificationHelpers.NotificationKey]},
+            }
+        };
+
+        //For UserFriendlyException is necessary return model with latest form state
+        if (context.Exception is UserFriendlyViewException exception)
+        {
+            result.ViewData.Model = exception.Model;
         }
 
-        public override void OnException(ExceptionContext context)
+        context.ExceptionHandled = true;
+        context.Result = result;
+    }
+
+    private void HandleUserFriendlyViewException(ExceptionContext context)
+    {
+        if (!(context.Exception is UserFriendlyViewException userFriendlyViewException)) return;
+
+        if (userFriendlyViewException.ErrorMessages != null && userFriendlyViewException.ErrorMessages.Any())
         {
-            if (!(context.Exception is UserFriendlyErrorPageException) &&
-                !(context.Exception is UserFriendlyViewException)) return;
-
-            //Create toastr notification
-            if (CreateNotification(context, out var tempData)) return;
-
-            HandleUserFriendlyViewException(context);
-            ProcessException(context, tempData);
-
-            //Clear toastr notification from temp
-            ClearNotification(tempData);
+            foreach (var message in userFriendlyViewException.ErrorMessages)
+            {
+                context.ModelState.AddModelError(message.ErrorKey, message.ErrorMessage);
+            }
         }
-
-        private void ClearNotification(ITempDataDictionary tempData)
+        else
         {
+            context.ModelState.AddModelError(userFriendlyViewException.ErrorKey, context.Exception.Message);
+        }
+    }
+
+    protected void CreateNotification(NotificationHelpers.AlertType type, ITempDataDictionary tempData, string message, string title = "")
+    {
+        var toast = new NotificationHelpers.Alert
+        {
+            Type = type,
+            Message = message,
+            Title = title
+        };
+
+        var alerts = new List<NotificationHelpers.Alert>();
+
+        if (tempData.ContainsKey(NotificationHelpers.NotificationKey))
+        {
+            alerts = JsonConvert.DeserializeObject<List<NotificationHelpers.Alert>>(tempData[NotificationHelpers.NotificationKey].ToString());
             tempData.Remove(NotificationHelpers.NotificationKey);
         }
 
-        private bool CreateNotification(ExceptionContext context, out ITempDataDictionary tempData)
+        alerts.Add(toast);
+
+        var settings = new JsonSerializerSettings
         {
-            tempData = _tempDataDictionaryFactory.GetTempData(context.HttpContext);
-            CreateNotification(NotificationHelpers.AlertType.Error, tempData, context.Exception.Message);
+            TypeNameHandling = TypeNameHandling.All
+        };
 
-            return !tempData.ContainsKey(NotificationHelpers.NotificationKey);
-        }
+        var alertJson = JsonConvert.SerializeObject(alerts, settings);
 
-        private void ProcessException(ExceptionContext context, ITempDataDictionary tempData)
-        {
-            if (!(context.ActionDescriptor is ControllerActionDescriptor controllerActionDescriptor)) return;
-
-            const string errorViewName = "Error";
-
-            var result = new ViewResult
-            {
-                ViewName = context.Exception is UserFriendlyViewException
-                    ? controllerActionDescriptor.ActionName
-                    : errorViewName,
-                TempData = tempData,
-                ViewData = new ViewDataDictionary(_modelMetadataProvider, context.ModelState)
-                {
-                    {"Notifications", tempData[NotificationHelpers.NotificationKey]},
-                }
-            };
-
-            //For UserFriendlyException is necessary return model with latest form state
-            if (context.Exception is UserFriendlyViewException exception)
-            {
-                result.ViewData.Model = exception.Model;
-            }
-
-            context.ExceptionHandled = true;
-            context.Result = result;
-        }
-
-        private void HandleUserFriendlyViewException(ExceptionContext context)
-        {
-            if (!(context.Exception is UserFriendlyViewException userFriendlyViewException)) return;
-
-            if (userFriendlyViewException.ErrorMessages != null && userFriendlyViewException.ErrorMessages.Any())
-            {
-                foreach (var message in userFriendlyViewException.ErrorMessages)
-                {
-                    context.ModelState.AddModelError(message.ErrorKey, message.ErrorMessage);
-                }
-            }
-            else
-            {
-                context.ModelState.AddModelError(userFriendlyViewException.ErrorKey, context.Exception.Message);
-            }
-        }
-        
-        protected void CreateNotification(NotificationHelpers.AlertType type, ITempDataDictionary tempData, string message, string title = "")
-        {
-            var toast = new NotificationHelpers.Alert
-            {
-                Type = type,
-                Message = message,
-                Title = title
-            };
-
-            var alerts = new List<NotificationHelpers.Alert>();
-
-            if (tempData.ContainsKey(NotificationHelpers.NotificationKey))
-            {
-                alerts = JsonConvert.DeserializeObject<List<NotificationHelpers.Alert>>(tempData[NotificationHelpers.NotificationKey].ToString());
-                tempData.Remove(NotificationHelpers.NotificationKey);
-            }
-
-            alerts.Add(toast);
-
-            var settings = new JsonSerializerSettings
-            {
-                TypeNameHandling = TypeNameHandling.All
-            };
-
-            var alertJson = JsonConvert.SerializeObject(alerts, settings);
-
-            tempData.Add(NotificationHelpers.NotificationKey, alertJson);
-        }
+        tempData.Add(NotificationHelpers.NotificationKey, alertJson);
     }
 }

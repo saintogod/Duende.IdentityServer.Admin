@@ -14,371 +14,370 @@ using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Shared.DbContexts;
 using Skoruba.Duende.IdentityServer.Admin.UnitTests.Mocks;
 using Xunit;
 
-namespace Skoruba.Duende.IdentityServer.Admin.UnitTests.Repositories
+namespace Skoruba.Duende.IdentityServer.Admin.UnitTests.Repositories;
+
+public class ApiResourceRepositoryTests
 {
-    public class ApiResourceRepositoryTests
+    private IdentityServerConfigurationDbContext GetDbContext()
     {
-        private IdentityServerConfigurationDbContext GetDbContext()
+        var serviceCollection = new ServiceCollection();
+
+        serviceCollection.AddSingleton(new ConfigurationStoreOptions());
+        serviceCollection.AddSingleton(new OperationalStoreOptions());
+
+        serviceCollection.AddDbContext<IdentityServerConfigurationDbContext>(builder => builder.UseInMemoryDatabase(Guid.NewGuid().ToString()));
+
+        var serviceProvider = serviceCollection.BuildServiceProvider();
+        var context = serviceProvider.GetService<IdentityServerConfigurationDbContext>();
+
+        return context;
+    }
+
+    private IApiResourceRepository GetApiResourceRepository(IdentityServerConfigurationDbContext context)
+    {
+        IApiResourceRepository apiResourceRepository = new ApiResourceRepository<IdentityServerConfigurationDbContext>(context);
+
+        return apiResourceRepository;
+    }
+
+
+    [Fact]
+    public async Task AddApiResourceAsync()
+    {
+        using (var context = GetDbContext())
         {
-            var serviceCollection = new ServiceCollection();
+            var apiResourceRepository = GetApiResourceRepository(context);
 
-            serviceCollection.AddSingleton(new ConfigurationStoreOptions());
-            serviceCollection.AddSingleton(new OperationalStoreOptions());
+            //Generate random new api resource
+            var apiResource = ApiResourceMock.GenerateRandomApiResource(0);
 
-            serviceCollection.AddDbContext<IdentityServerConfigurationDbContext>(builder => builder.UseInMemoryDatabase(Guid.NewGuid().ToString()));
+            //Add new api resource
+            await apiResourceRepository.AddApiResourceAsync(apiResource);
 
-            var serviceProvider = serviceCollection.BuildServiceProvider();
-            var context = serviceProvider.GetService<IdentityServerConfigurationDbContext>();
+            //Get new api resource
+            var newApiResource = await context.ApiResources.Where(x => x.Id == apiResource.Id).SingleAsync();
 
-            return context;
+            //Assert new api resource
+            apiResource.Should().BeEquivalentTo(newApiResource, options => options.Excluding(o => o.Id));
         }
+    }
 
-        private IApiResourceRepository GetApiResourceRepository(IdentityServerConfigurationDbContext context)
+    [Fact]
+    public async Task GetApiResourceAsync()
+    {
+        using (var context = GetDbContext())
         {
-            IApiResourceRepository apiResourceRepository = new ApiResourceRepository<IdentityServerConfigurationDbContext>(context);
+            var apiResourceRepository = GetApiResourceRepository(context);
 
-            return apiResourceRepository;
+            //Generate random new api resource
+            var apiResource = ApiResourceMock.GenerateRandomApiResource(0);
+
+            //Add new api resource
+            await apiResourceRepository.AddApiResourceAsync(apiResource);
+
+            //Get new api resource
+            var newApiResource = await apiResourceRepository.GetApiResourceAsync(apiResource.Id);
+
+            //Assert new api resource
+            apiResource.Should().BeEquivalentTo(newApiResource, options => options.Excluding(o => o.Id).Excluding(o => o.Secrets)
+                .Excluding(o => o.Scopes)
+                .Excluding(o => o.UserClaims));
+
+            apiResource.UserClaims.Should().BeEquivalentTo(newApiResource.UserClaims,
+                option => option.Excluding(x => x.Path.EndsWith("Id"))
+                    .Excluding(x => x.Path.EndsWith("ApiResource")));
         }
+    }
 
-
-        [Fact]
-        public async Task AddApiResourceAsync()
+    [Fact]
+    public async Task DeleteApiResourceAsync()
+    {
+        using (var context = GetDbContext())
         {
-            using (var context = GetDbContext())
-            {
-                var apiResourceRepository = GetApiResourceRepository(context);
+            var apiResourceRepository = GetApiResourceRepository(context);
 
-                //Generate random new api resource
-                var apiResource = ApiResourceMock.GenerateRandomApiResource(0);
+            //Generate random new api resource
+            var apiResource = ApiResourceMock.GenerateRandomApiResource(0);
 
-                //Add new api resource
-                await apiResourceRepository.AddApiResourceAsync(apiResource);
+            //Add new api resource
+            await apiResourceRepository.AddApiResourceAsync(apiResource);
 
-                //Get new api resource
-                var newApiResource = await context.ApiResources.Where(x => x.Id == apiResource.Id).SingleAsync();
+            //Get new api resource
+            var newApiResource = await context.ApiResources.Where(x => x.Id == apiResource.Id).SingleAsync();
 
-                //Assert new api resource
-                apiResource.Should().BeEquivalentTo(newApiResource, options => options.Excluding(o => o.Id));
-            }
+            //Assert new api resource
+            apiResource.Should().BeEquivalentTo(newApiResource, options => options.Excluding(o => o.Id));
+
+            //Delete api resource
+            await apiResourceRepository.DeleteApiResourceAsync(newApiResource);
+
+            //Get deleted api resource
+            var deletedApiResource = await context.ApiResources.Where(x => x.Id == apiResource.Id).SingleOrDefaultAsync();
+
+            //Assert if it not exist
+            deletedApiResource.Should().BeNull();
         }
+    }
 
-        [Fact]
-        public async Task GetApiResourceAsync()
+    [Fact]
+    public async Task UpdateApiResourceAsync()
+    {
+        using (var context = GetDbContext())
         {
-            using (var context = GetDbContext())
-            {
-                var apiResourceRepository = GetApiResourceRepository(context);
+            var apiResourceRepository = GetApiResourceRepository(context);
 
-                //Generate random new api resource
-                var apiResource = ApiResourceMock.GenerateRandomApiResource(0);
+            //Generate random new api resource
+            var apiResource = ApiResourceMock.GenerateRandomApiResource(0);
 
-                //Add new api resource
-                await apiResourceRepository.AddApiResourceAsync(apiResource);
+            //Add new api resource
+            await apiResourceRepository.AddApiResourceAsync(apiResource);
 
-                //Get new api resource
-                var newApiResource = await apiResourceRepository.GetApiResourceAsync(apiResource.Id);
+            //Get new api resource
+            var newApiResource = await context.ApiResources.Where(x => x.Id == apiResource.Id).SingleOrDefaultAsync();
 
-                //Assert new api resource
-                apiResource.Should().BeEquivalentTo(newApiResource, options => options.Excluding(o => o.Id).Excluding(o => o.Secrets)
-                    .Excluding(o => o.Scopes)
-                    .Excluding(o => o.UserClaims));
+            //Assert new api resource
+            apiResource.Should().BeEquivalentTo(newApiResource, options => options.Excluding(o => o.Id));
 
-                apiResource.UserClaims.Should().BeEquivalentTo(newApiResource.UserClaims,
-                    option => option.Excluding(x => x.Path.EndsWith("Id"))
-                        .Excluding(x => x.Path.EndsWith("ApiResource")));
-            }
+            //Detached the added item
+            context.Entry(newApiResource).State = EntityState.Detached;
+
+            //Generete new api resource with added item id
+            var updatedApiResource = ApiResourceMock.GenerateRandomApiResource(newApiResource.Id);
+
+            //Update api resource
+            await apiResourceRepository.UpdateApiResourceAsync(updatedApiResource);
+
+            //Get updated api resource
+            var updatedApiResourceEntity = await context.ApiResources.Where(x => x.Id == updatedApiResource.Id).SingleAsync();
+
+            //Assert updated api resource
+            updatedApiResourceEntity.Should().BeEquivalentTo(updatedApiResource);
         }
+    }
 
-        [Fact]
-        public async Task DeleteApiResourceAsync()
+    [Fact]
+    public async Task AddApiSecretAsync()
+    {
+        using (var context = GetDbContext())
         {
-            using (var context = GetDbContext())
-            {
-                var apiResourceRepository = GetApiResourceRepository(context);
+            var apiResourceRepository = GetApiResourceRepository(context);
 
-                //Generate random new api resource
-                var apiResource = ApiResourceMock.GenerateRandomApiResource(0);
+            //Generate random new api resource
+            var apiResource = ApiResourceMock.GenerateRandomApiResource(0);
 
-                //Add new api resource
-                await apiResourceRepository.AddApiResourceAsync(apiResource);
+            //Add new api resource
+            await apiResourceRepository.AddApiResourceAsync(apiResource);
 
-                //Get new api resource
-                var newApiResource = await context.ApiResources.Where(x => x.Id == apiResource.Id).SingleAsync();
+            //Generate random new api secret
+            var apiSecret = ApiResourceMock.GenerateRandomApiSecret(0);
 
-                //Assert new api resource
-                apiResource.Should().BeEquivalentTo(newApiResource, options => options.Excluding(o => o.Id));
+            //Add new api secret
+            await apiResourceRepository.AddApiSecretAsync(apiResource.Id, apiSecret);
 
-                //Delete api resource
-                await apiResourceRepository.DeleteApiResourceAsync(newApiResource);
+            //Get new api secret
+            var newApiSecret = await context.ApiSecrets.Where(x => x.Id == apiSecret.Id).SingleAsync();
 
-                //Get deleted api resource
-                var deletedApiResource = await context.ApiResources.Where(x => x.Id == apiResource.Id).SingleOrDefaultAsync();
-
-                //Assert if it not exist
-                deletedApiResource.Should().BeNull();
-            }
+            //Assert new api secret
+            apiSecret.Should().BeEquivalentTo(newApiSecret, options => options.Excluding(o => o.Id));
         }
+    }
 
-        [Fact]
-        public async Task UpdateApiResourceAsync()
+    [Fact]
+    public async Task DeleteApiSecretAsync()
+    {
+        using (var context = GetDbContext())
         {
-            using (var context = GetDbContext())
-            {
-                var apiResourceRepository = GetApiResourceRepository(context);
+            var apiResourceRepository = GetApiResourceRepository(context);
 
-                //Generate random new api resource
-                var apiResource = ApiResourceMock.GenerateRandomApiResource(0);
+            //Generate random new api resource
+            var apiResource = ApiResourceMock.GenerateRandomApiResource(0);
 
-                //Add new api resource
-                await apiResourceRepository.AddApiResourceAsync(apiResource);
+            //Add new api resource
+            await apiResourceRepository.AddApiResourceAsync(apiResource);
 
-                //Get new api resource
-                var newApiResource = await context.ApiResources.Where(x => x.Id == apiResource.Id).SingleOrDefaultAsync();
+            //Generate random new api scope
+            var apiSecret = ApiResourceMock.GenerateRandomApiSecret(0);
 
-                //Assert new api resource
-                apiResource.Should().BeEquivalentTo(newApiResource, options => options.Excluding(o => o.Id));
+            //Add new api secret
+            await apiResourceRepository.AddApiSecretAsync(apiResource.Id, apiSecret);
 
-                //Detached the added item
-                context.Entry(newApiResource).State = EntityState.Detached;
+            //Get new api resource
+            var newApiSecret = await context.ApiSecrets.Where(x => x.Id == apiSecret.Id).SingleOrDefaultAsync();
 
-                //Generete new api resource with added item id
-                var updatedApiResource = ApiResourceMock.GenerateRandomApiResource(newApiResource.Id);
+            //Assert new api resource
+            apiSecret.Should().BeEquivalentTo(newApiSecret, options => options.Excluding(o => o.Id));
 
-                //Update api resource
-                await apiResourceRepository.UpdateApiResourceAsync(updatedApiResource);
+            //Try delete it
+            await apiResourceRepository.DeleteApiSecretAsync(newApiSecret);
 
-                //Get updated api resource
-                var updatedApiResourceEntity = await context.ApiResources.Where(x => x.Id == updatedApiResource.Id).SingleAsync();
+            //Get deleted api secret
+            var deletedApiSecret = await context.ApiSecrets.Where(x => x.Id == newApiSecret.Id).SingleOrDefaultAsync();
 
-                //Assert updated api resource
-                updatedApiResourceEntity.Should().BeEquivalentTo(updatedApiResource);
-            }
+            //Assert if it exist
+            deletedApiSecret.Should().BeNull();
         }
+    }
 
-        [Fact]
-        public async Task AddApiSecretAsync()
+    [Fact]
+    public async Task GetApiSecretAsync()
+    {
+        using (var context = GetDbContext())
         {
-            using (var context = GetDbContext())
-            {
-                var apiResourceRepository = GetApiResourceRepository(context);
+            var apiResourceRepository = GetApiResourceRepository(context);
 
-                //Generate random new api resource
-                var apiResource = ApiResourceMock.GenerateRandomApiResource(0);
+            //Generate random new api resource
+            var apiResource = ApiResourceMock.GenerateRandomApiResource(0);
 
-                //Add new api resource
-                await apiResourceRepository.AddApiResourceAsync(apiResource);
+            //Add new api resource
+            await apiResourceRepository.AddApiResourceAsync(apiResource);
 
-                //Generate random new api secret
-                var apiSecret = ApiResourceMock.GenerateRandomApiSecret(0);
+            //Generate random new api secret
+            var apiSecret = ApiResourceMock.GenerateRandomApiSecret(0);
 
-                //Add new api secret
-                await apiResourceRepository.AddApiSecretAsync(apiResource.Id, apiSecret);
+            //Add new api secret
+            await apiResourceRepository.AddApiSecretAsync(apiResource.Id, apiSecret);
 
-                //Get new api secret
-                var newApiSecret = await context.ApiSecrets.Where(x => x.Id == apiSecret.Id).SingleAsync();
+            //Get new api secret
+            var newApiSecret = await apiResourceRepository.GetApiSecretAsync(apiSecret.Id);
 
-                //Assert new api secret
-                apiSecret.Should().BeEquivalentTo(newApiSecret, options => options.Excluding(o => o.Id));
-            }
+            //Assert new api secret
+            apiSecret.Should().BeEquivalentTo(newApiSecret, options => options.Excluding(o => o.Id)
+                .Excluding(o => o.ApiResource.Secrets)
+                .Excluding(o => o.ApiResource.UserClaims)
+                .Excluding(o => o.ApiResource.Scopes));
         }
+    }
 
-        [Fact]
-        public async Task DeleteApiSecretAsync()
+    [Fact]
+    public async Task AddApiResourcePropertyAsync()
+    {
+        using (var context = GetDbContext())
         {
-            using (var context = GetDbContext())
-            {
-                var apiResourceRepository = GetApiResourceRepository(context);
+            var apiResourceRepository = GetApiResourceRepository(context);
 
-                //Generate random new api resource
-                var apiResource = ApiResourceMock.GenerateRandomApiResource(0);
+            //Generate random new api resource without id
+            var apiResource = ApiResourceMock.GenerateRandomApiResource(0);
 
-                //Add new api resource
-                await apiResourceRepository.AddApiResourceAsync(apiResource);
+            //Add new api resource
+            await apiResourceRepository.AddApiResourceAsync(apiResource);
 
-                //Generate random new api scope
-                var apiSecret = ApiResourceMock.GenerateRandomApiSecret(0);
+            //Get new api resource
+            var resource = await apiResourceRepository.GetApiResourceAsync(apiResource.Id);
 
-                //Add new api secret
-                await apiResourceRepository.AddApiSecretAsync(apiResource.Id, apiSecret);
+            //Assert new api resource
+            apiResource.Should().BeEquivalentTo(resource, options => options.Excluding(o => o.Id)
+                .Excluding(o => o.Secrets)
+                .Excluding(o => o.Scopes)
+                .Excluding(o => o.UserClaims));
 
-                //Get new api resource
-                var newApiSecret = await context.ApiSecrets.Where(x => x.Id == apiSecret.Id).SingleOrDefaultAsync();
+            apiResource.UserClaims.Should().BeEquivalentTo(resource.UserClaims,
+                option => option.Excluding(x => x.Path.EndsWith("Id"))
+                    .Excluding(x => x.Path.EndsWith("ApiResource")));
 
-                //Assert new api resource
-                apiSecret.Should().BeEquivalentTo(newApiSecret, options => options.Excluding(o => o.Id));
+            //Generate random new api resource property
+            var apiResourceProperty = ApiResourceMock.GenerateRandomApiResourceProperty(0);
 
-                //Try delete it
-                await apiResourceRepository.DeleteApiSecretAsync(newApiSecret);
+            //Add new api resource property
+            await apiResourceRepository.AddApiResourcePropertyAsync(resource.Id, apiResourceProperty);
 
-                //Get deleted api secret
-                var deletedApiSecret = await context.ApiSecrets.Where(x => x.Id == newApiSecret.Id).SingleOrDefaultAsync();
+            //Get new api resource property
+            var resourceProperty = await context.ApiResourceProperties.Where(x => x.Id == apiResourceProperty.Id)
+                .SingleOrDefaultAsync();
 
-                //Assert if it exist
-                deletedApiSecret.Should().BeNull();
-            }
+            apiResourceProperty.Should().BeEquivalentTo(resourceProperty,
+                options => options.Excluding(o => o.Id).Excluding(x => x.ApiResource));
         }
+    }
 
-        [Fact]
-        public async Task GetApiSecretAsync()
+    [Fact]
+    public async Task DeleteApiResourcePropertyAsync()
+    {
+        using (var context = GetDbContext())
         {
-            using (var context = GetDbContext())
-            {
-                var apiResourceRepository = GetApiResourceRepository(context);
+            var apiResourceRepository = GetApiResourceRepository(context);
 
-                //Generate random new api resource
-                var apiResource = ApiResourceMock.GenerateRandomApiResource(0);
+            //Generate random new api resource without id
+            var apiResource = ApiResourceMock.GenerateRandomApiResource(0);
 
-                //Add new api resource
-                await apiResourceRepository.AddApiResourceAsync(apiResource);
+            //Add new api resource
+            await apiResourceRepository.AddApiResourceAsync(apiResource);
 
-                //Generate random new api secret
-                var apiSecret = ApiResourceMock.GenerateRandomApiSecret(0);
+            //Get new api resource
+            var resource = await apiResourceRepository.GetApiResourceAsync(apiResource.Id);
 
-                //Add new api secret
-                await apiResourceRepository.AddApiSecretAsync(apiResource.Id, apiSecret);
+            //Assert new api resource
+            apiResource.Should().BeEquivalentTo(resource, options => options.Excluding(o => o.Id)
+                .Excluding(o => o.Secrets)
+                .Excluding(o => o.Scopes)
+                .Excluding(o => o.UserClaims));
 
-                //Get new api secret
-                var newApiSecret = await apiResourceRepository.GetApiSecretAsync(apiSecret.Id);
+            apiResource.UserClaims.Should().BeEquivalentTo(resource.UserClaims,
+                option => option.Excluding(x => x.Path.EndsWith("Id"))
+                    .Excluding(x => x.Path.EndsWith("ApiResource")));
 
-                //Assert new api secret
-                apiSecret.Should().BeEquivalentTo(newApiSecret, options => options.Excluding(o => o.Id)
-                    .Excluding(o => o.ApiResource.Secrets)
-                    .Excluding(o => o.ApiResource.UserClaims)
-                    .Excluding(o => o.ApiResource.Scopes));
-            }
+            //Generate random new api resource property
+            var apiResourceProperty = ApiResourceMock.GenerateRandomApiResourceProperty(0);
+
+            //Add new api resource property
+            await apiResourceRepository.AddApiResourcePropertyAsync(resource.Id, apiResourceProperty);
+
+            //Get new api resource property
+            var property = await context.ApiResourceProperties.Where(x => x.Id == apiResourceProperty.Id)
+                .SingleOrDefaultAsync();
+
+            //Assert
+            apiResourceProperty.Should().BeEquivalentTo(property,
+                options => options.Excluding(o => o.Id).Excluding(x => x.ApiResource));
+
+            //Try delete it
+            await apiResourceRepository.DeleteApiResourcePropertyAsync(property);
+
+            //Get new api resource property
+            var resourceProperty = await context.ApiResourceProperties.Where(x => x.Id == apiResourceProperty.Id)
+                .SingleOrDefaultAsync();
+
+            //Assert
+            resourceProperty.Should().BeNull();
         }
+    }
 
-        [Fact]
-        public async Task AddApiResourcePropertyAsync()
+    [Fact]
+    public async Task GetApiResourcePropertyAsync()
+    {
+        using (var context = GetDbContext())
         {
-            using (var context = GetDbContext())
-            {
-                var apiResourceRepository = GetApiResourceRepository(context);
+            var apiResourceRepository = GetApiResourceRepository(context);
 
-                //Generate random new api resource without id
-                var apiResource = ApiResourceMock.GenerateRandomApiResource(0);
+            //Generate random new api resource without id
+            var apiResource = ApiResourceMock.GenerateRandomApiResource(0);
 
-                //Add new api resource
-                await apiResourceRepository.AddApiResourceAsync(apiResource);
+            //Add new api resource
+            await apiResourceRepository.AddApiResourceAsync(apiResource);
 
-                //Get new api resource
-                var resource = await apiResourceRepository.GetApiResourceAsync(apiResource.Id);
+            //Get new api resource
+            var resource = await apiResourceRepository.GetApiResourceAsync(apiResource.Id);
 
-                //Assert new api resource
-                apiResource.Should().BeEquivalentTo(resource, options => options.Excluding(o => o.Id)
-                    .Excluding(o => o.Secrets)
-                    .Excluding(o => o.Scopes)
-                    .Excluding(o => o.UserClaims));
+            //Assert new api resource
+            apiResource.Should().BeEquivalentTo(resource, options => options.Excluding(o => o.Id)
+                .Excluding(o => o.Secrets)
+                .Excluding(o => o.Scopes)
+                .Excluding(o => o.UserClaims));
 
-                apiResource.UserClaims.Should().BeEquivalentTo(resource.UserClaims,
-                    option => option.Excluding(x => x.Path.EndsWith("Id"))
-                        .Excluding(x => x.Path.EndsWith("ApiResource")));
+            apiResource.UserClaims.Should().BeEquivalentTo(resource.UserClaims,
+                option => option.Excluding(x => x.Path.EndsWith("Id"))
+                    .Excluding(x => x.Path.EndsWith("ApiResource")));
 
-                //Generate random new api resource property
-                var apiResourceProperty = ApiResourceMock.GenerateRandomApiResourceProperty(0);
+            //Generate random new api resource property
+            var apiResourceProperty = ApiResourceMock.GenerateRandomApiResourceProperty(0);
 
-                //Add new api resource property
-                await apiResourceRepository.AddApiResourcePropertyAsync(resource.Id, apiResourceProperty);
+            //Add new api resource property
+            await apiResourceRepository.AddApiResourcePropertyAsync(resource.Id, apiResourceProperty);
 
-                //Get new api resource property
-                var resourceProperty = await context.ApiResourceProperties.Where(x => x.Id == apiResourceProperty.Id)
-                    .SingleOrDefaultAsync();
+            //Get new api resource property
+            var resourceProperty = await apiResourceRepository.GetApiResourcePropertyAsync(apiResourceProperty.Id);
 
-                apiResourceProperty.Should().BeEquivalentTo(resourceProperty,
-                    options => options.Excluding(o => o.Id).Excluding(x => x.ApiResource));
-            }
-        }
-
-        [Fact]
-        public async Task DeleteApiResourcePropertyAsync()
-        {
-            using (var context = GetDbContext())
-            {
-                var apiResourceRepository = GetApiResourceRepository(context);
-
-                //Generate random new api resource without id
-                var apiResource = ApiResourceMock.GenerateRandomApiResource(0);
-
-                //Add new api resource
-                await apiResourceRepository.AddApiResourceAsync(apiResource);
-
-                //Get new api resource
-                var resource = await apiResourceRepository.GetApiResourceAsync(apiResource.Id);
-
-                //Assert new api resource
-                apiResource.Should().BeEquivalentTo(resource, options => options.Excluding(o => o.Id)
-                    .Excluding(o => o.Secrets)
-                    .Excluding(o => o.Scopes)
-                    .Excluding(o => o.UserClaims));
-
-                apiResource.UserClaims.Should().BeEquivalentTo(resource.UserClaims,
-                    option => option.Excluding(x => x.Path.EndsWith("Id"))
-                        .Excluding(x => x.Path.EndsWith("ApiResource")));
-
-                //Generate random new api resource property
-                var apiResourceProperty = ApiResourceMock.GenerateRandomApiResourceProperty(0);
-
-                //Add new api resource property
-                await apiResourceRepository.AddApiResourcePropertyAsync(resource.Id, apiResourceProperty);
-
-                //Get new api resource property
-                var property = await context.ApiResourceProperties.Where(x => x.Id == apiResourceProperty.Id)
-                    .SingleOrDefaultAsync();
-
-                //Assert
-                apiResourceProperty.Should().BeEquivalentTo(property,
-                    options => options.Excluding(o => o.Id).Excluding(x => x.ApiResource));
-
-                //Try delete it
-                await apiResourceRepository.DeleteApiResourcePropertyAsync(property);
-
-                //Get new api resource property
-                var resourceProperty = await context.ApiResourceProperties.Where(x => x.Id == apiResourceProperty.Id)
-                    .SingleOrDefaultAsync();
-
-                //Assert
-                resourceProperty.Should().BeNull();
-            }
-        }
-
-        [Fact]
-        public async Task GetApiResourcePropertyAsync()
-        {
-            using (var context = GetDbContext())
-            {
-                var apiResourceRepository = GetApiResourceRepository(context);
-
-                //Generate random new api resource without id
-                var apiResource = ApiResourceMock.GenerateRandomApiResource(0);
-
-                //Add new api resource
-                await apiResourceRepository.AddApiResourceAsync(apiResource);
-
-                //Get new api resource
-                var resource = await apiResourceRepository.GetApiResourceAsync(apiResource.Id);
-
-                //Assert new api resource
-                apiResource.Should().BeEquivalentTo(resource, options => options.Excluding(o => o.Id)
-                    .Excluding(o => o.Secrets)
-                    .Excluding(o => o.Scopes)
-                    .Excluding(o => o.UserClaims));
-
-                apiResource.UserClaims.Should().BeEquivalentTo(resource.UserClaims,
-                    option => option.Excluding(x => x.Path.EndsWith("Id"))
-                        .Excluding(x => x.Path.EndsWith("ApiResource")));
-
-                //Generate random new api resource property
-                var apiResourceProperty = ApiResourceMock.GenerateRandomApiResourceProperty(0);
-
-                //Add new api resource property
-                await apiResourceRepository.AddApiResourcePropertyAsync(resource.Id, apiResourceProperty);
-
-                //Get new api resource property
-                var resourceProperty = await apiResourceRepository.GetApiResourcePropertyAsync(apiResourceProperty.Id);
-
-                apiResourceProperty.Should().BeEquivalentTo(resourceProperty,
-                    options => options.Excluding(o => o.Id).Excluding(x => x.ApiResource));
-            }
+            apiResourceProperty.Should().BeEquivalentTo(resourceProperty,
+                options => options.Excluding(o => o.Id).Excluding(x => x.ApiResource));
         }
     }
 }

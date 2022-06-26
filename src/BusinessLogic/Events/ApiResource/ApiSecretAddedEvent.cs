@@ -4,21 +4,20 @@
 using System;
 using Skoruba.AuditLogging.Events;
 
-namespace Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Events.ApiResource
+namespace Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Events.ApiResource;
+
+public class ApiSecretAddedEvent : AuditEvent
 {
-    public class ApiSecretAddedEvent : AuditEvent
+    public string Type { get; set; }
+
+    public DateTime? Expiration { get; set; }
+
+    public int ApiResourceId { get; set; }
+
+    public ApiSecretAddedEvent(int apiResourceId, string type, DateTime? expiration)
     {
-        public string Type { get; set; }
-
-        public DateTime? Expiration { get; set; }
-
-        public int ApiResourceId { get; set; }
-
-        public ApiSecretAddedEvent(int apiResourceId, string type, DateTime? expiration)
-        {
-            ApiResourceId = apiResourceId;
-            Type = type;
-            Expiration = expiration;
-        }
+        ApiResourceId = apiResourceId;
+        Type = type;
+        Expiration = expiration;
     }
 }

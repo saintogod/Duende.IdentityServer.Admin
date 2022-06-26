@@ -5,29 +5,28 @@ using AutoMapper;
 using Skoruba.Duende.IdentityServer.Admin.Api.Dtos.ApiScopes;
 using Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Dtos.Configuration;
 
-namespace Skoruba.Duende.IdentityServer.Admin.Api.Mappers
+namespace Skoruba.Duende.IdentityServer.Admin.Api.Mappers;
+
+public class ApiScopeApiMapperProfile : Profile
 {
-    public class ApiScopeApiMapperProfile : Profile
+    public ApiScopeApiMapperProfile()
     {
-        public ApiScopeApiMapperProfile()
-        {
-            // Api Scopes
-            CreateMap<ApiScopesDto, ApiScopesApiDto>(MemberList.Destination)
-                .ReverseMap();
+        // Api Scopes
+        CreateMap<ApiScopesDto, ApiScopesApiDto>(MemberList.Destination)
+            .ReverseMap();
 
-            CreateMap<ApiScopeDto, ApiScopeApiDto>(MemberList.Destination)
-                .ReverseMap();
+        CreateMap<ApiScopeDto, ApiScopeApiDto>(MemberList.Destination)
+            .ReverseMap();
 
-            // Api Scope Properties
-            CreateMap<ApiScopePropertiesDto, ApiScopePropertiesApiDto>(MemberList.Destination)
-                .ReverseMap();
+        // Api Scope Properties
+        CreateMap<ApiScopePropertiesDto, ApiScopePropertiesApiDto>(MemberList.Destination)
+            .ReverseMap();
 
-            CreateMap<ApiScopePropertyDto, ApiScopePropertyApiDto>(MemberList.Destination)
-                .ReverseMap();
+        CreateMap<ApiScopePropertyDto, ApiScopePropertyApiDto>(MemberList.Destination)
+            .ReverseMap();
 
-            CreateMap<ApiScopePropertiesDto, ApiScopePropertyApiDto>(MemberList.Destination)
-                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.ApiScopePropertyId))
-                .ReverseMap();
-        }
+        CreateMap<ApiScopePropertiesDto, ApiScopePropertyApiDto>(MemberList.Destination)
+            .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.ApiScopePropertyId))
+            .ReverseMap();
     }
 }

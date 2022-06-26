@@ -3,62 +3,61 @@
 
 using Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Helpers;
 
-namespace Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Resources
+namespace Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Resources;
+
+public class IdentityResourceServiceResources : IIdentityResourceServiceResources
 {
-    public class IdentityResourceServiceResources : IIdentityResourceServiceResources
+    public virtual ResourceMessage IdentityResourceDoesNotExist()
     {
-        public virtual ResourceMessage IdentityResourceDoesNotExist()
+        return new ResourceMessage()
         {
-            return new ResourceMessage()
-            {
-                Code = nameof(IdentityResourceDoesNotExist),
-                Description = IdentityResourceServiceResource.IdentityResourceDoesNotExist
-            };
-        }
+            Code = nameof(IdentityResourceDoesNotExist),
+            Description = IdentityResourceServiceResource.IdentityResourceDoesNotExist
+        };
+    }
 
-        public virtual ResourceMessage IdentityResourceExistsKey()
+    public virtual ResourceMessage IdentityResourceExistsKey()
+    {
+        return new ResourceMessage()
         {
-            return new ResourceMessage()
-            {
-                Code = nameof(IdentityResourceExistsKey),
-                Description = IdentityResourceServiceResource.IdentityResourceExistsKey
-            };
-        }
+            Code = nameof(IdentityResourceExistsKey),
+            Description = IdentityResourceServiceResource.IdentityResourceExistsKey
+        };
+    }
 
-        public virtual ResourceMessage IdentityResourceExistsValue()
+    public virtual ResourceMessage IdentityResourceExistsValue()
+    {
+        return new ResourceMessage()
         {
-            return new ResourceMessage()
-            {
-                Code = nameof(IdentityResourceExistsValue),
-                Description = IdentityResourceServiceResource.IdentityResourceExistsValue
-            };
-        }
+            Code = nameof(IdentityResourceExistsValue),
+            Description = IdentityResourceServiceResource.IdentityResourceExistsValue
+        };
+    }
 
-        public virtual ResourceMessage IdentityResourcePropertyDoesNotExist()
+    public virtual ResourceMessage IdentityResourcePropertyDoesNotExist()
+    {
+        return new ResourceMessage()
         {
-            return new ResourceMessage()
-            {
-                Code = nameof(IdentityResourcePropertyDoesNotExist),
-                Description = IdentityResourceServiceResource.IdentityResourcePropertyDoesNotExist
-            };
-        }
+            Code = nameof(IdentityResourcePropertyDoesNotExist),
+            Description = IdentityResourceServiceResource.IdentityResourcePropertyDoesNotExist
+        };
+    }
 
-        public virtual ResourceMessage IdentityResourcePropertyExistsValue()
+    public virtual ResourceMessage IdentityResourcePropertyExistsValue()
+    {
+        return new ResourceMessage()
         {
-            return new ResourceMessage()
-            {
-                Code = nameof(IdentityResourcePropertyExistsValue),
-                Description = IdentityResourceServiceResource.IdentityResourcePropertyExistsValue
-            };
-        }
+            Code = nameof(IdentityResourcePropertyExistsValue),
+            Description = IdentityResourceServiceResource.IdentityResourcePropertyExistsValue
+        };
+    }
 
-        public virtual ResourceMessage IdentityResourcePropertyExistsKey()
+    public virtual ResourceMessage IdentityResourcePropertyExistsKey()
+    {
+        return new ResourceMessage()
         {
-            return new ResourceMessage()
-            {
-                Code = nameof(IdentityResourcePropertyExistsKey),
-                Description = IdentityResourceServiceResource.IdentityResourcePropertyExistsKey
-            };
-        }
+            Code = nameof(IdentityResourcePropertyExistsKey),
+            Description = IdentityResourceServiceResource.IdentityResourcePropertyExistsKey
+        };
     }
 }

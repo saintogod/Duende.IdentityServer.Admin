@@ -3,10 +3,9 @@
 
 using Skoruba.Duende.IdentityServer.Admin.Api.ExceptionHandling;
 
-namespace Skoruba.Duende.IdentityServer.Admin.Api.Resources
+namespace Skoruba.Duende.IdentityServer.Admin.Api.Resources;
+
+public interface IApiErrorResources
 {
-    public interface IApiErrorResources
-    {
-        ApiError CannotSetId();
-    }
+    ApiError CannotSetId();
 }

@@ -3,12 +3,11 @@
 
 using System.Collections.Generic;
 
-namespace Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Identity.Dtos.Identity.Interfaces
+namespace Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Identity.Dtos.Identity.Interfaces;
+
+public interface IRolesDto
 {
-    public interface IRolesDto
-    {
-        int PageSize { get; set; }
-        int TotalCount { get; set; }
-        List<IRoleDto> Roles { get; }
-    }
+    int PageSize { get; set; }
+    int TotalCount { get; set; }
+    List<IRoleDto> Roles { get; }
 }

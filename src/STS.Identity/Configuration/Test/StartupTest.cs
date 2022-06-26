@@ -7,17 +7,16 @@ using Microsoft.Extensions.DependencyInjection;
 using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Shared.DbContexts;
 using Skoruba.Duende.IdentityServer.STS.Identity.Helpers;
 
-namespace Skoruba.Duende.IdentityServer.STS.Identity.Configuration.Test
-{
-    public class StartupTest : Startup
-    {
-        public StartupTest(IWebHostEnvironment environment, IConfiguration configuration) : base(environment, configuration)
-        {
-        }
+namespace Skoruba.Duende.IdentityServer.STS.Identity.Configuration.Test;
 
-        public override void RegisterDbContexts(IServiceCollection services)
-        {
-            services.RegisterDbContextsStaging<AdminIdentityDbContext, IdentityServerConfigurationDbContext, IdentityServerPersistedGrantDbContext, IdentityServerDataProtectionDbContext>();
-        }
+public class StartupTest : Startup
+{
+    public StartupTest(IWebHostEnvironment environment, IConfiguration configuration) : base(environment, configuration)
+    {
+    }
+
+    public override void RegisterDbContexts(IServiceCollection services)
+    {
+        services.RegisterDbContextsStaging<AdminIdentityDbContext, IdentityServerConfigurationDbContext, IdentityServerPersistedGrantDbContext, IdentityServerDataProtectionDbContext>();
     }
 }

@@ -3,21 +3,20 @@
 
 using Skoruba.Duende.IdentityServer.Shared.Configuration.Configuration.Identity;
 
-namespace Skoruba.Duende.IdentityServer.STS.Identity.Helpers.Localization
+namespace Skoruba.Duende.IdentityServer.STS.Identity.Helpers.Localization;
+
+public static class LoginPolicyResolutionLocalizer
 {
-    public static class LoginPolicyResolutionLocalizer
+    public static string GetUserNameLocalizationKey(LoginResolutionPolicy policy)
     {
-        public static string GetUserNameLocalizationKey(LoginResolutionPolicy policy)
+        switch (policy)
         {
-            switch (policy)
-            {
-                case LoginResolutionPolicy.Username:
-                    return "Username";
-                case LoginResolutionPolicy.Email:
-                    return "Email";
-                default:
-                    return "Username";
-            }
+            case LoginResolutionPolicy.Username:
+                return "Username";
+            case LoginResolutionPolicy.Email:
+                return "Email";
+            default:
+                return "Username";
         }
     }
 }

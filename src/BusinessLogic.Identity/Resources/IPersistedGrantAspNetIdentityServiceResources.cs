@@ -3,12 +3,11 @@
 
 using Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Identity.Helpers;
 
-namespace Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Identity.Resources
-{
-    public interface IPersistedGrantAspNetIdentityServiceResources
-    {
-        ResourceMessage PersistedGrantDoesNotExist();
+namespace Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Identity.Resources;
 
-        ResourceMessage PersistedGrantWithSubjectIdDoesNotExist();
-    }
+public interface IPersistedGrantAspNetIdentityServiceResources
+{
+    ResourceMessage PersistedGrantDoesNotExist();
+
+    ResourceMessage PersistedGrantWithSubjectIdDoesNotExist();
 }

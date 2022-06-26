@@ -3,21 +3,20 @@
 
 using AutoMapper;
 
-namespace Skoruba.Duende.IdentityServer.Admin.Api.Mappers
+namespace Skoruba.Duende.IdentityServer.Admin.Api.Mappers;
+
+public static class PersistedGrantApiMappers
 {
-    public static class PersistedGrantApiMappers
+    static PersistedGrantApiMappers()
     {
-        static PersistedGrantApiMappers()
-        {
-            Mapper = new MapperConfiguration(cfg => cfg.AddProfile<PersistedGrantApiMapperProfile>())
-                .CreateMapper();
-        }
+        Mapper = new MapperConfiguration(cfg => cfg.AddProfile<PersistedGrantApiMapperProfile>())
+            .CreateMapper();
+    }
 
-        internal static IMapper Mapper { get; }
+    internal static IMapper Mapper { get; }
 
-        public static T ToPersistedGrantApiModel<T>(this object source)
-        {
-            return Mapper.Map<T>(source);
-        }
+    public static T ToPersistedGrantApiModel<T>(this object source)
+    {
+        return Mapper.Map<T>(source);
     }
 }

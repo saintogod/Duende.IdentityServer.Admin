@@ -8,37 +8,36 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Skoruba.Duende.IdentityServer.Admin.Api.Configuration.Test;
 
-namespace Skoruba.Duende.IdentityServer.Admin.Api.IntegrationTests.Tests.Base
+namespace Skoruba.Duende.IdentityServer.Admin.Api.IntegrationTests.Tests.Base;
+
+public class TestFixture : IDisposable
 {
-    public class TestFixture : IDisposable
+    public TestServer TestServer;
+
+    public HttpClient Client { get; }
+
+    public TestFixture()
     {
-        public TestServer TestServer;
+        var builder = new WebHostBuilder()
+            .ConfigureAppConfiguration((hostContext, configApp) =>
+            {
+                configApp.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
+                configApp.AddJsonFile("serilog.json", optional: true, reloadOnChange: true);
 
-        public HttpClient Client { get; }
+                var env = hostContext.HostingEnvironment;
 
-        public TestFixture()
-        {
-            var builder = new WebHostBuilder()
-                .ConfigureAppConfiguration((hostContext, configApp) =>
-                {
-                    configApp.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
-                    configApp.AddJsonFile("serilog.json", optional: true, reloadOnChange: true);
+                configApp.AddJsonFile($"serilog.{env.EnvironmentName}.json", optional: true, reloadOnChange: true);
+                configApp.AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true, reloadOnChange: true);
+            })
+            .UseStartup<StartupTest>();
 
-                    var env = hostContext.HostingEnvironment;
-                    
-                    configApp.AddJsonFile($"serilog.{env.EnvironmentName}.json", optional: true, reloadOnChange: true);
-                    configApp.AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true, reloadOnChange: true);
-                })
-                .UseStartup<StartupTest>();
+        TestServer = new TestServer(builder);
+        Client = TestServer.CreateClient();
+    }
 
-            TestServer = new TestServer(builder);
-            Client = TestServer.CreateClient();
-        }
-
-        public void Dispose()
-        {
-            Client.Dispose();
-            TestServer.Dispose();
-        }
+    public void Dispose()
+    {
+        Client.Dispose();
+        TestServer.Dispose();
     }
 }

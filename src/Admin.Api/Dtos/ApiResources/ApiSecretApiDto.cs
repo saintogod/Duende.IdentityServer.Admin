@@ -4,22 +4,21 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace Skoruba.Duende.IdentityServer.Admin.Api.Dtos.ApiResources
+namespace Skoruba.Duende.IdentityServer.Admin.Api.Dtos.ApiResources;
+
+public class ApiSecretApiDto
 {
-    public class ApiSecretApiDto
-    {
-        [Required]
-        public string Type { get; set; } = "SharedSecret";
+    [Required]
+    public string Type { get; set; } = "SharedSecret";
 
-        public int Id { get; set; }
+    public int Id { get; set; }
 
-        public string Description { get; set; }
+    public string Description { get; set; }
 
-        [Required]
-        public string Value { get; set; }
+    [Required]
+    public string Value { get; set; }
 
-        public string HashType { get; set; }
+    public string HashType { get; set; }
 
-        public DateTime? Expiration { get; set; }
-    }
+    public DateTime? Expiration { get; set; }
 }

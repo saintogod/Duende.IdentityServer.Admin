@@ -3,206 +3,205 @@
 
 using Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Identity.Helpers;
 
-namespace Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Identity.Resources
+namespace Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Identity.Resources;
+
+public class IdentityServiceResources : IIdentityServiceResources
 {
-    public class IdentityServiceResources : IIdentityServiceResources
+    public virtual ResourceMessage UserUpdateFailed()
     {
-        public virtual ResourceMessage UserUpdateFailed()
+        return new ResourceMessage()
         {
-            return new ResourceMessage()
-            {
-                Code = nameof(UserUpdateFailed),
-                Description = IdentityServiceResource.UserUpdateFailed
-            };
-        }
+            Code = nameof(UserUpdateFailed),
+            Description = IdentityServiceResource.UserUpdateFailed
+        };
+    }
 
-        public virtual ResourceMessage UserRoleDeleteFailed()
+    public virtual ResourceMessage UserRoleDeleteFailed()
+    {
+        return new ResourceMessage()
         {
-            return new ResourceMessage()
-            {
-                Code = nameof(UserRoleDeleteFailed),
-                Description = IdentityServiceResource.UserRoleDeleteFailed
-            };
-        }
+            Code = nameof(UserRoleDeleteFailed),
+            Description = IdentityServiceResource.UserRoleDeleteFailed
+        };
+    }
 
-        public virtual ResourceMessage UserRoleCreateFailed()
+    public virtual ResourceMessage UserRoleCreateFailed()
+    {
+        return new ResourceMessage()
         {
-            return new ResourceMessage()
-            {
-                Code = nameof(UserRoleCreateFailed),
-                Description = IdentityServiceResource.UserRoleCreateFailed
-            };
-        }
-    
-        public virtual ResourceMessage UserProviderDoesNotExist()
-        {
-            return new ResourceMessage()
-            {
-                Code = nameof(UserProviderDoesNotExist),
-                Description = IdentityServiceResource.UserProviderDoesNotExist
-            };
-        }
+            Code = nameof(UserRoleCreateFailed),
+            Description = IdentityServiceResource.UserRoleCreateFailed
+        };
+    }
 
-        public virtual ResourceMessage UserProviderDeleteFailed()
+    public virtual ResourceMessage UserProviderDoesNotExist()
+    {
+        return new ResourceMessage()
         {
-            return new ResourceMessage()
-            {
-                Code = nameof(UserProviderDeleteFailed),
-                Description = IdentityServiceResource.UserProviderDeleteFailed
-            };
-        }
+            Code = nameof(UserProviderDoesNotExist),
+            Description = IdentityServiceResource.UserProviderDoesNotExist
+        };
+    }
 
-        public virtual ResourceMessage UserChangePasswordFailed()
+    public virtual ResourceMessage UserProviderDeleteFailed()
+    {
+        return new ResourceMessage()
         {
-            return new ResourceMessage()
-            {
-                Code = nameof(UserChangePasswordFailed),
-                Description = IdentityServiceResource.UserChangePasswordFailed
-            };
-        }
+            Code = nameof(UserProviderDeleteFailed),
+            Description = IdentityServiceResource.UserProviderDeleteFailed
+        };
+    }
 
-        public virtual ResourceMessage UserDoesNotExist()
+    public virtual ResourceMessage UserChangePasswordFailed()
+    {
+        return new ResourceMessage()
         {
-            return new ResourceMessage()
-            {
-                Code = nameof(UserDoesNotExist),
-                Description = IdentityServiceResource.UserDoesNotExist
-            };
-        }
+            Code = nameof(UserChangePasswordFailed),
+            Description = IdentityServiceResource.UserChangePasswordFailed
+        };
+    }
 
-        public virtual ResourceMessage UserDeleteFailed()
+    public virtual ResourceMessage UserDoesNotExist()
+    {
+        return new ResourceMessage()
         {
-            return new ResourceMessage()
-            {
-                Code = nameof(UserDeleteFailed),
-                Description = IdentityServiceResource.UserDeleteFailed
-            };
-        }
+            Code = nameof(UserDoesNotExist),
+            Description = IdentityServiceResource.UserDoesNotExist
+        };
+    }
 
-        public virtual ResourceMessage UserCreateFailed()
+    public virtual ResourceMessage UserDeleteFailed()
+    {
+        return new ResourceMessage()
         {
-            return new ResourceMessage()
-            {
-                Code = nameof(UserCreateFailed),
-                Description = IdentityServiceResource.UserCreateFailed
-            };
-        }
+            Code = nameof(UserDeleteFailed),
+            Description = IdentityServiceResource.UserDeleteFailed
+        };
+    }
 
-        public virtual ResourceMessage UserClaimsDeleteFailed()
+    public virtual ResourceMessage UserCreateFailed()
+    {
+        return new ResourceMessage()
         {
-            return new ResourceMessage()
-            {
-                Code = nameof(UserClaimsDeleteFailed),
-                Description = IdentityServiceResource.UserClaimsDeleteFailed
-            };
-        }
+            Code = nameof(UserCreateFailed),
+            Description = IdentityServiceResource.UserCreateFailed
+        };
+    }
 
-        public virtual ResourceMessage UserClaimsCreateFailed()
+    public virtual ResourceMessage UserClaimsDeleteFailed()
+    {
+        return new ResourceMessage()
         {
-            return new ResourceMessage()
-            {
-                Code = nameof(UserClaimsCreateFailed),
-                Description = IdentityServiceResource.UserClaimsCreateFailed
-            };
-        }
+            Code = nameof(UserClaimsDeleteFailed),
+            Description = IdentityServiceResource.UserClaimsDeleteFailed
+        };
+    }
 
-        public virtual ResourceMessage UserClaimsUpdateFailed()
+    public virtual ResourceMessage UserClaimsCreateFailed()
+    {
+        return new ResourceMessage()
         {
-            return new ResourceMessage()
-            {
-                Code = nameof(UserClaimsCreateFailed),
-                Description = IdentityServiceResource.UserClaimsUpdateFailed
-            };
-        }
+            Code = nameof(UserClaimsCreateFailed),
+            Description = IdentityServiceResource.UserClaimsCreateFailed
+        };
+    }
 
-        public virtual ResourceMessage UserClaimDoesNotExist()
+    public virtual ResourceMessage UserClaimsUpdateFailed()
+    {
+        return new ResourceMessage()
         {
-            return new ResourceMessage()
-            {
-                Code = nameof(UserClaimDoesNotExist),
-                Description = IdentityServiceResource.UserClaimDoesNotExist
-            };
-        }
+            Code = nameof(UserClaimsCreateFailed),
+            Description = IdentityServiceResource.UserClaimsUpdateFailed
+        };
+    }
 
-        public virtual ResourceMessage RoleUpdateFailed()
+    public virtual ResourceMessage UserClaimDoesNotExist()
+    {
+        return new ResourceMessage()
         {
-            return new ResourceMessage()
-            {
-                Code = nameof(RoleUpdateFailed),
-                Description = IdentityServiceResource.RoleUpdateFailed
-            };
-        }
+            Code = nameof(UserClaimDoesNotExist),
+            Description = IdentityServiceResource.UserClaimDoesNotExist
+        };
+    }
 
-        public virtual ResourceMessage RoleDoesNotExist()
+    public virtual ResourceMessage RoleUpdateFailed()
+    {
+        return new ResourceMessage()
         {
-            return new ResourceMessage()
-            {
-                Code = nameof(RoleDoesNotExist),
-                Description = IdentityServiceResource.RoleDoesNotExist
-            };
-        }
+            Code = nameof(RoleUpdateFailed),
+            Description = IdentityServiceResource.RoleUpdateFailed
+        };
+    }
 
-        public virtual ResourceMessage RoleDeleteFailed()
+    public virtual ResourceMessage RoleDoesNotExist()
+    {
+        return new ResourceMessage()
         {
-            return new ResourceMessage()
-            {
-                Code = nameof(RoleDeleteFailed),
-                Description = IdentityServiceResource.RoleDeleteFailed
-            };
-        }
+            Code = nameof(RoleDoesNotExist),
+            Description = IdentityServiceResource.RoleDoesNotExist
+        };
+    }
 
-        public virtual ResourceMessage RoleCreateFailed()
+    public virtual ResourceMessage RoleDeleteFailed()
+    {
+        return new ResourceMessage()
         {
-            return new ResourceMessage()
-            {
-                Code = nameof(RoleCreateFailed),
-                Description = IdentityServiceResource.RoleCreateFailed
-            };
-        }
+            Code = nameof(RoleDeleteFailed),
+            Description = IdentityServiceResource.RoleDeleteFailed
+        };
+    }
 
-        public virtual ResourceMessage RoleClaimsDeleteFailed()
+    public virtual ResourceMessage RoleCreateFailed()
+    {
+        return new ResourceMessage()
         {
-            return new ResourceMessage()
-            {
-                Code = nameof(RoleClaimsDeleteFailed),
-                Description = IdentityServiceResource.RoleClaimsDeleteFailed
-            };
-        }
+            Code = nameof(RoleCreateFailed),
+            Description = IdentityServiceResource.RoleCreateFailed
+        };
+    }
 
-        public virtual ResourceMessage RoleClaimsCreateFailed()
+    public virtual ResourceMessage RoleClaimsDeleteFailed()
+    {
+        return new ResourceMessage()
         {
-            return new ResourceMessage()
-            {
-                Code = nameof(RoleClaimsCreateFailed),
-                Description = IdentityServiceResource.RoleClaimsCreateFailed
-            };
-        }
+            Code = nameof(RoleClaimsDeleteFailed),
+            Description = IdentityServiceResource.RoleClaimsDeleteFailed
+        };
+    }
 
-        public virtual ResourceMessage RoleClaimsUpdateFailed()
+    public virtual ResourceMessage RoleClaimsCreateFailed()
+    {
+        return new ResourceMessage()
         {
-            return new ResourceMessage()
-            {
-                Code = nameof(RoleClaimsCreateFailed),
-                Description = IdentityServiceResource.RoleClaimsUpdateFailed
-            };
-        }
+            Code = nameof(RoleClaimsCreateFailed),
+            Description = IdentityServiceResource.RoleClaimsCreateFailed
+        };
+    }
 
-        public virtual ResourceMessage RoleClaimDoesNotExist()
+    public virtual ResourceMessage RoleClaimsUpdateFailed()
+    {
+        return new ResourceMessage()
         {
-            return new ResourceMessage()
-            {
-                Code = nameof(RoleClaimDoesNotExist),
-                Description = IdentityServiceResource.RoleClaimDoesNotExist
-            };
-        }
+            Code = nameof(RoleClaimsCreateFailed),
+            Description = IdentityServiceResource.RoleClaimsUpdateFailed
+        };
+    }
 
-        public virtual ResourceMessage IdentityErrorKey()
+    public virtual ResourceMessage RoleClaimDoesNotExist()
+    {
+        return new ResourceMessage()
         {
-            return new ResourceMessage()
-            {
-                Code = nameof(IdentityErrorKey),
-                Description = IdentityServiceResource.IdentityErrorKey
-            };
-        }
+            Code = nameof(RoleClaimDoesNotExist),
+            Description = IdentityServiceResource.RoleClaimDoesNotExist
+        };
+    }
+
+    public virtual ResourceMessage IdentityErrorKey()
+    {
+        return new ResourceMessage()
+        {
+            Code = nameof(IdentityErrorKey),
+            Description = IdentityServiceResource.IdentityErrorKey
+        };
     }
 }

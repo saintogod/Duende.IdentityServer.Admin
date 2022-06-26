@@ -4,15 +4,14 @@
 using Skoruba.AuditLogging.Events;
 using Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Dtos.Configuration;
 
-namespace Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Events.IdentityResource
-{
-    public class IdentityResourceRequestedEvent : AuditEvent
-    {
-        public IdentityResourceDto IdentityResource { get; set; }
+namespace Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Events.IdentityResource;
 
-        public IdentityResourceRequestedEvent(IdentityResourceDto identityResource)
-        {
-            IdentityResource = identityResource;
-        }
+public class IdentityResourceRequestedEvent : AuditEvent
+{
+    public IdentityResourceDto IdentityResource { get; set; }
+
+    public IdentityResourceRequestedEvent(IdentityResourceDto identityResource)
+    {
+        IdentityResource = identityResource;
     }
 }

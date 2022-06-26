@@ -1,11 +1,10 @@
 ﻿// Copyright (c) Jan Škoruba. All Rights Reserved.
 // Licensed under the Apache License, Version 2.0.
 
-namespace Skoruba.Duende.IdentityServer.Admin.EntityFramework.Helpers
+namespace Skoruba.Duende.IdentityServer.Admin.EntityFramework.Helpers;
+
+public enum HashType
 {
-	public enum HashType
-	{
-		Sha256,
-		Sha512
-	}
+    Sha256,
+    Sha512
 }

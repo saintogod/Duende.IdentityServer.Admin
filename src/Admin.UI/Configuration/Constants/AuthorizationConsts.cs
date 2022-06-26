@@ -1,10 +1,9 @@
 ﻿// Copyright (c) Jan Škoruba. All Rights Reserved.
 // Licensed under the Apache License, Version 2.0.
 
-namespace Skoruba.Duende.IdentityServer.Admin.UI.Configuration.Constants
+namespace Skoruba.Duende.IdentityServer.Admin.UI.Configuration.Constants;
+
+public class AuthorizationConsts
 {
-    public class AuthorizationConsts
-    {
-        public const string AdministrationPolicy = "RequireAdministratorRole";
-    }
+    public const string AdministrationPolicy = "RequireAdministratorRole";
 }

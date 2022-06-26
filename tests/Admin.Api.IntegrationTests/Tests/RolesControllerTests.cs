@@ -8,38 +8,37 @@ using Skoruba.Duende.IdentityServer.Admin.Api.IntegrationTests.Common;
 using Skoruba.Duende.IdentityServer.Admin.Api.IntegrationTests.Tests.Base;
 using Xunit;
 
-namespace Skoruba.Duende.IdentityServer.Admin.Api.IntegrationTests.Tests
+namespace Skoruba.Duende.IdentityServer.Admin.Api.IntegrationTests.Tests;
+
+public class RolesControllerTests : BaseClassFixture
 {
-    public class RolesControllerTests : BaseClassFixture
+    public RolesControllerTests(TestFixture fixture) : base(fixture)
     {
-        public RolesControllerTests(TestFixture fixture) : base(fixture)
-        {
-        }
+    }
 
-        [Fact]
-        public async Task GetRolesAsAdmin()
-        {
-            SetupAdminClaimsViaHeaders();
+    [Fact]
+    public async Task GetRolesAsAdmin()
+    {
+        SetupAdminClaimsViaHeaders();
 
-            var response = await Client.GetAsync("api/roles");
+        var response = await Client.GetAsync("api/roles");
 
-            // Assert
-            response.EnsureSuccessStatusCode();
-            response.StatusCode.Should().Be(HttpStatusCode.OK);
-        }
+        // Assert
+        response.EnsureSuccessStatusCode();
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+    }
 
-        [Fact]
-        public async Task GetRolesWithoutPermissions()
-        {
-            Client.DefaultRequestHeaders.Clear();
+    [Fact]
+    public async Task GetRolesWithoutPermissions()
+    {
+        Client.DefaultRequestHeaders.Clear();
 
-            var response = await Client.GetAsync("api/roles");
+        var response = await Client.GetAsync("api/roles");
 
-            // Assert
-            response.StatusCode.Should().Be(HttpStatusCode.Redirect);
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.Redirect);
 
-            //The redirect to login
-            response.Headers.Location.ToString().Should().Contain(AuthenticationConsts.AccountLoginPage);
-        }
+        //The redirect to login
+        response.Headers.Location.ToString().Should().Contain(AuthenticationConsts.AccountLoginPage);
     }
 }

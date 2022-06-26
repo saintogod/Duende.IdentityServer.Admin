@@ -6,56 +6,55 @@ using Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Dtos.Configuration;
 using Skoruba.Duende.IdentityServer.Admin.UnitTests.Mocks;
 using Xunit;
 
-namespace Skoruba.Duende.IdentityServer.Admin.Api.UnitTests.Mappers
+namespace Skoruba.Duende.IdentityServer.Admin.Api.UnitTests.Mappers;
+
+public class ApiScopeMappers
 {
-    public class ApiScopeMappers
+    [Fact]
+    public void CanMapApiScopeApiDtoToApiScopeDto()
     {
-        [Fact]
-        public void CanMapApiScopeApiDtoToApiScopeDto()
-        {
-            var apiScopeApiDto = ApiScopeApiDtoMock.GenerateRandomApiScope(1);
+        var apiScopeApiDto = ApiScopeApiDtoMock.GenerateRandomApiScope(1);
 
-            var apiScopeDto = apiScopeApiDto.ToApiScopeApiModel<ApiScopeDto>();
+        var apiScopeDto = apiScopeApiDto.ToApiScopeApiModel<ApiScopeDto>();
 
-            apiScopeDto.Should().BeEquivalentTo(apiScopeApiDto, options => options.Excluding(x=> x.ApiScopeProperties));
-        }
-        
-        [Fact]
-        public void CanMapApiScopeDtoToApiScopeApiDto()
-        {
-            var apiScopeDto = ApiScopeDtoMock.GenerateRandomApiScope(1);
+        apiScopeDto.Should().BeEquivalentTo(apiScopeApiDto, options => options.Excluding(x => x.ApiScopeProperties));
+    }
 
-            var apiScopeApiDto = apiScopeDto.ToApiScopeApiModel<ApiScopeApiDto>();
+    [Fact]
+    public void CanMapApiScopeDtoToApiScopeApiDto()
+    {
+        var apiScopeDto = ApiScopeDtoMock.GenerateRandomApiScope(1);
 
-            apiScopeApiDto.Should().BeEquivalentTo(apiScopeDto, options => options
-                .Excluding(x => x.ApiScopeProperties)
-                .Excluding(x=> x.UserClaimsItems));
-        }
+        var apiScopeApiDto = apiScopeDto.ToApiScopeApiModel<ApiScopeApiDto>();
 
-        [Fact]
-        public void CanMapApiScopePropertyApiDtoToApiScopePropertyDto()
-        {
-            var apiScopePropertyApiDto = ApiScopeApiDtoMock.GenerateRandomApiScopeProperty(1);
+        apiScopeApiDto.Should().BeEquivalentTo(apiScopeDto, options => options
+            .Excluding(x => x.ApiScopeProperties)
+            .Excluding(x => x.UserClaimsItems));
+    }
 
-            var apiScopePropertyDto = apiScopePropertyApiDto.ToApiScopeApiModel<ApiScopePropertyDto>();
+    [Fact]
+    public void CanMapApiScopePropertyApiDtoToApiScopePropertyDto()
+    {
+        var apiScopePropertyApiDto = ApiScopeApiDtoMock.GenerateRandomApiScopeProperty(1);
 
-            apiScopePropertyDto.Should().BeEquivalentTo(apiScopePropertyApiDto);
-        }
+        var apiScopePropertyDto = apiScopePropertyApiDto.ToApiScopeApiModel<ApiScopePropertyDto>();
 
-        [Fact]
-        public void CanMapApiScopePropertyDtoToApiScopePropertyDto()
-        {
-            var apiScopePropertyDto = ApiScopeDtoMock.GenerateRandomApiScopeProperty(1,1);
+        apiScopePropertyDto.Should().BeEquivalentTo(apiScopePropertyApiDto);
+    }
 
-            var apiScopePropertyApiDto = apiScopePropertyDto.ToApiScopeApiModel<ApiScopePropertyApiDto>();
+    [Fact]
+    public void CanMapApiScopePropertyDtoToApiScopePropertyDto()
+    {
+        var apiScopePropertyDto = ApiScopeDtoMock.GenerateRandomApiScopeProperty(1, 1);
 
-            apiScopePropertyApiDto.Should().BeEquivalentTo(apiScopePropertyDto, options =>
-                options.Excluding(x => x.ApiScopeId)
-                    .Excluding(x => x.ApiScopeName)
-                    .Excluding(x => x.PageSize)
-                    .Excluding(x => x.TotalCount)
-                    .Excluding(x => x.ApiScopePropertyId)
-                    .Excluding(x => x.ApiScopeProperties));
-        }
+        var apiScopePropertyApiDto = apiScopePropertyDto.ToApiScopeApiModel<ApiScopePropertyApiDto>();
+
+        apiScopePropertyApiDto.Should().BeEquivalentTo(apiScopePropertyDto, options =>
+            options.Excluding(x => x.ApiScopeId)
+                .Excluding(x => x.ApiScopeName)
+                .Excluding(x => x.PageSize)
+                .Excluding(x => x.TotalCount)
+                .Excluding(x => x.ApiScopePropertyId)
+                .Excluding(x => x.ApiScopeProperties));
     }
 }

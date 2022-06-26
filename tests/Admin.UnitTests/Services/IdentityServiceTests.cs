@@ -23,586 +23,585 @@ using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Shared.Entities.Identi
 using Skoruba.Duende.IdentityServer.Admin.UnitTests.Mocks;
 using Xunit;
 
-namespace Skoruba.Duende.IdentityServer.Admin.UnitTests.Services
+namespace Skoruba.Duende.IdentityServer.Admin.UnitTests.Services;
+
+public class IdentityServiceTests
 {
-    public class IdentityServiceTests
+    public IdentityServiceTests()
     {
-        public IdentityServiceTests()
-        {
-            var databaseName = Guid.NewGuid().ToString();
+        var databaseName = Guid.NewGuid().ToString();
 
-            _dbContextOptions = new DbContextOptionsBuilder<AdminIdentityDbContext>()
-                .UseInMemoryDatabase(databaseName)
-                .Options;
-        }
+        _dbContextOptions = new DbContextOptionsBuilder<AdminIdentityDbContext>()
+            .UseInMemoryDatabase(databaseName)
+            .Options;
+    }
 
-        private readonly DbContextOptions<AdminIdentityDbContext> _dbContextOptions;
+    private readonly DbContextOptions<AdminIdentityDbContext> _dbContextOptions;
 
-        private IIdentityRepository<UserIdentity, UserIdentityRole, string,
+    private IIdentityRepository<UserIdentity, UserIdentityRole, string,
+        UserIdentityUserClaim, UserIdentityUserRole, UserIdentityUserLogin, UserIdentityRoleClaim,
+        UserIdentityUserToken> GetIdentityRepository(AdminIdentityDbContext dbContext,
+        UserManager<UserIdentity> userManager,
+        RoleManager<UserIdentityRole> roleManager,
+        IMapper mapper)
+    {
+        return new IdentityRepository<AdminIdentityDbContext, UserIdentity, UserIdentityRole, string,
             UserIdentityUserClaim, UserIdentityUserRole, UserIdentityUserLogin, UserIdentityRoleClaim,
-            UserIdentityUserToken> GetIdentityRepository(AdminIdentityDbContext dbContext,
-            UserManager<UserIdentity> userManager,
-            RoleManager<UserIdentityRole> roleManager,
-            IMapper mapper)
-        {
-            return new IdentityRepository<AdminIdentityDbContext, UserIdentity, UserIdentityRole, string,
-                UserIdentityUserClaim, UserIdentityUserRole, UserIdentityUserLogin, UserIdentityRoleClaim,
-                UserIdentityUserToken>(dbContext, userManager, roleManager, mapper);
-        }
+            UserIdentityUserToken>(dbContext, userManager, roleManager, mapper);
+    }
 
-        private IIdentityService<UserDto<string>, RoleDto<string>, UserIdentity,
+    private IIdentityService<UserDto<string>, RoleDto<string>, UserIdentity,
+        UserIdentityRole, string,
+        UserIdentityUserClaim, UserIdentityUserRole, UserIdentityUserLogin, UserIdentityRoleClaim,
+        UserIdentityUserToken,
+        UsersDto<UserDto<string>, string>, RolesDto<RoleDto<string>, string>, UserRolesDto<RoleDto<string>, string>,
+        UserClaimsDto<UserClaimDto<string>, string>, UserProviderDto<string>, UserProvidersDto<UserProviderDto<string>, string>, UserChangePasswordDto<string>,
+        RoleClaimsDto<RoleClaimDto<string>, string>, UserClaimDto<string>, RoleClaimDto<string>> GetIdentityService(IIdentityRepository<UserIdentity, UserIdentityRole, string, UserIdentityUserClaim, UserIdentityUserRole, UserIdentityUserLogin, UserIdentityRoleClaim, UserIdentityUserToken> identityRepository,
+        IIdentityServiceResources identityServiceResources,
+        IMapper mapper, IAuditEventLogger auditEventLogger)
+    {
+        return new IdentityService<UserDto<string>, RoleDto<string>, UserIdentity,
             UserIdentityRole, string,
             UserIdentityUserClaim, UserIdentityUserRole, UserIdentityUserLogin, UserIdentityRoleClaim,
             UserIdentityUserToken,
             UsersDto<UserDto<string>, string>, RolesDto<RoleDto<string>, string>, UserRolesDto<RoleDto<string>, string>,
             UserClaimsDto<UserClaimDto<string>, string>, UserProviderDto<string>, UserProvidersDto<UserProviderDto<string>, string>, UserChangePasswordDto<string>,
-            RoleClaimsDto<RoleClaimDto<string>, string>, UserClaimDto<string>, RoleClaimDto<string>> GetIdentityService(IIdentityRepository<UserIdentity, UserIdentityRole, string, UserIdentityUserClaim, UserIdentityUserRole, UserIdentityUserLogin, UserIdentityRoleClaim, UserIdentityUserToken> identityRepository,
-            IIdentityServiceResources identityServiceResources,
-            IMapper mapper, IAuditEventLogger auditEventLogger)
+            RoleClaimsDto<RoleClaimDto<string>, string>, UserClaimDto<string>, RoleClaimDto<string>>(identityRepository, identityServiceResources, mapper, auditEventLogger);
+    }
+
+    private IMapper GetMapper()
+    {
+        return new MapperConfiguration(cfg => cfg.AddProfile<IdentityMapperProfile<UserDto<string>, RoleDto<string>, UserIdentity, UserIdentityRole, string,
+                    UserIdentityUserClaim, UserIdentityUserRole, UserIdentityUserLogin, UserIdentityRoleClaim,
+                    UserIdentityUserToken,
+                    UsersDto<UserDto<string>, string>, RolesDto<RoleDto<string>, string>, UserRolesDto<RoleDto<string>, string>,
+                    UserClaimsDto<UserClaimDto<string>, string>, UserProviderDto<string>, UserProvidersDto<UserProviderDto<string>, string>,
+                    RoleClaimsDto<RoleClaimDto<string>, string>, UserClaimDto<string>, RoleClaimDto<string>>>())
+            .CreateMapper();
+    }
+
+    private UserManager<UserIdentity> GetTestUserManager(AdminIdentityDbContext context)
+    {
+        var testUserManager = IdentityMock.TestUserManager(new UserStore<UserIdentity, UserIdentityRole, AdminIdentityDbContext, string, UserIdentityUserClaim, UserIdentityUserRole, UserIdentityUserLogin, UserIdentityUserToken, UserIdentityRoleClaim>(context, new IdentityErrorDescriber()));
+
+        return testUserManager;
+    }
+
+    private RoleManager<UserIdentityRole> GetTestRoleManager(AdminIdentityDbContext context)
+    {
+        var testRoleManager = IdentityMock.TestRoleManager(new RoleStore<UserIdentityRole, AdminIdentityDbContext, string, UserIdentityUserRole, UserIdentityRoleClaim>(context, new IdentityErrorDescriber()));
+
+        return testRoleManager;
+    }
+
+    private IIdentityService<UserDto<string>, RoleDto<string>, UserIdentity,
+        UserIdentityRole, string,
+        UserIdentityUserClaim, UserIdentityUserRole, UserIdentityUserLogin, UserIdentityRoleClaim,
+        UserIdentityUserToken,
+        UsersDto<UserDto<string>, string>, RolesDto<RoleDto<string>, string>,
+        UserRolesDto<RoleDto<string>, string>,
+        UserClaimsDto<UserClaimDto<string>, string>, UserProviderDto<string>, UserProvidersDto<UserProviderDto<string>, string>, UserChangePasswordDto<string>,
+        RoleClaimsDto<RoleClaimDto<string>, string>, UserClaimDto<string>, RoleClaimDto<string>> GetIdentityService(AdminIdentityDbContext context)
+    {
+        var testUserManager = GetTestUserManager(context);
+        var testRoleManager = GetTestRoleManager(context);
+        var mapper = GetMapper();
+
+        var identityRepository = GetIdentityRepository(context, testUserManager, testRoleManager, mapper);
+        var localizerIdentityResource = new IdentityServiceResources();
+
+        var auditLoggerMock = new Mock<IAuditEventLogger>();
+        var auditLogger = auditLoggerMock.Object;
+
+        var identityService = GetIdentityService(identityRepository, localizerIdentityResource, mapper, auditLogger);
+
+        return identityService;
+    }
+
+    [Fact]
+    public async Task AddUserAsync()
+    {
+        using (var context = new AdminIdentityDbContext(_dbContextOptions))
         {
-            return new IdentityService<UserDto<string>, RoleDto<string>, UserIdentity,
-                UserIdentityRole, string,
-                UserIdentityUserClaim, UserIdentityUserRole, UserIdentityUserLogin, UserIdentityRoleClaim,
-                UserIdentityUserToken,
-                UsersDto<UserDto<string>, string>, RolesDto<RoleDto<string>, string>, UserRolesDto<RoleDto<string>, string>,
-                UserClaimsDto<UserClaimDto<string>, string>, UserProviderDto<string>, UserProvidersDto<UserProviderDto<string>, string>, UserChangePasswordDto<string>,
-                RoleClaimsDto<RoleClaimDto<string>, string>, UserClaimDto<string>, RoleClaimDto<string>>(identityRepository, identityServiceResources, mapper, auditEventLogger);
+            var identityService = GetIdentityService(context);
+
+            //Generate random new user
+            var userDto = IdentityDtoMock<string>.GenerateRandomUser();
+
+            await identityService.CreateUserAsync(userDto);
+
+            //Get new user
+            var user = await context.Users.Where(x => x.UserName == userDto.UserName).SingleOrDefaultAsync();
+            userDto.Id = user.Id;
+
+            var newUserDto = await identityService.GetUserAsync(userDto.Id.ToString());
+
+            //Assert new user
+            newUserDto.Should().BeEquivalentTo(userDto);
         }
+    }
 
-        private IMapper GetMapper()
+    [Fact]
+    public async Task DeleteUserProviderAsync()
+    {
+        using (var context = new AdminIdentityDbContext(_dbContextOptions))
         {
-            return new MapperConfiguration(cfg => cfg.AddProfile<IdentityMapperProfile<UserDto<string>, RoleDto<string>, UserIdentity, UserIdentityRole, string,
-                        UserIdentityUserClaim, UserIdentityUserRole, UserIdentityUserLogin, UserIdentityRoleClaim,
-                        UserIdentityUserToken,
-                        UsersDto<UserDto<string>, string>, RolesDto<RoleDto<string>, string>, UserRolesDto<RoleDto<string>, string>,
-                        UserClaimsDto<UserClaimDto<string>, string>, UserProviderDto<string>, UserProvidersDto<UserProviderDto<string>, string>,
-                        RoleClaimsDto<RoleClaimDto<string>, string>, UserClaimDto<string>, RoleClaimDto<string>>>())
-                .CreateMapper();
+            var identityService = GetIdentityService(context);
+
+            //Generate random new user
+            var userDto = IdentityDtoMock<string>.GenerateRandomUser();
+
+            await identityService.CreateUserAsync(userDto);
+
+            //Get new user
+            var user = await context.Users.Where(x => x.UserName == userDto.UserName).SingleOrDefaultAsync();
+            userDto.Id = user.Id;
+
+            var newUserDto = await identityService.GetUserAsync(userDto.Id.ToString());
+
+            //Assert new user
+            newUserDto.Should().BeEquivalentTo(userDto);
+
+            var userProvider = IdentityMock.GenerateRandomUserProviders(Guid.NewGuid().ToString(), Guid.NewGuid().ToString(),
+                newUserDto.Id);
+
+            //Add new user login
+            await context.UserLogins.AddAsync(userProvider);
+            await context.SaveChangesAsync();
+
+            //Get added user provider
+            var addedUserProvider = await context.UserLogins.Where(x => x.ProviderKey == userProvider.ProviderKey && x.LoginProvider == userProvider.LoginProvider).SingleOrDefaultAsync();
+            addedUserProvider.Should().NotBeNull();
+
+            var userProviderDto = IdentityDtoMock<string>.GenerateRandomUserProviders(userProvider.ProviderKey, userProvider.LoginProvider,
+                userProvider.UserId);
+
+            await identityService.DeleteUserProvidersAsync(userProviderDto);
+
+            //Get deleted user provider
+            var deletedUserProvider = await context.UserLogins.Where(x => x.ProviderKey == userProvider.ProviderKey && x.LoginProvider == userProvider.LoginProvider).SingleOrDefaultAsync();
+            deletedUserProvider.Should().BeNull();
         }
+    }
 
-        private UserManager<UserIdentity> GetTestUserManager(AdminIdentityDbContext context)
+    [Fact]
+    public async Task AddUserRoleAsync()
+    {
+        using (var context = new AdminIdentityDbContext(_dbContextOptions))
         {
-            var testUserManager = IdentityMock.TestUserManager(new UserStore<UserIdentity, UserIdentityRole, AdminIdentityDbContext, string, UserIdentityUserClaim, UserIdentityUserRole, UserIdentityUserLogin, UserIdentityUserToken, UserIdentityRoleClaim>(context, new IdentityErrorDescriber()));
+            var identityService = GetIdentityService(context);
 
-            return testUserManager;
+            //Generate random new user
+            var userDto = IdentityDtoMock<string>.GenerateRandomUser();
+
+            await identityService.CreateUserAsync(userDto);
+
+            //Get new user
+            var user = await context.Users.Where(x => x.UserName == userDto.UserName).SingleOrDefaultAsync();
+            userDto.Id = user.Id;
+
+            var newUserDto = await identityService.GetUserAsync(userDto.Id.ToString());
+
+            //Assert new user
+            newUserDto.Should().BeEquivalentTo(userDto);
+
+            //Generate random new role
+            var roleDto = IdentityDtoMock<string>.GenerateRandomRole();
+
+            await identityService.CreateRoleAsync(roleDto);
+
+            //Get new role
+            var role = await context.Roles.Where(x => x.Name == roleDto.Name).SingleOrDefaultAsync();
+            roleDto.Id = role.Id;
+
+            var newRoleDto = await identityService.GetRoleAsync(roleDto.Id.ToString());
+
+            //Assert new role
+            newRoleDto.Should().BeEquivalentTo(roleDto);
+
+            var userRoleDto = IdentityDtoMock<string>.GenerateRandomUserRole<RoleDto<string>>(roleDto.Id, userDto.Id);
+
+            await identityService.CreateUserRoleAsync(userRoleDto);
+
+            //Get new role
+            var userRole = await context.UserRoles.Where(x => x.RoleId == roleDto.Id && x.UserId == userDto.Id).SingleOrDefaultAsync();
+
+            userRole.Should().NotBeNull();
         }
+    }
 
-        private RoleManager<UserIdentityRole> GetTestRoleManager(AdminIdentityDbContext context)
+    [Fact]
+    public async Task DeleteUserRoleAsync()
+    {
+        using (var context = new AdminIdentityDbContext(_dbContextOptions))
         {
-            var testRoleManager = IdentityMock.TestRoleManager(new RoleStore<UserIdentityRole, AdminIdentityDbContext, string, UserIdentityUserRole, UserIdentityRoleClaim>(context, new IdentityErrorDescriber()));
+            var identityService = GetIdentityService(context);
 
-            return testRoleManager;
+            //Generate random new user
+            var userDto = IdentityDtoMock<string>.GenerateRandomUser();
+
+            await identityService.CreateUserAsync(userDto);
+
+            //Get new user
+            var user = await context.Users.Where(x => x.UserName == userDto.UserName).SingleOrDefaultAsync();
+            userDto.Id = user.Id;
+
+            var newUserDto = await identityService.GetUserAsync(userDto.Id.ToString());
+
+            //Assert new user
+            newUserDto.Should().BeEquivalentTo(userDto);
+
+            //Generate random new role
+            var roleDto = IdentityDtoMock<string>.GenerateRandomRole();
+
+            await identityService.CreateRoleAsync(roleDto);
+
+            //Get new role
+            var role = await context.Roles.Where(x => x.Name == roleDto.Name).SingleOrDefaultAsync();
+            roleDto.Id = role.Id;
+
+            var newRoleDto = await identityService.GetRoleAsync(roleDto.Id.ToString());
+
+            //Assert new role
+            newRoleDto.Should().BeEquivalentTo(roleDto);
+
+            var userRoleDto = IdentityDtoMock<string>.GenerateRandomUserRole<RoleDto<string>>(roleDto.Id, userDto.Id);
+
+            await identityService.CreateUserRoleAsync(userRoleDto);
+
+            //Get new role
+            var userRole = await context.UserRoles.Where(x => x.RoleId == roleDto.Id && x.UserId == userDto.Id).SingleOrDefaultAsync();
+            userRole.Should().NotBeNull();
+
+            await identityService.DeleteUserRoleAsync(userRoleDto);
+
+            //Get deleted role
+            var userRoleDeleted = await context.UserRoles.Where(x => x.RoleId == roleDto.Id && x.UserId == userDto.Id).SingleOrDefaultAsync();
+            userRoleDeleted.Should().BeNull();
         }
+    }
 
-        private IIdentityService<UserDto<string>, RoleDto<string>, UserIdentity,
-            UserIdentityRole, string,
-            UserIdentityUserClaim, UserIdentityUserRole, UserIdentityUserLogin, UserIdentityRoleClaim,
-            UserIdentityUserToken,
-            UsersDto<UserDto<string>, string>, RolesDto<RoleDto<string>, string>,
-            UserRolesDto<RoleDto<string>, string>,
-            UserClaimsDto<UserClaimDto<string>, string>, UserProviderDto<string>, UserProvidersDto<UserProviderDto<string>, string>, UserChangePasswordDto<string>,
-            RoleClaimsDto<RoleClaimDto<string>, string>, UserClaimDto<string>, RoleClaimDto<string>> GetIdentityService(AdminIdentityDbContext context)
+    [Fact]
+    public async Task AddUserClaimAsync()
+    {
+        using (var context = new AdminIdentityDbContext(_dbContextOptions))
         {
-            var testUserManager = GetTestUserManager(context);
-            var testRoleManager = GetTestRoleManager(context);
-            var mapper = GetMapper();
+            var identityService = GetIdentityService(context);
 
-            var identityRepository = GetIdentityRepository(context, testUserManager, testRoleManager, mapper);
-            var localizerIdentityResource = new IdentityServiceResources();
+            //Generate random new user
+            var userDto = IdentityDtoMock<string>.GenerateRandomUser();
 
-            var auditLoggerMock = new Mock<IAuditEventLogger>();
-            var auditLogger = auditLoggerMock.Object;
+            await identityService.CreateUserAsync(userDto);
 
-            var identityService = GetIdentityService(identityRepository, localizerIdentityResource, mapper, auditLogger);
+            //Get new user
+            var user = await context.Users.Where(x => x.UserName == userDto.UserName).SingleOrDefaultAsync();
+            userDto.Id = user.Id;
 
-            return identityService;
+            var newUserDto = await identityService.GetUserAsync(userDto.Id.ToString());
+
+            //Assert new user
+            newUserDto.Should().BeEquivalentTo(userDto);
+
+            //Generate random new user claim
+            var userClaimDto = IdentityDtoMock<string>.GenerateRandomUserClaim(0, userDto.Id);
+
+            await identityService.CreateUserClaimsAsync(userClaimDto);
+
+            //Get new user claim
+            var claim = await context.UserClaims.Where(x => x.ClaimType == userClaimDto.ClaimType && x.ClaimValue == userClaimDto.ClaimValue).SingleOrDefaultAsync();
+            userClaimDto.ClaimId = claim.Id;
+
+            var newUserClaim = await identityService.GetUserClaimAsync(userDto.Id.ToString(), claim.Id);
+
+            //Assert new user claim
+            newUserClaim.Should().BeEquivalentTo(userClaimDto);
         }
+    }
 
-        [Fact]
-        public async Task AddUserAsync()
+    [Fact]
+    public async Task DeleteUserClaimAsync()
+    {
+        using (var context = new AdminIdentityDbContext(_dbContextOptions))
         {
-            using (var context = new AdminIdentityDbContext(_dbContextOptions))
-            {
-                var identityService = GetIdentityService(context);
+            var identityService = GetIdentityService(context);
 
-                //Generate random new user
-                var userDto = IdentityDtoMock<string>.GenerateRandomUser();
+            //Generate random new user
+            var userDto = IdentityDtoMock<string>.GenerateRandomUser();
 
-                await identityService.CreateUserAsync(userDto);
+            await identityService.CreateUserAsync(userDto);
 
-                //Get new user
-                var user = await context.Users.Where(x => x.UserName == userDto.UserName).SingleOrDefaultAsync();
-                userDto.Id = user.Id;
+            //Get new user
+            var user = await context.Users.Where(x => x.UserName == userDto.UserName).SingleOrDefaultAsync();
+            userDto.Id = user.Id;
 
-                var newUserDto = await identityService.GetUserAsync(userDto.Id.ToString());
+            var newUserDto = await identityService.GetUserAsync(userDto.Id.ToString());
 
-                //Assert new user
-                newUserDto.Should().BeEquivalentTo(userDto);
-            }
+            //Assert new user
+            newUserDto.Should().BeEquivalentTo(userDto);
+
+            //Generate random new user claim
+            var userClaimDto = IdentityDtoMock<string>.GenerateRandomUserClaim(0, userDto.Id);
+
+            await identityService.CreateUserClaimsAsync(userClaimDto);
+
+            //Get new user claim
+            var claim = await context.UserClaims.Where(x => x.ClaimType == userClaimDto.ClaimType && x.ClaimValue == userClaimDto.ClaimValue).SingleOrDefaultAsync();
+            userClaimDto.ClaimId = claim.Id;
+
+            var newUserClaim = await identityService.GetUserClaimAsync(userDto.Id.ToString(), claim.Id);
+
+            //Assert new user claim
+            newUserClaim.Should().BeEquivalentTo(userClaimDto);
+
+            await identityService.DeleteUserClaimAsync(userClaimDto);
+
+            //Get deleted user claim
+            var deletedClaim = await context.UserClaims.Where(x => x.ClaimType == userClaimDto.ClaimType && x.ClaimValue == userClaimDto.ClaimValue).SingleOrDefaultAsync();
+            deletedClaim.Should().BeNull();
         }
+    }
 
-        [Fact]
-        public async Task DeleteUserProviderAsync()
+    [Fact]
+    public async Task UpdateUserAsync()
+    {
+        using (var context = new AdminIdentityDbContext(_dbContextOptions))
         {
-            using (var context = new AdminIdentityDbContext(_dbContextOptions))
-            {
-                var identityService = GetIdentityService(context);
+            var identityService = GetIdentityService(context);
 
-                //Generate random new user
-                var userDto = IdentityDtoMock<string>.GenerateRandomUser();
+            //Generate random new user
+            var userDto = IdentityDtoMock<string>.GenerateRandomUser();
 
-                await identityService.CreateUserAsync(userDto);
+            await identityService.CreateUserAsync(userDto);
 
-                //Get new user
-                var user = await context.Users.Where(x => x.UserName == userDto.UserName).SingleOrDefaultAsync();
-                userDto.Id = user.Id;
+            //Get new user
+            var user = await context.Users.Where(x => x.UserName == userDto.UserName).SingleOrDefaultAsync();
+            userDto.Id = user.Id;
 
-                var newUserDto = await identityService.GetUserAsync(userDto.Id.ToString());
+            var newUserDto = await identityService.GetUserAsync(userDto.Id.ToString());
 
-                //Assert new user
-                newUserDto.Should().BeEquivalentTo(userDto);
+            //Assert new user
+            newUserDto.Should().BeEquivalentTo(userDto);
 
-                var userProvider = IdentityMock.GenerateRandomUserProviders(Guid.NewGuid().ToString(), Guid.NewGuid().ToString(),
-                    newUserDto.Id);
+            //Detached the added item
+            context.Entry(user).State = EntityState.Detached;
 
-                //Add new user login
-                await context.UserLogins.AddAsync(userProvider);
-                await context.SaveChangesAsync();
+            //Generete new user with added item id
+            var userDtoForUpdate = IdentityDtoMock<string>.GenerateRandomUser(user.Id);
 
-                //Get added user provider
-                var addedUserProvider = await context.UserLogins.Where(x => x.ProviderKey == userProvider.ProviderKey && x.LoginProvider == userProvider.LoginProvider).SingleOrDefaultAsync();
-                addedUserProvider.Should().NotBeNull();
+            //Update user
+            await identityService.UpdateUserAsync(userDtoForUpdate);
 
-                var userProviderDto = IdentityDtoMock<string>.GenerateRandomUserProviders(userProvider.ProviderKey, userProvider.LoginProvider,
-                    userProvider.UserId);
+            var updatedUser = await identityService.GetUserAsync(userDtoForUpdate.Id.ToString());
 
-                await identityService.DeleteUserProvidersAsync(userProviderDto);
-
-                //Get deleted user provider
-                var deletedUserProvider = await context.UserLogins.Where(x => x.ProviderKey == userProvider.ProviderKey && x.LoginProvider == userProvider.LoginProvider).SingleOrDefaultAsync();
-                deletedUserProvider.Should().BeNull();
-            }
+            //Assert updated user
+            updatedUser.Should().BeEquivalentTo(userDtoForUpdate);
         }
+    }
 
-        [Fact]
-        public async Task AddUserRoleAsync()
+    [Fact]
+    public async Task DeleteUserAsync()
+    {
+        using (var context = new AdminIdentityDbContext(_dbContextOptions))
         {
-            using (var context = new AdminIdentityDbContext(_dbContextOptions))
-            {
-                var identityService = GetIdentityService(context);
+            var identityService = GetIdentityService(context);
 
-                //Generate random new user
-                var userDto = IdentityDtoMock<string>.GenerateRandomUser();
+            //Generate random new user
+            var userDto = IdentityDtoMock<string>.GenerateRandomUser();
 
-                await identityService.CreateUserAsync(userDto);
+            await identityService.CreateUserAsync(userDto);
 
-                //Get new user
-                var user = await context.Users.Where(x => x.UserName == userDto.UserName).SingleOrDefaultAsync();
-                userDto.Id = user.Id;
+            //Get new user
+            var user = await context.Users.Where(x => x.UserName == userDto.UserName).SingleOrDefaultAsync();
+            userDto.Id = user.Id;
 
-                var newUserDto = await identityService.GetUserAsync(userDto.Id.ToString());
+            var newUserDto = await identityService.GetUserAsync(userDto.Id.ToString());
 
-                //Assert new user
-                newUserDto.Should().BeEquivalentTo(userDto);
+            //Assert new user
+            newUserDto.Should().BeEquivalentTo(userDto);
 
-                //Generate random new role
-                var roleDto = IdentityDtoMock<string>.GenerateRandomRole();
+            //Remove user
+            await identityService.DeleteUserAsync(newUserDto.Id.ToString(), newUserDto);
 
-                await identityService.CreateRoleAsync(roleDto);
+            //Try Get Removed user
+            var removeUser = await context.Users.Where(x => x.Id == user.Id)
+                .SingleOrDefaultAsync();
 
-                //Get new role
-                var role = await context.Roles.Where(x => x.Name == roleDto.Name).SingleOrDefaultAsync();
-                roleDto.Id = role.Id;
-
-                var newRoleDto = await identityService.GetRoleAsync(roleDto.Id.ToString());
-
-                //Assert new role
-                newRoleDto.Should().BeEquivalentTo(roleDto);
-
-                var userRoleDto = IdentityDtoMock<string>.GenerateRandomUserRole<RoleDto<string>>(roleDto.Id, userDto.Id);
-
-                await identityService.CreateUserRoleAsync(userRoleDto);
-
-                //Get new role
-                var userRole = await context.UserRoles.Where(x => x.RoleId == roleDto.Id && x.UserId == userDto.Id).SingleOrDefaultAsync();
-
-                userRole.Should().NotBeNull();
-            }
+            //Assert removed user
+            removeUser.Should().BeNull();
         }
+    }
 
-        [Fact]
-        public async Task DeleteUserRoleAsync()
+    [Fact]
+    public async Task AddRoleAsync()
+    {
+        using (var context = new AdminIdentityDbContext(_dbContextOptions))
         {
-            using (var context = new AdminIdentityDbContext(_dbContextOptions))
-            {
-                var identityService = GetIdentityService(context);
+            var identityService = GetIdentityService(context);
 
-                //Generate random new user
-                var userDto = IdentityDtoMock<string>.GenerateRandomUser();
+            //Generate random new role
+            var roleDto = IdentityDtoMock<string>.GenerateRandomRole();
 
-                await identityService.CreateUserAsync(userDto);
+            await identityService.CreateRoleAsync(roleDto);
 
-                //Get new user
-                var user = await context.Users.Where(x => x.UserName == userDto.UserName).SingleOrDefaultAsync();
-                userDto.Id = user.Id;
+            //Get new role
+            var role = await context.Roles.Where(x => x.Name == roleDto.Name).SingleOrDefaultAsync();
+            roleDto.Id = role.Id;
 
-                var newUserDto = await identityService.GetUserAsync(userDto.Id.ToString());
+            var newRoleDto = await identityService.GetRoleAsync(roleDto.Id.ToString());
 
-                //Assert new user
-                newUserDto.Should().BeEquivalentTo(userDto);
-
-                //Generate random new role
-                var roleDto = IdentityDtoMock<string>.GenerateRandomRole();
-
-                await identityService.CreateRoleAsync(roleDto);
-
-                //Get new role
-                var role = await context.Roles.Where(x => x.Name == roleDto.Name).SingleOrDefaultAsync();
-                roleDto.Id = role.Id;
-
-                var newRoleDto = await identityService.GetRoleAsync(roleDto.Id.ToString());
-
-                //Assert new role
-                newRoleDto.Should().BeEquivalentTo(roleDto);
-
-                var userRoleDto = IdentityDtoMock<string>.GenerateRandomUserRole<RoleDto<string>>(roleDto.Id, userDto.Id);
-
-                await identityService.CreateUserRoleAsync(userRoleDto);
-
-                //Get new role
-                var userRole = await context.UserRoles.Where(x => x.RoleId == roleDto.Id && x.UserId == userDto.Id).SingleOrDefaultAsync();
-                userRole.Should().NotBeNull();
-
-                await identityService.DeleteUserRoleAsync(userRoleDto);
-
-                //Get deleted role
-                var userRoleDeleted = await context.UserRoles.Where(x => x.RoleId == roleDto.Id && x.UserId == userDto.Id).SingleOrDefaultAsync();
-                userRoleDeleted.Should().BeNull();
-            }
+            //Assert new role
+            newRoleDto.Should().BeEquivalentTo(roleDto);
         }
+    }
 
-        [Fact]
-        public async Task AddUserClaimAsync()
+    [Fact]
+    public async Task UpdateRoleAsync()
+    {
+        using (var context = new AdminIdentityDbContext(_dbContextOptions))
         {
-            using (var context = new AdminIdentityDbContext(_dbContextOptions))
-            {
-                var identityService = GetIdentityService(context);
+            var identityService = GetIdentityService(context);
 
-                //Generate random new user
-                var userDto = IdentityDtoMock<string>.GenerateRandomUser();
+            //Generate random new role
+            var roleDto = IdentityDtoMock<string>.GenerateRandomRole();
 
-                await identityService.CreateUserAsync(userDto);
+            await identityService.CreateRoleAsync(roleDto);
 
-                //Get new user
-                var user = await context.Users.Where(x => x.UserName == userDto.UserName).SingleOrDefaultAsync();
-                userDto.Id = user.Id;
+            //Get new role
+            var role = await context.Roles.Where(x => x.Name == roleDto.Name).SingleOrDefaultAsync();
+            roleDto.Id = role.Id;
 
-                var newUserDto = await identityService.GetUserAsync(userDto.Id.ToString());
+            var newRoleDto = await identityService.GetRoleAsync(roleDto.Id.ToString());
 
-                //Assert new user
-                newUserDto.Should().BeEquivalentTo(userDto);
+            //Assert new role
+            newRoleDto.Should().BeEquivalentTo(roleDto);
 
-                //Generate random new user claim
-                var userClaimDto = IdentityDtoMock<string>.GenerateRandomUserClaim(0, userDto.Id);
+            //Detached the added item
+            context.Entry(role).State = EntityState.Detached;
 
-                await identityService.CreateUserClaimsAsync(userClaimDto);
+            //Generete new role with added item id
+            var roleDtoForUpdate = IdentityDtoMock<string>.GenerateRandomRole(role.Id);
 
-                //Get new user claim
-                var claim = await context.UserClaims.Where(x => x.ClaimType == userClaimDto.ClaimType && x.ClaimValue == userClaimDto.ClaimValue).SingleOrDefaultAsync();
-                userClaimDto.ClaimId = claim.Id;
+            //Update role
+            await identityService.UpdateRoleAsync(roleDtoForUpdate);
 
-                var newUserClaim = await identityService.GetUserClaimAsync(userDto.Id.ToString(), claim.Id);
+            var updatedRole = await identityService.GetRoleAsync(roleDtoForUpdate.Id.ToString());
 
-                //Assert new user claim
-                newUserClaim.Should().BeEquivalentTo(userClaimDto);
-            }
+            //Assert updated role
+            updatedRole.Should().BeEquivalentTo(roleDtoForUpdate);
         }
+    }
 
-        [Fact]
-        public async Task DeleteUserClaimAsync()
+    [Fact]
+    public async Task DeleteRoleAsync()
+    {
+        using (var context = new AdminIdentityDbContext(_dbContextOptions))
         {
-            using (var context = new AdminIdentityDbContext(_dbContextOptions))
-            {
-                var identityService = GetIdentityService(context);
+            var identityService = GetIdentityService(context);
 
-                //Generate random new user
-                var userDto = IdentityDtoMock<string>.GenerateRandomUser();
+            //Generate random new role
+            var roleDto = IdentityDtoMock<string>.GenerateRandomRole();
 
-                await identityService.CreateUserAsync(userDto);
+            await identityService.CreateRoleAsync(roleDto);
 
-                //Get new user
-                var user = await context.Users.Where(x => x.UserName == userDto.UserName).SingleOrDefaultAsync();
-                userDto.Id = user.Id;
+            //Get new role
+            var role = await context.Roles.Where(x => x.Name == roleDto.Name).SingleOrDefaultAsync();
+            roleDto.Id = role.Id;
 
-                var newUserDto = await identityService.GetUserAsync(userDto.Id.ToString());
+            var newRoleDto = await identityService.GetRoleAsync(roleDto.Id.ToString());
 
-                //Assert new user
-                newUserDto.Should().BeEquivalentTo(userDto);
+            //Assert new role
+            newRoleDto.Should().BeEquivalentTo(roleDto);
 
-                //Generate random new user claim
-                var userClaimDto = IdentityDtoMock<string>.GenerateRandomUserClaim(0, userDto.Id);
+            //Remove role
+            await identityService.DeleteRoleAsync(newRoleDto);
 
-                await identityService.CreateUserClaimsAsync(userClaimDto);
+            //Try Get Removed role
+            var removeRole = await context.Roles.Where(x => x.Id == role.Id)
+                .SingleOrDefaultAsync();
 
-                //Get new user claim
-                var claim = await context.UserClaims.Where(x => x.ClaimType == userClaimDto.ClaimType && x.ClaimValue == userClaimDto.ClaimValue).SingleOrDefaultAsync();
-                userClaimDto.ClaimId = claim.Id;
-
-                var newUserClaim = await identityService.GetUserClaimAsync(userDto.Id.ToString(), claim.Id);
-
-                //Assert new user claim
-                newUserClaim.Should().BeEquivalentTo(userClaimDto);
-
-                await identityService.DeleteUserClaimAsync(userClaimDto);
-
-                //Get deleted user claim
-                var deletedClaim = await context.UserClaims.Where(x => x.ClaimType == userClaimDto.ClaimType && x.ClaimValue == userClaimDto.ClaimValue).SingleOrDefaultAsync();
-                deletedClaim.Should().BeNull();
-            }
+            //Assert removed role
+            removeRole.Should().BeNull();
         }
+    }
 
-        [Fact]
-        public async Task UpdateUserAsync()
+    [Fact]
+    public async Task AddRoleClaimAsync()
+    {
+        using (var context = new AdminIdentityDbContext(_dbContextOptions))
         {
-            using (var context = new AdminIdentityDbContext(_dbContextOptions))
-            {
-                var identityService = GetIdentityService(context);
+            var identityService = GetIdentityService(context);
 
-                //Generate random new user
-                var userDto = IdentityDtoMock<string>.GenerateRandomUser();
+            //Generate random new role
+            var roleDto = IdentityDtoMock<string>.GenerateRandomRole();
 
-                await identityService.CreateUserAsync(userDto);
+            await identityService.CreateRoleAsync(roleDto);
 
-                //Get new user
-                var user = await context.Users.Where(x => x.UserName == userDto.UserName).SingleOrDefaultAsync();
-                userDto.Id = user.Id;
+            //Get new role
+            var role = await context.Roles.Where(x => x.Name == roleDto.Name).SingleOrDefaultAsync();
+            roleDto.Id = role.Id;
 
-                var newUserDto = await identityService.GetUserAsync(userDto.Id.ToString());
+            var newRoleDto = await identityService.GetRoleAsync(roleDto.Id.ToString());
 
-                //Assert new user
-                newUserDto.Should().BeEquivalentTo(userDto);
+            //Assert new role
+            newRoleDto.Should().BeEquivalentTo(roleDto);
 
-                //Detached the added item
-                context.Entry(user).State = EntityState.Detached;
+            //Generate random new role claim
+            var roleClaimDto = IdentityDtoMock<string>.GenerateRandomRoleClaim(0, roleDto.Id);
 
-                //Generete new user with added item id
-                var userDtoForUpdate = IdentityDtoMock<string>.GenerateRandomUser(user.Id);
+            await identityService.CreateRoleClaimsAsync(roleClaimDto);
 
-                //Update user
-                await identityService.UpdateUserAsync(userDtoForUpdate);
+            //Get new role claim
+            var roleClaim = await context.RoleClaims.Where(x => x.ClaimType == roleClaimDto.ClaimType && x.ClaimValue == roleClaimDto.ClaimValue).SingleOrDefaultAsync();
+            roleClaimDto.ClaimId = roleClaim.Id;
 
-                var updatedUser = await identityService.GetUserAsync(userDtoForUpdate.Id.ToString());
+            var newRoleClaimDto = await identityService.GetRoleClaimAsync(roleDto.Id.ToString(), roleClaimDto.ClaimId);
 
-                //Assert updated user
-                updatedUser.Should().BeEquivalentTo(userDtoForUpdate);
-            }
+            //Assert new role
+            newRoleClaimDto.Should().BeEquivalentTo(roleClaimDto, options => options.Excluding(o => o.RoleName));
         }
+    }
 
-        [Fact]
-        public async Task DeleteUserAsync()
+    [Fact]
+    public async Task RemoveRoleClaimAsync()
+    {
+        using (var context = new AdminIdentityDbContext(_dbContextOptions))
         {
-            using (var context = new AdminIdentityDbContext(_dbContextOptions))
-            {
-                var identityService = GetIdentityService(context);
+            var identityService = GetIdentityService(context);
 
-                //Generate random new user
-                var userDto = IdentityDtoMock<string>.GenerateRandomUser();
+            //Generate random new role
+            var roleDto = IdentityDtoMock<string>.GenerateRandomRole();
 
-                await identityService.CreateUserAsync(userDto);
+            await identityService.CreateRoleAsync(roleDto);
 
-                //Get new user
-                var user = await context.Users.Where(x => x.UserName == userDto.UserName).SingleOrDefaultAsync();
-                userDto.Id = user.Id;
+            //Get new role
+            var role = await context.Roles.Where(x => x.Name == roleDto.Name).SingleOrDefaultAsync();
+            roleDto.Id = role.Id;
 
-                var newUserDto = await identityService.GetUserAsync(userDto.Id.ToString());
+            var newRoleDto = await identityService.GetRoleAsync(roleDto.Id.ToString());
 
-                //Assert new user
-                newUserDto.Should().BeEquivalentTo(userDto);
+            //Assert new role
+            newRoleDto.Should().BeEquivalentTo(roleDto);
 
-                //Remove user
-                await identityService.DeleteUserAsync(newUserDto.Id.ToString(), newUserDto);
+            //Generate random new role claim
+            var roleClaimDto = IdentityDtoMock<string>.GenerateRandomRoleClaim(0, roleDto.Id);
 
-                //Try Get Removed user
-                var removeUser = await context.Users.Where(x => x.Id == user.Id)
-                    .SingleOrDefaultAsync();
+            await identityService.CreateRoleClaimsAsync(roleClaimDto);
 
-                //Assert removed user
-                removeUser.Should().BeNull();
-            }
-        }
+            //Get new role claim
+            var roleClaim = await context.RoleClaims.Where(x => x.ClaimType == roleClaimDto.ClaimType && x.ClaimValue == roleClaimDto.ClaimValue).SingleOrDefaultAsync();
+            roleClaimDto.ClaimId = roleClaim.Id;
 
-        [Fact]
-        public async Task AddRoleAsync()
-        {
-            using (var context = new AdminIdentityDbContext(_dbContextOptions))
-            {
-                var identityService = GetIdentityService(context);
+            var newRoleClaimDto = await identityService.GetRoleClaimAsync(roleDto.Id.ToString(), roleClaimDto.ClaimId);
 
-                //Generate random new role
-                var roleDto = IdentityDtoMock<string>.GenerateRandomRole();
+            //Assert new role
+            newRoleClaimDto.Should().BeEquivalentTo(roleClaimDto, options => options.Excluding(o => o.RoleName));
 
-                await identityService.CreateRoleAsync(roleDto);
+            await identityService.DeleteRoleClaimAsync(roleClaimDto);
 
-                //Get new role
-                var role = await context.Roles.Where(x => x.Name == roleDto.Name).SingleOrDefaultAsync();
-                roleDto.Id = role.Id;
+            var roleClaimToDelete = await context.RoleClaims.Where(x => x.ClaimType == roleClaimDto.ClaimType && x.ClaimValue == roleClaimDto.ClaimValue).SingleOrDefaultAsync();
 
-                var newRoleDto = await identityService.GetRoleAsync(roleDto.Id.ToString());
-
-                //Assert new role
-                newRoleDto.Should().BeEquivalentTo(roleDto);
-            }
-        }
-
-        [Fact]
-        public async Task UpdateRoleAsync()
-        {
-            using (var context = new AdminIdentityDbContext(_dbContextOptions))
-            {
-                var identityService = GetIdentityService(context);
-
-                //Generate random new role
-                var roleDto = IdentityDtoMock<string>.GenerateRandomRole();
-
-                await identityService.CreateRoleAsync(roleDto);
-
-                //Get new role
-                var role = await context.Roles.Where(x => x.Name == roleDto.Name).SingleOrDefaultAsync();
-                roleDto.Id = role.Id;
-
-                var newRoleDto = await identityService.GetRoleAsync(roleDto.Id.ToString());
-
-                //Assert new role
-                newRoleDto.Should().BeEquivalentTo(roleDto);
-
-                //Detached the added item
-                context.Entry(role).State = EntityState.Detached;
-
-                //Generete new role with added item id
-                var roleDtoForUpdate = IdentityDtoMock<string>.GenerateRandomRole(role.Id);
-
-                //Update role
-                await identityService.UpdateRoleAsync(roleDtoForUpdate);
-
-                var updatedRole = await identityService.GetRoleAsync(roleDtoForUpdate.Id.ToString());
-
-                //Assert updated role
-                updatedRole.Should().BeEquivalentTo(roleDtoForUpdate);
-            }
-        }
-
-        [Fact]
-        public async Task DeleteRoleAsync()
-        {
-            using (var context = new AdminIdentityDbContext(_dbContextOptions))
-            {
-                var identityService = GetIdentityService(context);
-
-                //Generate random new role
-                var roleDto = IdentityDtoMock<string>.GenerateRandomRole();
-
-                await identityService.CreateRoleAsync(roleDto);
-
-                //Get new role
-                var role = await context.Roles.Where(x => x.Name == roleDto.Name).SingleOrDefaultAsync();
-                roleDto.Id = role.Id;
-
-                var newRoleDto = await identityService.GetRoleAsync(roleDto.Id.ToString());
-
-                //Assert new role
-                newRoleDto.Should().BeEquivalentTo(roleDto);
-
-                //Remove role
-                await identityService.DeleteRoleAsync(newRoleDto);
-
-                //Try Get Removed role
-                var removeRole = await context.Roles.Where(x => x.Id == role.Id)
-                    .SingleOrDefaultAsync();
-
-                //Assert removed role
-                removeRole.Should().BeNull();
-            }
-        }
-
-        [Fact]
-        public async Task AddRoleClaimAsync()
-        {
-            using (var context = new AdminIdentityDbContext(_dbContextOptions))
-            {
-                var identityService = GetIdentityService(context);
-
-                //Generate random new role
-                var roleDto = IdentityDtoMock<string>.GenerateRandomRole();
-
-                await identityService.CreateRoleAsync(roleDto);
-
-                //Get new role
-                var role = await context.Roles.Where(x => x.Name == roleDto.Name).SingleOrDefaultAsync();
-                roleDto.Id = role.Id;
-
-                var newRoleDto = await identityService.GetRoleAsync(roleDto.Id.ToString());
-
-                //Assert new role
-                newRoleDto.Should().BeEquivalentTo(roleDto);
-
-                //Generate random new role claim
-                var roleClaimDto = IdentityDtoMock<string>.GenerateRandomRoleClaim(0, roleDto.Id);
-
-                await identityService.CreateRoleClaimsAsync(roleClaimDto);
-
-                //Get new role claim
-                var roleClaim = await context.RoleClaims.Where(x => x.ClaimType == roleClaimDto.ClaimType && x.ClaimValue == roleClaimDto.ClaimValue).SingleOrDefaultAsync();
-                roleClaimDto.ClaimId = roleClaim.Id;
-
-                var newRoleClaimDto = await identityService.GetRoleClaimAsync(roleDto.Id.ToString(), roleClaimDto.ClaimId);
-
-                //Assert new role
-                newRoleClaimDto.Should().BeEquivalentTo(roleClaimDto, options => options.Excluding(o => o.RoleName));
-            }
-        }
-
-        [Fact]
-        public async Task RemoveRoleClaimAsync()
-        {
-            using (var context = new AdminIdentityDbContext(_dbContextOptions))
-            {
-                var identityService = GetIdentityService(context);
-
-                //Generate random new role
-                var roleDto = IdentityDtoMock<string>.GenerateRandomRole();
-
-                await identityService.CreateRoleAsync(roleDto);
-
-                //Get new role
-                var role = await context.Roles.Where(x => x.Name == roleDto.Name).SingleOrDefaultAsync();
-                roleDto.Id = role.Id;
-
-                var newRoleDto = await identityService.GetRoleAsync(roleDto.Id.ToString());
-
-                //Assert new role
-                newRoleDto.Should().BeEquivalentTo(roleDto);
-
-                //Generate random new role claim
-                var roleClaimDto = IdentityDtoMock<string>.GenerateRandomRoleClaim(0, roleDto.Id);
-
-                await identityService.CreateRoleClaimsAsync(roleClaimDto);
-
-                //Get new role claim
-                var roleClaim = await context.RoleClaims.Where(x => x.ClaimType == roleClaimDto.ClaimType && x.ClaimValue == roleClaimDto.ClaimValue).SingleOrDefaultAsync();
-                roleClaimDto.ClaimId = roleClaim.Id;
-
-                var newRoleClaimDto = await identityService.GetRoleClaimAsync(roleDto.Id.ToString(), roleClaimDto.ClaimId);
-
-                //Assert new role
-                newRoleClaimDto.Should().BeEquivalentTo(roleClaimDto, options => options.Excluding(o => o.RoleName));
-
-                await identityService.DeleteRoleClaimAsync(roleClaimDto);
-
-                var roleClaimToDelete = await context.RoleClaims.Where(x => x.ClaimType == roleClaimDto.ClaimType && x.ClaimValue == roleClaimDto.ClaimValue).SingleOrDefaultAsync();
-
-                //Assert removed role claim
-                roleClaimToDelete.Should().BeNull();
-            }
+            //Assert removed role claim
+            roleClaimToDelete.Should().BeNull();
         }
     }
 }

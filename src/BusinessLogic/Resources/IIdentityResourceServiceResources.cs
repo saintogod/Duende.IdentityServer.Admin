@@ -3,20 +3,19 @@
 
 using Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Helpers;
 
-namespace Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Resources
+namespace Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Resources;
+
+public interface IIdentityResourceServiceResources
 {
-    public interface IIdentityResourceServiceResources
-    {
-        ResourceMessage IdentityResourceDoesNotExist();
+    ResourceMessage IdentityResourceDoesNotExist();
 
-        ResourceMessage IdentityResourceExistsKey();
+    ResourceMessage IdentityResourceExistsKey();
 
-        ResourceMessage IdentityResourceExistsValue();
+    ResourceMessage IdentityResourceExistsValue();
 
-        ResourceMessage IdentityResourcePropertyDoesNotExist();
+    ResourceMessage IdentityResourcePropertyDoesNotExist();
 
-        ResourceMessage IdentityResourcePropertyExistsValue();
+    ResourceMessage IdentityResourcePropertyExistsValue();
 
-        ResourceMessage IdentityResourcePropertyExistsKey();
-    }
+    ResourceMessage IdentityResourcePropertyExistsKey();
 }

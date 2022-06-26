@@ -6,21 +6,20 @@ using Microsoft.EntityFrameworkCore;
 using Skoruba.AuditLogging.EntityFramework.DbContexts;
 using Skoruba.AuditLogging.EntityFramework.Entities;
 
-namespace Skoruba.Duende.IdentityServer.Admin.EntityFramework.Shared.DbContexts
+namespace Skoruba.Duende.IdentityServer.Admin.EntityFramework.Shared.DbContexts;
+
+public class AdminAuditLogDbContext : DbContext, IAuditLoggingDbContext<AuditLog>
 {
-    public class AdminAuditLogDbContext : DbContext, IAuditLoggingDbContext<AuditLog>
+    public AdminAuditLogDbContext(DbContextOptions<AdminAuditLogDbContext> dbContextOptions)
+        : base(dbContextOptions)
     {
-        public AdminAuditLogDbContext(DbContextOptions<AdminAuditLogDbContext> dbContextOptions)
-            : base(dbContextOptions)
-        {
 
-        }
-
-        public Task<int> SaveChangesAsync()
-        {
-            return base.SaveChangesAsync();
-        }
-
-        public DbSet<AuditLog> AuditLog { get; set; }
     }
+
+    public Task<int> SaveChangesAsync()
+    {
+        return base.SaveChangesAsync();
+    }
+
+    public DbSet<AuditLog> AuditLog { get; set; }
 }

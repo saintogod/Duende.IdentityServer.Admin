@@ -5,27 +5,26 @@ using System;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Xml.Linq;
 
-namespace Skoruba.Duende.IdentityServer.Admin.EntityFramework.Entities
-{    
-    public class Log
-    {
-        public long Id { get; set; }
+namespace Skoruba.Duende.IdentityServer.Admin.EntityFramework.Entities;
 
-        public string Message { get; set; }
+public class Log
+{
+    public long Id { get; set; }
 
-        public string MessageTemplate { get; set; }
-        
-        public string Level { get; set; }
+    public string Message { get; set; }
 
-        public DateTimeOffset TimeStamp { get; set; }
+    public string MessageTemplate { get; set; }
 
-        public string Exception { get; set; }
+    public string Level { get; set; }
 
-        public string LogEvent { get; set; }
-        
-        public string Properties { get; set; }
+    public DateTimeOffset TimeStamp { get; set; }
 
-        [NotMapped]
-        public XElement PropertiesXml => XElement.Parse(Properties);
-    }
+    public string Exception { get; set; }
+
+    public string LogEvent { get; set; }
+
+    public string Properties { get; set; }
+
+    [NotMapped]
+    public XElement PropertiesXml => XElement.Parse(Properties);
 }

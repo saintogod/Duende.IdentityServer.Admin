@@ -4,42 +4,41 @@
 using System.Threading.Tasks;
 using Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Dtos.Configuration;
 
-namespace Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Services.Interfaces
+namespace Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Services.Interfaces;
+
+public interface IApiResourceService
 {
-    public interface IApiResourceService
-    {
-        ApiSecretsDto BuildApiSecretsViewModel(ApiSecretsDto apiSecrets);
+    ApiSecretsDto BuildApiSecretsViewModel(ApiSecretsDto apiSecrets);
 
-        Task<ApiResourcesDto> GetApiResourcesAsync(string search, int page = 1, int pageSize = 10);
+    Task<ApiResourcesDto> GetApiResourcesAsync(string search, int page = 1, int pageSize = 10);
 
-        Task<ApiResourcePropertiesDto> GetApiResourcePropertiesAsync(int apiResourceId, int page = 1, int pageSize = 10);
+    Task<ApiResourcePropertiesDto> GetApiResourcePropertiesAsync(int apiResourceId, int page = 1, int pageSize = 10);
 
-        Task<ApiResourcePropertiesDto> GetApiResourcePropertyAsync(int apiResourcePropertyId);
+    Task<ApiResourcePropertiesDto> GetApiResourcePropertyAsync(int apiResourcePropertyId);
 
-        Task<int> AddApiResourcePropertyAsync(ApiResourcePropertiesDto apiResourceProperties);
+    Task<int> AddApiResourcePropertyAsync(ApiResourcePropertiesDto apiResourceProperties);
 
-        Task<int> DeleteApiResourcePropertyAsync(ApiResourcePropertiesDto apiResourceProperty);
+    Task<int> DeleteApiResourcePropertyAsync(ApiResourcePropertiesDto apiResourceProperty);
 
-        Task<bool> CanInsertApiResourcePropertyAsync(ApiResourcePropertiesDto apiResourceProperty);
+    Task<bool> CanInsertApiResourcePropertyAsync(ApiResourcePropertiesDto apiResourceProperty);
 
-        Task<ApiResourceDto> GetApiResourceAsync(int apiResourceId);
+    Task<ApiResourceDto> GetApiResourceAsync(int apiResourceId);
 
-        Task<int> AddApiResourceAsync(ApiResourceDto apiResource);
+    Task<int> AddApiResourceAsync(ApiResourceDto apiResource);
 
-        Task<int> UpdateApiResourceAsync(ApiResourceDto apiResource);
+    Task<int> UpdateApiResourceAsync(ApiResourceDto apiResource);
 
-        Task<int> DeleteApiResourceAsync(ApiResourceDto apiResource);
+    Task<int> DeleteApiResourceAsync(ApiResourceDto apiResource);
 
-        Task<bool> CanInsertApiResourceAsync(ApiResourceDto apiResource);
-        
-        Task<ApiSecretsDto> GetApiSecretsAsync(int apiResourceId, int page = 1, int pageSize = 10);
+    Task<bool> CanInsertApiResourceAsync(ApiResourceDto apiResource);
 
-        Task<int> AddApiSecretAsync(ApiSecretsDto apiSecret);
+    Task<ApiSecretsDto> GetApiSecretsAsync(int apiResourceId, int page = 1, int pageSize = 10);
 
-        Task<ApiSecretsDto> GetApiSecretAsync(int apiSecretId);
+    Task<int> AddApiSecretAsync(ApiSecretsDto apiSecret);
 
-        Task<int> DeleteApiSecretAsync(ApiSecretsDto apiSecret);
+    Task<ApiSecretsDto> GetApiSecretAsync(int apiSecretId);
 
-        Task<string> GetApiResourceNameAsync(int apiResourceId);
-    }
+    Task<int> DeleteApiSecretAsync(ApiSecretsDto apiSecret);
+
+    Task<string> GetApiResourceNameAsync(int apiResourceId);
 }

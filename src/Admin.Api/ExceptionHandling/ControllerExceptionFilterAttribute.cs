@@ -8,70 +8,69 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Shared.ExceptionHandling;
 
-namespace Skoruba.Duende.IdentityServer.Admin.Api.ExceptionHandling
+namespace Skoruba.Duende.IdentityServer.Admin.Api.ExceptionHandling;
+
+public class ControllerExceptionFilterAttribute : ExceptionFilterAttribute
 {
-    public class ControllerExceptionFilterAttribute : ExceptionFilterAttribute
+    private const string ErrorKey = "Error";
+
+    public override void OnException(ExceptionContext context)
     {
-        private const string ErrorKey = "Error";
+        if (!(context.Exception is UserFriendlyErrorPageException) &&
+            !(context.Exception is UserFriendlyViewException)) return;
 
-        public override void OnException(ExceptionContext context)
+        HandleUserFriendlyViewException(context);
+        ProcessException(context);
+    }
+
+    void SetTraceId(string traceIdentifier, ProblemDetails problemDetails)
+    {
+        var traceId = Activity.Current?.Id ?? traceIdentifier;
+        problemDetails.Extensions["traceId"] = traceId;
+    }
+
+    private void ProcessException(ExceptionContext context)
+    {
+        var problemDetails = new ValidationProblemDetails(context.ModelState)
         {
-            if (!(context.Exception is UserFriendlyErrorPageException) &&
-                !(context.Exception is UserFriendlyViewException)) return;
+            Title = "One or more model validation errors occurred.",
+            Status = StatusCodes.Status400BadRequest,
+            Instance = context.HttpContext.Request.Path
+        };
 
-            HandleUserFriendlyViewException(context);
-            ProcessException(context);
-        }
+        SetTraceId(context.HttpContext.TraceIdentifier, problemDetails);
 
-        void SetTraceId(string traceIdentifier, ProblemDetails problemDetails)
+        var exceptionResult = new BadRequestObjectResult(problemDetails)
         {
-            var traceId = Activity.Current?.Id ?? traceIdentifier;
-            problemDetails.Extensions["traceId"] = traceId;
-        }
+            ContentTypes = {
+                "application/problem+json",
+                "application/problem+xml" }
+        };
 
-        private void ProcessException(ExceptionContext context)
+        context.ExceptionHandled = true;
+        context.Result = exceptionResult;
+    }
+
+    private void HandleUserFriendlyViewException(ExceptionContext context)
+    {
+        if (context.Exception is UserFriendlyViewException userFriendlyViewException)
         {
-            var problemDetails = new ValidationProblemDetails(context.ModelState)
+            if (userFriendlyViewException.ErrorMessages != null && userFriendlyViewException.ErrorMessages.Any())
             {
-                Title = "One or more model validation errors occurred.",
-                Status = StatusCodes.Status400BadRequest,
-                Instance = context.HttpContext.Request.Path
-            };
-            
-            SetTraceId(context.HttpContext.TraceIdentifier, problemDetails);
-
-            var exceptionResult =  new BadRequestObjectResult(problemDetails)
-            {
-                ContentTypes = {
-                    "application/problem+json",
-                    "application/problem+xml" }
-            };
-
-            context.ExceptionHandled = true;
-            context.Result = exceptionResult;
-        }
-
-        private void HandleUserFriendlyViewException(ExceptionContext context)
-        {
-            if (context.Exception is UserFriendlyViewException userFriendlyViewException)
-            {
-                if (userFriendlyViewException.ErrorMessages != null && userFriendlyViewException.ErrorMessages.Any())
+                foreach (var message in userFriendlyViewException.ErrorMessages)
                 {
-                    foreach (var message in userFriendlyViewException.ErrorMessages)
-                    {
-                        context.ModelState.AddModelError(message.ErrorKey ?? ErrorKey, message.ErrorMessage);
-                    }
-                }
-                else
-                {
-                    context.ModelState.AddModelError(userFriendlyViewException.ErrorKey ?? ErrorKey, context.Exception.Message);
+                    context.ModelState.AddModelError(message.ErrorKey ?? ErrorKey, message.ErrorMessage);
                 }
             }
-
-            if (context.Exception is UserFriendlyErrorPageException userFriendlyErrorPageException)
+            else
             {
-                context.ModelState.AddModelError(userFriendlyErrorPageException.ErrorKey ?? ErrorKey, context.Exception.Message);
+                context.ModelState.AddModelError(userFriendlyViewException.ErrorKey ?? ErrorKey, context.Exception.Message);
             }
+        }
+
+        if (context.Exception is UserFriendlyErrorPageException userFriendlyErrorPageException)
+        {
+            context.ModelState.AddModelError(userFriendlyErrorPageException.ErrorKey ?? ErrorKey, context.Exception.Message);
         }
     }
 }

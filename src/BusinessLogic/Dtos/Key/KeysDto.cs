@@ -3,19 +3,18 @@
 
 using System.Collections.Generic;
 
-namespace Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Dtos.Key
+namespace Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Dtos.Key;
+
+public class KeysDto
 {
-    public class KeysDto
+    public KeysDto()
     {
-		public KeysDto()
-        {
-            Keys = new List<KeyDto>();
-        }
+        Keys = new List<KeyDto>();
+    }
 
-        public List<KeyDto> Keys { get; set; }
+    public List<KeyDto> Keys { get; set; }
 
-        public int TotalCount { get; set; }
+    public int TotalCount { get; set; }
 
-        public int PageSize { get; set; }
-	}
+    public int PageSize { get; set; }
 }

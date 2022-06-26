@@ -8,36 +8,35 @@ using Microsoft.Extensions.Logging;
 using Skoruba.Duende.IdentityServer.Admin.UI.Areas.AdminUI.Controllers;
 using Xunit;
 
-namespace Skoruba.Duende.IdentityServer.Admin.UnitTests.Controllers
+namespace Skoruba.Duende.IdentityServer.Admin.UnitTests.Controllers;
+
+public class HomeControllerTests
 {
-    public class HomeControllerTests
+    private readonly IServiceProvider _serviceProvider;
+
+    public HomeControllerTests()
     {
-        private readonly IServiceProvider _serviceProvider;
+        var services = new ServiceCollection();
+        services.AddLogging();
 
-        public HomeControllerTests()
-        {
-            var services = new ServiceCollection();
-            services.AddLogging();
+        _serviceProvider = services.BuildServiceProvider();
+    }
 
-            _serviceProvider = services.BuildServiceProvider();
-        }
+    [Fact]
+    public void GetIndex()
+    {
+        // Arrange
+        var logger = _serviceProvider.GetRequiredService<ILogger<ConfigurationController>>();
 
-        [Fact]
-        public void GetIndex()
-        {
-            // Arrange
-            var logger = _serviceProvider.GetRequiredService<ILogger<ConfigurationController>>();
+        var controller = new HomeController(logger);
 
-            var controller = new HomeController(logger);
+        // Action
+        var result = controller.Index();
 
-            // Action
-            var result = controller.Index();
+        // Assert
+        var viewResult = Assert.IsType<ViewResult>(result);
+        Assert.Null(viewResult.ViewName);
 
-            // Assert
-            var viewResult = Assert.IsType<ViewResult>(result);
-            Assert.Null(viewResult.ViewName);
-
-            Assert.NotNull(viewResult.ViewData);
-        }
+        Assert.NotNull(viewResult.ViewData);
     }
 }

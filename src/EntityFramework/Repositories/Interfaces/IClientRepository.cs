@@ -6,80 +6,79 @@ using System.Threading.Tasks;
 using Duende.IdentityServer.EntityFramework.Entities;
 using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Extensions.Common;
 
-namespace Skoruba.Duende.IdentityServer.Admin.EntityFramework.Repositories.Interfaces
+namespace Skoruba.Duende.IdentityServer.Admin.EntityFramework.Repositories.Interfaces;
+
+public interface IClientRepository
 {
-	public interface IClientRepository
-    {
-		Task<int> AddClientAsync(Client client);
+    Task<int> AddClientAsync(Client client);
 
-		Task<int> UpdateClientAsync(Client client, bool updateClientClaims = false, bool updateClientProperties = false);
+    Task<int> UpdateClientAsync(Client client, bool updateClientClaims = false, bool updateClientProperties = false);
 
-	    Task<int> RemoveClientAsync(Client client);
+    Task<int> RemoveClientAsync(Client client);
 
-	    Task<int> CloneClientAsync(Client client,
-	        bool cloneClientCorsOrigins = true,
-	        bool cloneClientGrantTypes = true,
-	        bool cloneClientIdPRestrictions = true,
-	        bool cloneClientPostLogoutRedirectUris = true,
-	        bool cloneClientScopes = true,
-	        bool cloneClientRedirectUris = true,
-	        bool cloneClientClaims = true,
-	        bool cloneClientProperties = true);
-        
-        Task<bool> CanInsertClientAsync(Client client, bool isCloned = false);
+    Task<int> CloneClientAsync(Client client,
+        bool cloneClientCorsOrigins = true,
+        bool cloneClientGrantTypes = true,
+        bool cloneClientIdPRestrictions = true,
+        bool cloneClientPostLogoutRedirectUris = true,
+        bool cloneClientScopes = true,
+        bool cloneClientRedirectUris = true,
+        bool cloneClientClaims = true,
+        bool cloneClientProperties = true);
 
-        Task<Client> GetClientAsync(int clientId);
+    Task<bool> CanInsertClientAsync(Client client, bool isCloned = false);
 
-	    Task<(string ClientId, string ClientName)> GetClientIdAsync(int clientId);
+    Task<Client> GetClientAsync(int clientId);
 
-        Task<PagedList<Client>> GetClientsAsync(string search = "", int page = 1, int pageSize = 10);
+    Task<(string ClientId, string ClientName)> GetClientIdAsync(int clientId);
 
-		Task<List<string>> GetScopesAsync(string scope, int limit = 0);
+    Task<PagedList<Client>> GetClientsAsync(string search = "", int page = 1, int pageSize = 10);
 
-	    List<string> GetGrantTypes(string grant, int limit = 0);
+    Task<List<string>> GetScopesAsync(string scope, int limit = 0);
 
-	    List<SelectItem> GetProtocolTypes();
+    List<string> GetGrantTypes(string grant, int limit = 0);
 
-        List<SelectItem> GetAccessTokenTypes();
+    List<SelectItem> GetProtocolTypes();
 
-		List<SelectItem> GetTokenExpirations();
+    List<SelectItem> GetAccessTokenTypes();
 
-		List<SelectItem> GetTokenUsage();
+    List<SelectItem> GetTokenExpirations();
 
-		List<SelectItem> GetHashTypes();
+    List<SelectItem> GetTokenUsage();
 
-	    List<SelectItem> GetSecretTypes();
+    List<SelectItem> GetHashTypes();
 
-	    List<string> GetStandardClaims(string claim, int limit = 0);
+    List<SelectItem> GetSecretTypes();
 
-        Task<int> AddClientSecretAsync(int clientId, ClientSecret clientSecret);
+    List<string> GetStandardClaims(string claim, int limit = 0);
 
-		Task<int> DeleteClientSecretAsync(ClientSecret clientSecret);
+    Task<int> AddClientSecretAsync(int clientId, ClientSecret clientSecret);
 
-		Task<PagedList<ClientSecret>> GetClientSecretsAsync(int clientId, int page = 1, int pageSize = 10);
+    Task<int> DeleteClientSecretAsync(ClientSecret clientSecret);
 
-		Task<ClientSecret> GetClientSecretAsync(int clientSecretId);
+    Task<PagedList<ClientSecret>> GetClientSecretsAsync(int clientId, int page = 1, int pageSize = 10);
 
-		Task<PagedList<ClientClaim>> GetClientClaimsAsync(int clientId, int page = 1, int pageSize = 10);
+    Task<ClientSecret> GetClientSecretAsync(int clientSecretId);
 
-	    Task<PagedList<ClientProperty>> GetClientPropertiesAsync(int clientId, int page = 1, int pageSize = 10);
+    Task<PagedList<ClientClaim>> GetClientClaimsAsync(int clientId, int page = 1, int pageSize = 10);
 
-        Task<ClientClaim> GetClientClaimAsync(int clientClaimId);
+    Task<PagedList<ClientProperty>> GetClientPropertiesAsync(int clientId, int page = 1, int pageSize = 10);
 
-	    Task<ClientProperty> GetClientPropertyAsync(int clientPropertyId);
+    Task<ClientClaim> GetClientClaimAsync(int clientClaimId);
 
-        Task<int> AddClientClaimAsync(int clientId, ClientClaim clientClaim);
+    Task<ClientProperty> GetClientPropertyAsync(int clientPropertyId);
 
-	    Task<int> AddClientPropertyAsync(int clientId, ClientProperty clientProperties);
+    Task<int> AddClientClaimAsync(int clientId, ClientClaim clientClaim);
 
-        Task<int> DeleteClientClaimAsync(ClientClaim clientClaim);
+    Task<int> AddClientPropertyAsync(int clientId, ClientProperty clientProperties);
 
-	    Task<int> DeleteClientPropertyAsync(ClientProperty clientProperty);
+    Task<int> DeleteClientClaimAsync(ClientClaim clientClaim);
 
-        List<string> GetSigningAlgorithms(string algorithm, int limit = 0);
+    Task<int> DeleteClientPropertyAsync(ClientProperty clientProperty);
 
-        Task<int> SaveAllChangesAsync();
+    List<string> GetSigningAlgorithms(string algorithm, int limit = 0);
 
-        bool AutoSaveChanges { get; set; }
-    }
+    Task<int> SaveAllChangesAsync();
+
+    bool AutoSaveChanges { get; set; }
 }

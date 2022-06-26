@@ -3,19 +3,18 @@
 
 using System.Collections.Generic;
 
-namespace Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Dtos.Configuration
+namespace Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Dtos.Configuration;
+
+public class IdentityResourcesDto
 {
-	public class IdentityResourcesDto
-	{
-		public IdentityResourcesDto()
-		{
-			IdentityResources = new List<IdentityResourceDto>();
-		}
+    public IdentityResourcesDto()
+    {
+        IdentityResources = new List<IdentityResourceDto>();
+    }
 
-		public int PageSize { get; set; }
+    public int PageSize { get; set; }
 
-		public int TotalCount { get; set; }
+    public int TotalCount { get; set; }
 
-		public List<IdentityResourceDto> IdentityResources { get; set; }
-	}
+    public List<IdentityResourceDto> IdentityResources { get; set; }
 }

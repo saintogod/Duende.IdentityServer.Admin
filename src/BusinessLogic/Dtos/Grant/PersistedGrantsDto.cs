@@ -3,21 +3,20 @@
 
 using System.Collections.Generic;
 
-namespace Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Dtos.Grant
+namespace Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Dtos.Grant;
+
+public class PersistedGrantsDto
 {
-	public class PersistedGrantsDto
-	{
-		public PersistedGrantsDto()
-		{
-			PersistedGrants = new List<PersistedGrantDto>();
-		}
+    public PersistedGrantsDto()
+    {
+        PersistedGrants = new List<PersistedGrantDto>();
+    }
 
-	    public string SubjectId { get; set; }
+    public string SubjectId { get; set; }
 
-		public int TotalCount { get; set; }
+    public int TotalCount { get; set; }
 
-		public int PageSize { get; set; }
+    public int PageSize { get; set; }
 
-		public List<PersistedGrantDto> PersistedGrants { get; set; }
-	}
+    public List<PersistedGrantDto> PersistedGrants { get; set; }
 }

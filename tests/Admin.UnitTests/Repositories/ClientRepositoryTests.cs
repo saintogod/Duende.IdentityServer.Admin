@@ -15,988 +15,987 @@ using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Shared.DbContexts;
 using Skoruba.Duende.IdentityServer.Admin.UnitTests.Mocks;
 using Xunit;
 
-namespace Skoruba.Duende.IdentityServer.Admin.UnitTests.Repositories
+namespace Skoruba.Duende.IdentityServer.Admin.UnitTests.Repositories;
+
+public class ClientRepositoryTests
 {
-    public class ClientRepositoryTests
+    private IdentityServerConfigurationDbContext GetDbContext()
     {
-        private IdentityServerConfigurationDbContext GetDbContext()
+        var serviceCollection = new ServiceCollection();
+
+        serviceCollection.AddSingleton(new ConfigurationStoreOptions());
+        serviceCollection.AddSingleton(new OperationalStoreOptions());
+
+        serviceCollection.AddDbContext<IdentityServerConfigurationDbContext>(builder => builder.UseInMemoryDatabase(Guid.NewGuid().ToString()));
+
+        var serviceProvider = serviceCollection.BuildServiceProvider();
+        var context = serviceProvider.GetService<IdentityServerConfigurationDbContext>();
+
+        return context;
+    }
+
+    private IClientRepository GetClientRepository(IdentityServerConfigurationDbContext context)
+    {
+        IClientRepository clientRepository = new ClientRepository<IdentityServerConfigurationDbContext>(context);
+
+        return clientRepository;
+    }
+
+    private IApiResourceRepository GetApiResourceRepository(IdentityServerConfigurationDbContext context)
+    {
+        IApiResourceRepository apiResourceRepository = new ApiResourceRepository<IdentityServerConfigurationDbContext>(context);
+
+        return apiResourceRepository;
+    }
+
+    private IApiScopeRepository GetApiScopeRepository(IdentityServerConfigurationDbContext context)
+    {
+        IApiScopeRepository apiScopeRepository = new ApiScopeRepository<IdentityServerConfigurationDbContext>(context);
+
+        return apiScopeRepository;
+    }
+
+    private IIdentityResourceRepository GetIdentityResourceRepository(IdentityServerConfigurationDbContext context)
+    {
+        IIdentityResourceRepository identityResourceRepository = new IdentityResourceRepository<IdentityServerConfigurationDbContext>(context);
+
+        return identityResourceRepository;
+    }
+
+    [Fact]
+    public async Task AddClientAsync()
+    {
+        using (var context = GetDbContext())
         {
-            var serviceCollection = new ServiceCollection();
+            var clientRepository = GetClientRepository(context);
 
-            serviceCollection.AddSingleton(new ConfigurationStoreOptions());
-            serviceCollection.AddSingleton(new OperationalStoreOptions());
+            //Generate random new client
+            var client = ClientMock.GenerateRandomClient(0);
 
-            serviceCollection.AddDbContext<IdentityServerConfigurationDbContext>(builder => builder.UseInMemoryDatabase(Guid.NewGuid().ToString()));
+            //Add new client
+            await clientRepository.AddClientAsync(client);
 
-            var serviceProvider = serviceCollection.BuildServiceProvider();
-            var context = serviceProvider.GetService<IdentityServerConfigurationDbContext>();
+            //Get new client
+            var clientEntity = await context.Clients.Where(x => x.Id == client.Id).SingleAsync();
 
-            return context;
+            //Assert new client
+            client.Should().BeEquivalentTo(clientEntity, options => options.Excluding(o => o.Id));
         }
+    }
 
-        private IClientRepository GetClientRepository(IdentityServerConfigurationDbContext context)
+    [Fact]
+    public async Task AddClientClaimAsync()
+    {
+        using (var context = GetDbContext())
         {
-            IClientRepository clientRepository = new ClientRepository<IdentityServerConfigurationDbContext>(context);
+            var clientRepository = GetClientRepository(context);
 
-            return clientRepository;
+            //Generate random new client without id
+            var client = ClientMock.GenerateRandomClient(0);
+
+            //Add new client
+            await clientRepository.AddClientAsync(client);
+
+            //Get new client
+            var clientEntity = await clientRepository.GetClientAsync(client.Id);
+
+            //Assert new client
+            ClientAssert(clientEntity, client);
+
+            //Generate random new Client Claim
+            var clientClaim = ClientMock.GenerateRandomClientClaim(0);
+
+            //Add new client claim
+            await clientRepository.AddClientClaimAsync(clientEntity.Id, clientClaim);
+
+            //Get new client claim
+            var newClientClaim =
+                await context.ClientClaims.Where(x => x.Id == clientClaim.Id).SingleOrDefaultAsync();
+
+            clientClaim.Should().BeEquivalentTo(newClientClaim,
+                options => options.Excluding(o => o.Id).Excluding(x => x.Client));
         }
+    }
 
-        private IApiResourceRepository GetApiResourceRepository(IdentityServerConfigurationDbContext context)
+    [Fact]
+    public async Task AddClientPropertyAsync()
+    {
+        using (var context = GetDbContext())
         {
-            IApiResourceRepository apiResourceRepository = new ApiResourceRepository<IdentityServerConfigurationDbContext>(context);
+            var clientRepository = GetClientRepository(context);
 
-            return apiResourceRepository;
+            //Generate random new client without id
+            var client = ClientMock.GenerateRandomClient(0);
+
+            //Add new client
+            await clientRepository.AddClientAsync(client);
+
+            //Get new client
+            var clientEntity = await clientRepository.GetClientAsync(client.Id);
+
+            //Assert new client
+            ClientAssert(clientEntity, client);
+
+            //Generate random new Client property
+            var clientProperty = ClientMock.GenerateRandomClientProperty(0);
+
+            //Add new client property
+            await clientRepository.AddClientPropertyAsync(clientEntity.Id, clientProperty);
+
+            //Get new client property
+            var newClientProperty = await context.ClientProperties.Where(x => x.Id == clientProperty.Id)
+                .SingleOrDefaultAsync();
+
+            clientProperty.Should().BeEquivalentTo(newClientProperty,
+                options => options.Excluding(o => o.Id).Excluding(x => x.Client));
         }
+    }
 
-        private IApiScopeRepository GetApiScopeRepository(IdentityServerConfigurationDbContext context)
+    [Fact]
+    public async Task AddClientSecretAsync()
+    {
+        using (var context = GetDbContext())
         {
-            IApiScopeRepository apiScopeRepository = new ApiScopeRepository<IdentityServerConfigurationDbContext>(context);
+            var clientRepository = GetClientRepository(context);
 
-            return apiScopeRepository;
+            //Generate random new client without id
+            var client = ClientMock.GenerateRandomClient(0);
+
+            //Add new client
+            await clientRepository.AddClientAsync(client);
+
+            //Get new client
+            var clientEntity = await clientRepository.GetClientAsync(client.Id);
+
+            //Assert new client
+            ClientAssert(clientEntity, client);
+
+            //Generate random new Client Secret
+            var clientSecret = ClientMock.GenerateRandomClientSecret(0);
+
+            //Add new client secret
+            await clientRepository.AddClientSecretAsync(clientEntity.Id, clientSecret);
+
+            //Get new client secret
+            var newSecret = await context.ClientSecrets.Where(x => x.Id == clientSecret.Id).SingleOrDefaultAsync();
+
+            clientSecret.Should().BeEquivalentTo(newSecret,
+                options => options.Excluding(o => o.Id).Excluding(x => x.Client));
         }
+    }
 
-        private IIdentityResourceRepository GetIdentityResourceRepository(IdentityServerConfigurationDbContext context)
+    [Fact]
+    public async Task CloneClientAsync()
+    {
+        using (var context = GetDbContext())
         {
-            IIdentityResourceRepository identityResourceRepository = new IdentityResourceRepository<IdentityServerConfigurationDbContext>(context);
+            //Generate random new client
+            var client = ClientMock.GenerateRandomClient(0, generateClaims: true, generateProperties: true, generateSecrets: true);
 
-            return identityResourceRepository;
+            var clientRepository = GetClientRepository(context);
+
+            //Add new client
+            await clientRepository.AddClientAsync(client);
+
+            var clientToClone = await context.Clients.Where(x => x.Id == client.Id).SingleOrDefaultAsync();
+
+            //Try clone it - all client collections without secrets
+            var clonedClientId = await clientRepository.CloneClientAsync(clientToClone);
+
+            var cloneClientEntity = await clientRepository.GetClientAsync(clonedClientId);
+            var clientToCompare = await clientRepository.GetClientAsync(clientToClone.Id);
+
+            ClientCloneCompare(cloneClientEntity, clientToCompare);
         }
+    }
 
-        [Fact]
-        public async Task AddClientAsync()
+    [Fact]
+    public async Task CloneClientWithoutCorsAsync()
+    {
+        using (var context = GetDbContext())
         {
-            using (var context = GetDbContext())
-            {
-                var clientRepository = GetClientRepository(context);
+            //Generate random new client
+            var client = ClientMock.GenerateRandomClient(0, generateClaims: true, generateProperties: true, generateSecrets: true);
 
-                //Generate random new client
-                var client = ClientMock.GenerateRandomClient(0);
+            var clientRepository = GetClientRepository(context);
 
+            //Add new client
+            await clientRepository.AddClientAsync(client);
+
+            var clientToClone = await context.Clients.Where(x => x.Id == client.Id).SingleOrDefaultAsync();
+
+            //Try clone it
+            var clonedClientId = await clientRepository.CloneClientAsync(clientToClone, cloneClientCorsOrigins: false);
+
+            var cloneClientEntity = await clientRepository.GetClientAsync(clonedClientId);
+            var clientToCompare = await clientRepository.GetClientAsync(clientToClone.Id);
+
+            ClientCloneCompare(cloneClientEntity, clientToCompare, cloneClientCorsOrigins: false);
+        }
+    }
+
+    [Fact]
+    public async Task CloneClientWithoutClaimsAsync()
+    {
+        using (var context = GetDbContext())
+        {
+            //Generate random new client
+            var client = ClientMock.GenerateRandomClient(0, generateClaims: true, generateProperties: true, generateSecrets: true);
+
+            var clientRepository = GetClientRepository(context);
+
+            //Add new client
+            await clientRepository.AddClientAsync(client);
+
+            var clientToClone = await context.Clients.Where(x => x.Id == client.Id).SingleOrDefaultAsync();
+
+            //Try clone it
+            var clonedClientId = await clientRepository.CloneClientAsync(clientToClone, cloneClientClaims: false);
+
+            var cloneClientEntity = await clientRepository.GetClientAsync(clonedClientId);
+            var clientToCompare = await clientRepository.GetClientAsync(clientToClone.Id);
+
+            ClientCloneCompare(cloneClientEntity, clientToCompare, cloneClientClaims: false);
+        }
+    }
+
+    [Fact]
+    public async Task CloneClientWithoutPropertiesAsync()
+    {
+        using (var context = GetDbContext())
+        {
+            //Generate random new client
+            var client = ClientMock.GenerateRandomClient(0, generateClaims: true, generateProperties: true, generateSecrets: true);
+
+            var clientRepository = GetClientRepository(context);
+
+            //Add new client
+            await clientRepository.AddClientAsync(client);
+
+            var clientToClone = await context.Clients.Where(x => x.Id == client.Id).SingleOrDefaultAsync();
+
+            //Try clone it
+            var clonedClientId = await clientRepository.CloneClientAsync(clientToClone, cloneClientProperties: false);
+
+            var cloneClientEntity = await clientRepository.GetClientAsync(clonedClientId);
+            var clientToCompare = await clientRepository.GetClientAsync(clientToClone.Id);
+
+            ClientCloneCompare(cloneClientEntity, clientToCompare, cloneClientProperties: false);
+        }
+    }
+
+    [Fact]
+    public async Task CloneClientWithoutGrantTypesAsync()
+    {
+        using (var context = GetDbContext())
+        {
+            //Generate random new client
+            var client = ClientMock.GenerateRandomClient(0, generateClaims: true, generateProperties: true, generateSecrets: true);
+
+            var clientRepository = GetClientRepository(context);
+
+            //Add new client
+            await clientRepository.AddClientAsync(client);
+
+            var clientToClone = await context.Clients.Where(x => x.Id == client.Id).SingleOrDefaultAsync();
+
+            //Try clone it
+            var clonedClientId = await clientRepository.CloneClientAsync(clientToClone, cloneClientGrantTypes: false);
+
+            var cloneClientEntity = await clientRepository.GetClientAsync(clonedClientId);
+            var clientToCompare = await clientRepository.GetClientAsync(clientToClone.Id);
+
+            ClientCloneCompare(cloneClientEntity, clientToCompare, cloneClientGrantTypes: false);
+        }
+    }
+
+    [Fact]
+    public async Task CloneClientWithoutIdPRestrictionsAsync()
+    {
+        using (var context = GetDbContext())
+        {
+            //Generate random new client
+            var client = ClientMock.GenerateRandomClient(0, generateClaims: true, generateProperties: true, generateSecrets: true);
+
+            var clientRepository = GetClientRepository(context);
+
+            //Add new client
+            await clientRepository.AddClientAsync(client);
+
+            var clientToClone = await context.Clients.Where(x => x.Id == client.Id).SingleOrDefaultAsync();
+
+            //Try clone it
+            var clonedClientId = await clientRepository.CloneClientAsync(clientToClone, cloneClientIdPRestrictions: false);
+
+            var cloneClientEntity = await clientRepository.GetClientAsync(clonedClientId);
+            var clientToCompare = await clientRepository.GetClientAsync(clientToClone.Id);
+
+            ClientCloneCompare(cloneClientEntity, clientToCompare, cloneClientIdPRestrictions: false);
+        }
+    }
+
+    [Fact]
+    public async Task CloneClientWithoutPostLogoutRedirectUrisAsync()
+    {
+        using (var context = GetDbContext())
+        {
+            //Generate random new client
+            var client = ClientMock.GenerateRandomClient(0, generateClaims: true, generateProperties: true, generateSecrets: true);
+
+            var clientRepository = GetClientRepository(context);
+
+            //Add new client
+            await clientRepository.AddClientAsync(client);
+
+            var clientToClone = await context.Clients.Where(x => x.Id == client.Id).SingleOrDefaultAsync();
+
+            //Try clone it
+            var clonedClientId = await clientRepository.CloneClientAsync(clientToClone, cloneClientPostLogoutRedirectUris: false);
+
+            var cloneClientEntity = await clientRepository.GetClientAsync(clonedClientId);
+            var clientToCompare = await clientRepository.GetClientAsync(clientToClone.Id);
+
+            ClientCloneCompare(cloneClientEntity, clientToCompare, cloneClientPostLogoutRedirectUris: false);
+        }
+    }
+
+    [Fact]
+    public async Task CloneClientWithoutRedirectUrisAsync()
+    {
+        using (var context = GetDbContext())
+        {
+            //Generate random new client
+            var client = ClientMock.GenerateRandomClient(0, generateClaims: true, generateProperties: true, generateSecrets: true);
+
+            var clientRepository = GetClientRepository(context);
+
+            //Add new client
+            await clientRepository.AddClientAsync(client);
+
+            var clientToClone = await context.Clients.Where(x => x.Id == client.Id).SingleOrDefaultAsync();
+
+            //Try clone it
+            var clonedClientId = await clientRepository.CloneClientAsync(clientToClone, cloneClientRedirectUris: false);
+
+            var cloneClientEntity = await clientRepository.GetClientAsync(clonedClientId);
+            var clientToCompare = await clientRepository.GetClientAsync(clientToClone.Id);
+
+            ClientCloneCompare(cloneClientEntity, clientToCompare, cloneClientRedirectUris: false);
+        }
+    }
+
+    [Fact]
+    public async Task CloneClientWithoutScopesAsync()
+    {
+        using (var context = GetDbContext())
+        {
+            //Generate random new client
+            var client = ClientMock.GenerateRandomClient(0, generateClaims: true, generateProperties: true, generateSecrets: true);
+
+            var clientRepository = GetClientRepository(context);
+
+            //Add new client
+            await clientRepository.AddClientAsync(client);
+
+            var clientToClone = await context.Clients.Where(x => x.Id == client.Id).SingleOrDefaultAsync();
+
+            //Try clone it
+            var clonedClientId = await clientRepository.CloneClientAsync(clientToClone, cloneClientScopes: false);
+
+            var cloneClientEntity = await clientRepository.GetClientAsync(clonedClientId);
+            var clientToCompare = await clientRepository.GetClientAsync(clientToClone.Id);
+
+            ClientCloneCompare(cloneClientEntity, clientToCompare, cloneClientScopes: false);
+        }
+    }
+
+    [Fact]
+    public async Task DeleteClientClaimAsync()
+    {
+        using (var context = GetDbContext())
+        {
+            var clientRepository = GetClientRepository(context);
+
+            //Generate random new client without id
+            var client = ClientMock.GenerateRandomClient(0);
+
+            //Add new client
+            await clientRepository.AddClientAsync(client);
+
+            //Get new client
+            var clientEntity = await clientRepository.GetClientAsync(client.Id);
+
+            //Assert new client
+            ClientAssert(clientEntity, client);
+
+            //Generate random new Client Claim
+            var clientClaim = ClientMock.GenerateRandomClientClaim(0);
+
+            //Add new client claim
+            await clientRepository.AddClientClaimAsync(clientEntity.Id, clientClaim);
+
+            //Get new client claim
+            var newClientClaim =
+                await context.ClientClaims.Where(x => x.Id == clientClaim.Id).SingleOrDefaultAsync();
+
+            //Assert
+            clientClaim.Should().BeEquivalentTo(newClientClaim,
+                options => options.Excluding(o => o.Id).Excluding(x => x.Client));
+
+            //Try delete it
+            await clientRepository.DeleteClientClaimAsync(newClientClaim);
+
+            //Get new client claim
+            var deletedClientClaim =
+                await context.ClientClaims.Where(x => x.Id == clientClaim.Id).SingleOrDefaultAsync();
+
+            //Assert
+            deletedClientClaim.Should().BeNull();
+        }
+    }
+
+    [Fact]
+    public async Task DeleteClientPropertyAsync()
+    {
+        using (var context = GetDbContext())
+        {
+            var clientRepository = GetClientRepository(context);
+
+            //Generate random new client without id
+            var client = ClientMock.GenerateRandomClient(0);
+
+            //Add new client
+            await clientRepository.AddClientAsync(client);
+
+            //Get new client
+            var clientEntity = await clientRepository.GetClientAsync(client.Id);
+
+            //Assert new client
+            ClientAssert(clientEntity, client);
+
+            //Generate random new Client Property
+            var clientProperty = ClientMock.GenerateRandomClientProperty(0);
+
+            //Add new client property
+            await clientRepository.AddClientPropertyAsync(clientEntity.Id, clientProperty);
+
+            //Get new client property
+            var newClientProperties = await context.ClientProperties.Where(x => x.Id == clientProperty.Id)
+                .SingleOrDefaultAsync();
+
+            //Assert
+            clientProperty.Should().BeEquivalentTo(newClientProperties,
+                options => options.Excluding(o => o.Id).Excluding(x => x.Client));
+
+            //Try delete it
+            await clientRepository.DeleteClientPropertyAsync(newClientProperties);
+
+            //Get new client property
+            var deletedClientProperty = await context.ClientProperties.Where(x => x.Id == clientProperty.Id)
+                .SingleOrDefaultAsync();
+
+            //Assert
+            deletedClientProperty.Should().BeNull();
+        }
+    }
+
+    [Fact]
+    public async Task DeleteClientSecretAsync()
+    {
+        using (var context = GetDbContext())
+        {
+            var clientRepository = GetClientRepository(context);
+
+            //Generate random new client without id
+            var client = ClientMock.GenerateRandomClient(0);
+
+            //Add new client
+            await clientRepository.AddClientAsync(client);
+
+            //Get new client
+            var clientEntity = await clientRepository.GetClientAsync(client.Id);
+
+            //Assert new client
+            ClientAssert(clientEntity, client);
+
+            //Generate random new Client Secret
+            var clientSecret = ClientMock.GenerateRandomClientSecret(0);
+
+            //Add new client secret
+            await clientRepository.AddClientSecretAsync(clientEntity.Id, clientSecret);
+
+            //Get new client secret
+            var newSecret = await context.ClientSecrets.Where(x => x.Id == clientSecret.Id).SingleOrDefaultAsync();
+
+            //Assert
+            clientSecret.Should().BeEquivalentTo(newSecret,
+                options => options.Excluding(o => o.Id).Excluding(x => x.Client));
+
+            //Try delete it
+            await clientRepository.DeleteClientSecretAsync(newSecret);
+
+            //Get new client secret
+            var deletedSecret =
+                await context.ClientSecrets.Where(x => x.Id == clientSecret.Id).SingleOrDefaultAsync();
+
+            //Assert
+            deletedSecret.Should().BeNull();
+        }
+    }
+
+    [Fact]
+    public async Task GetClientAsync()
+    {
+        using (var context = GetDbContext())
+        {
+            var clientRepository = GetClientRepository(context);
+
+            //Generate random new client without id
+            var client = ClientMock.GenerateRandomClient(0);
+
+            //Add new client
+            await clientRepository.AddClientAsync(client);
+
+            //Get new client
+            var clientEntity = await clientRepository.GetClientAsync(client.Id);
+
+            //Assert new client
+            ClientAssert(clientEntity, client);
+        }
+    }
+
+    [Fact]
+    public async Task GetClientClaimAsync()
+    {
+        using (var context = GetDbContext())
+        {
+            var clientRepository = GetClientRepository(context);
+
+            //Generate random new client without id
+            var client = ClientMock.GenerateRandomClient(0);
+
+            //Add new client
+            await clientRepository.AddClientAsync(client);
+
+            //Get new client
+            var clientEntity = await clientRepository.GetClientAsync(client.Id);
+
+            //Assert new client
+            ClientAssert(clientEntity, client);
+
+            //Generate random client claim
+            var clientClaim = ClientMock.GenerateRandomClientClaim(0);
+
+            //Add new client claim
+            await clientRepository.AddClientClaimAsync(clientEntity.Id, clientClaim);
+
+            //Get new client claim
+            var newClientClaim = await clientRepository.GetClientClaimAsync(clientClaim.Id);
+
+            clientClaim.Should().BeEquivalentTo(newClientClaim,
+                options => options.Excluding(o => o.Id).Excluding(x => x.Client));
+        }
+    }
+
+    [Fact]
+    public async Task GetClientPropertyAsync()
+    {
+        using (var context = GetDbContext())
+        {
+            var clientRepository = GetClientRepository(context);
+
+            //Generate random new client without id
+            var client = ClientMock.GenerateRandomClient(0);
+
+            //Add new client
+            await clientRepository.AddClientAsync(client);
+
+            //Get new client
+            var clientEntity = await clientRepository.GetClientAsync(client.Id);
+
+            //Assert new client
+            ClientAssert(clientEntity, client);
+
+            //Generate random new Client Property
+            var clientProperty = ClientMock.GenerateRandomClientProperty(0);
+
+            //Add new client Property
+            await clientRepository.AddClientPropertyAsync(clientEntity.Id, clientProperty);
+
+            //Get new client Property
+            var newClientProperty = await clientRepository.GetClientPropertyAsync(clientProperty.Id);
+
+            clientProperty.Should().BeEquivalentTo(newClientProperty,
+                options => options.Excluding(o => o.Id).Excluding(x => x.Client));
+        }
+    }
+
+    [Fact]
+    public async Task GetClientsAsync()
+    {
+        using (var context = GetDbContext())
+        {
+            var clientRepository = GetClientRepository(context);
+
+            var rnd = new Random();
+            var generateRows = rnd.Next(1, 10);
+
+            //Generate random new clients
+            var randomClients = ClientMock.GenerateRandomClients(0, generateRows);
+
+            foreach (var client in randomClients)
                 //Add new client
                 await clientRepository.AddClientAsync(client);
 
-                //Get new client
-                var clientEntity = await context.Clients.Where(x => x.Id == client.Id).SingleAsync();
+            var clients = await clientRepository.GetClientsAsync();
 
-                //Assert new client
-                client.Should().BeEquivalentTo(clientEntity, options => options.Excluding(o => o.Id));
-            }
+            //Assert clients count
+            clients.Data.Count.Should().Be(randomClients.Count);
+
+            //Assert that clients are same
+            randomClients.Should().BeEquivalentTo(clients.Data);
         }
+    }
 
-        [Fact]
-        public async Task AddClientClaimAsync()
+    [Fact]
+    public async Task GetClientSecretAsync()
+    {
+        using (var context = GetDbContext())
         {
-            using (var context = GetDbContext())
-            {
-                var clientRepository = GetClientRepository(context);
+            var clientRepository = GetClientRepository(context);
 
-                //Generate random new client without id
-                var client = ClientMock.GenerateRandomClient(0);
+            //Generate random new client without id
+            var client = ClientMock.GenerateRandomClient(0);
 
-                //Add new client
-                await clientRepository.AddClientAsync(client);
+            //Add new client
+            await clientRepository.AddClientAsync(client);
 
-                //Get new client
-                var clientEntity = await clientRepository.GetClientAsync(client.Id);
+            //Get new client
+            var clientEntity = await clientRepository.GetClientAsync(client.Id);
 
-                //Assert new client
-                ClientAssert(clientEntity, client);
+            //Assert new client
+            ClientAssert(clientEntity, client);
 
-                //Generate random new Client Claim
-                var clientClaim = ClientMock.GenerateRandomClientClaim(0);
+            //Generate random new Client Secret
+            var clientSecret = ClientMock.GenerateRandomClientSecret(0);
 
-                //Add new client claim
-                await clientRepository.AddClientClaimAsync(clientEntity.Id, clientClaim);
+            //Add new client secret
+            await clientRepository.AddClientSecretAsync(clientEntity.Id, clientSecret);
 
-                //Get new client claim
-                var newClientClaim =
-                    await context.ClientClaims.Where(x => x.Id == clientClaim.Id).SingleOrDefaultAsync();
+            //Get new client secret
+            var newSecret = await clientRepository.GetClientSecretAsync(clientSecret.Id);
 
-                clientClaim.Should().BeEquivalentTo(newClientClaim,
-                    options => options.Excluding(o => o.Id).Excluding(x => x.Client));
-            }
+            clientSecret.Should().BeEquivalentTo(newSecret,
+                options => options.Excluding(o => o.Id).Excluding(x => x.Client));
         }
+    }
 
-        [Fact]
-        public async Task AddClientPropertyAsync()
+    [Fact]
+    public async Task RemoveClientAsync()
+    {
+        using (var context = GetDbContext())
         {
-            using (var context = GetDbContext())
-            {
-                var clientRepository = GetClientRepository(context);
+            var clientRepository = GetClientRepository(context);
 
-                //Generate random new client without id
-                var client = ClientMock.GenerateRandomClient(0);
+            //Generate random new client without id
+            var client = ClientMock.GenerateRandomClient(0);
 
-                //Add new client
-                await clientRepository.AddClientAsync(client);
+            //Add new client
+            await clientRepository.AddClientAsync(client);
 
-                //Get new client
-                var clientEntity = await clientRepository.GetClientAsync(client.Id);
+            //Get new client
+            var clientEntity = await context.Clients.Where(x => x.Id == client.Id).SingleAsync();
 
-                //Assert new client
-                ClientAssert(clientEntity, client);
+            //Assert new client
+            client.Should().BeEquivalentTo(clientEntity, options => options.Excluding(o => o.Id));
 
-                //Generate random new Client property
-                var clientProperty = ClientMock.GenerateRandomClientProperty(0);
+            //Detached the added item
+            context.Entry(clientEntity).State = EntityState.Detached;
 
-                //Add new client property
-                await clientRepository.AddClientPropertyAsync(clientEntity.Id, clientProperty);
+            //Remove client
+            await clientRepository.RemoveClientAsync(clientEntity);
 
-                //Get new client property
-                var newClientProperty = await context.ClientProperties.Where(x => x.Id == clientProperty.Id)
-                    .SingleOrDefaultAsync();
+            //Try Get Removed client
+            var removeClientEntity = await context.Clients.Where(x => x.Id == clientEntity.Id)
+                .SingleOrDefaultAsync();
 
-                clientProperty.Should().BeEquivalentTo(newClientProperty,
-                    options => options.Excluding(o => o.Id).Excluding(x => x.Client));
-            }
+            //Assert removed client - it might be null
+            removeClientEntity.Should().BeNull();
         }
+    }
 
-        [Fact]
-        public async Task AddClientSecretAsync()
+    [Fact]
+    public async Task UpdateClientAsync()
+    {
+        using (var context = GetDbContext())
         {
-            using (var context = GetDbContext())
-            {
-                var clientRepository = GetClientRepository(context);
+            var clientRepository = GetClientRepository(context);
 
-                //Generate random new client without id
-                var client = ClientMock.GenerateRandomClient(0);
+            //Generate random new client without id
+            var client = ClientMock.GenerateRandomClient(0);
 
-                //Add new client
-                await clientRepository.AddClientAsync(client);
+            //Add new client
+            await clientRepository.AddClientAsync(client);
 
-                //Get new client
-                var clientEntity = await clientRepository.GetClientAsync(client.Id);
+            //Get new client
+            var clientEntity = await context.Clients.Where(x => x.Id == client.Id).SingleAsync();
 
-                //Assert new client
-                ClientAssert(clientEntity, client);
+            //Assert new client
+            client.Should().BeEquivalentTo(clientEntity, options => options.Excluding(o => o.Id));
 
-                //Generate random new Client Secret
-                var clientSecret = ClientMock.GenerateRandomClientSecret(0);
+            //Detached the added item
+            context.Entry(clientEntity).State = EntityState.Detached;
 
-                //Add new client secret
-                await clientRepository.AddClientSecretAsync(clientEntity.Id, clientSecret);
+            //Generete new client with added item id
+            var updatedClient = ClientMock.GenerateRandomClient(clientEntity.Id);
 
-                //Get new client secret
-                var newSecret = await context.ClientSecrets.Where(x => x.Id == clientSecret.Id).SingleOrDefaultAsync();
+            //Update client
+            await clientRepository.UpdateClientAsync(updatedClient);
 
-                clientSecret.Should().BeEquivalentTo(newSecret,
-                    options => options.Excluding(o => o.Id).Excluding(x => x.Client));
-            }
+            //Get updated client
+            var updatedClientEntity =
+                await context.Clients.Where(x => x.Id == updatedClient.Id).SingleAsync();
+
+            //Assert updated client
+            updatedClient.Should().BeEquivalentTo(updatedClientEntity);
         }
+    }
 
-        [Fact]
-        public async Task CloneClientAsync()
+    [Fact]
+    public void GetGrantTypes()
+    {
+        using (var context = GetDbContext())
         {
-            using (var context = GetDbContext())
-            {
-                //Generate random new client
-                var client = ClientMock.GenerateRandomClient(0, generateClaims: true, generateProperties: true, generateSecrets: true);
+            var clientRepository = GetClientRepository(context);
 
-                var clientRepository = GetClientRepository(context);
+            //Try get some existing grant
+            var randomClientGrantType = ClientMock.GenerateRandomClientGrantType();
 
-                //Add new client
-                await clientRepository.AddClientAsync(client);
-
-                var clientToClone = await context.Clients.Where(x => x.Id == client.Id).SingleOrDefaultAsync();
-
-                //Try clone it - all client collections without secrets
-                var clonedClientId = await clientRepository.CloneClientAsync(clientToClone);
-
-                var cloneClientEntity = await clientRepository.GetClientAsync(clonedClientId);
-                var clientToCompare = await clientRepository.GetClientAsync(clientToClone.Id);
-
-                ClientCloneCompare(cloneClientEntity, clientToCompare);
-            }
+            var grantTypes = clientRepository.GetGrantTypes(randomClientGrantType.GrantType);
+            grantTypes[0].Should().Be(randomClientGrantType.GrantType);
         }
-        
-        [Fact]
-        public async Task CloneClientWithoutCorsAsync()
+    }
+
+    [Fact]
+    public void GetStandardClaims()
+    {
+        using (var context = GetDbContext())
         {
-            using (var context = GetDbContext())
-            {
-                //Generate random new client
-                var client = ClientMock.GenerateRandomClient(0, generateClaims: true, generateProperties: true, generateSecrets: true);
+            var clientRepository = GetClientRepository(context);
 
-                var clientRepository = GetClientRepository(context);
+            //Try get some existing claims
+            var randomClientClaim = ClientMock.GenerateRandomClientClaim(0);
 
-                //Add new client
-                await clientRepository.AddClientAsync(client);
-
-                var clientToClone = await context.Clients.Where(x => x.Id == client.Id).SingleOrDefaultAsync();
-
-                //Try clone it
-                var clonedClientId = await clientRepository.CloneClientAsync(clientToClone, cloneClientCorsOrigins: false);
-
-                var cloneClientEntity = await clientRepository.GetClientAsync(clonedClientId);
-                var clientToCompare = await clientRepository.GetClientAsync(clientToClone.Id);
-
-                ClientCloneCompare(cloneClientEntity, clientToCompare, cloneClientCorsOrigins: false);
-            }
+            var grantTypes = clientRepository.GetStandardClaims(randomClientClaim.Type);
+            grantTypes.Contains(randomClientClaim.Type).Should().Be(true);
         }
+    }
 
-        [Fact]
-        public async Task CloneClientWithoutClaimsAsync()
+    [Fact]
+    public async Task GetScopesIdentityResourceAsync()
+    {
+        using (var context = GetDbContext())
         {
-            using (var context = GetDbContext())
-            {
-                //Generate random new client
-                var client = ClientMock.GenerateRandomClient(0, generateClaims: true, generateProperties: true, generateSecrets: true);
+            var clientRepository = GetClientRepository(context);
+            var identityResourceRepository = GetIdentityResourceRepository(context);
 
-                var clientRepository = GetClientRepository(context);
+            var identityResource = IdentityResourceMock.GenerateRandomIdentityResource(0);
+            await identityResourceRepository.AddIdentityResourceAsync(identityResource);
 
-                //Add new client
-                await clientRepository.AddClientAsync(client);
+            var identityScopes = await clientRepository.GetScopesAsync(identityResource.Name);
 
-                var clientToClone = await context.Clients.Where(x => x.Id == client.Id).SingleOrDefaultAsync();
-
-                //Try clone it
-                var clonedClientId = await clientRepository.CloneClientAsync(clientToClone, cloneClientClaims: false);
-
-                var cloneClientEntity = await clientRepository.GetClientAsync(clonedClientId);
-                var clientToCompare = await clientRepository.GetClientAsync(clientToClone.Id);
-
-                ClientCloneCompare(cloneClientEntity, clientToCompare, cloneClientClaims: false);
-            }
+            identityScopes[0].Should().Be(identityResource.Name);
         }
+    }
 
-        [Fact]
-        public async Task CloneClientWithoutPropertiesAsync()
+    [Fact]
+    public async Task GetScopesApiResourceAsync()
+    {
+        using (var context = GetDbContext())
         {
-            using (var context = GetDbContext())
-            {
-                //Generate random new client
-                var client = ClientMock.GenerateRandomClient(0, generateClaims: true, generateProperties: true, generateSecrets: true);
+            var clientRepository = GetClientRepository(context);
+            var apiScopeRepository = GetApiScopeRepository(context);
 
-                var clientRepository = GetClientRepository(context);
+            var apiScope = ApiScopeMock.GenerateRandomApiScope(0);
+            await apiScopeRepository.AddApiScopeAsync(apiScope);
 
-                //Add new client
-                await clientRepository.AddClientAsync(client);
+            var apiScopes = await clientRepository.GetScopesAsync(apiScope.Name);
 
-                var clientToClone = await context.Clients.Where(x => x.Id == client.Id).SingleOrDefaultAsync();
-
-                //Try clone it
-                var clonedClientId = await clientRepository.CloneClientAsync(clientToClone, cloneClientProperties: false);
-
-                var cloneClientEntity = await clientRepository.GetClientAsync(clonedClientId);
-                var clientToCompare = await clientRepository.GetClientAsync(clientToClone.Id);
-
-                ClientCloneCompare(cloneClientEntity, clientToCompare, cloneClientProperties: false);
-            }
+            apiScopes[0].Should().Be(apiScope.Name);
         }
+    }
 
-        [Fact]
-        public async Task CloneClientWithoutGrantTypesAsync()
+    private void ClientCloneCompare(Client cloneClientEntity, Client clientToCompare, bool cloneClientCorsOrigins = true, bool cloneClientGrantTypes = true, bool cloneClientIdPRestrictions = true, bool cloneClientPostLogoutRedirectUris = true, bool cloneClientScopes = true, bool cloneClientRedirectUris = true, bool cloneClientClaims = true, bool cloneClientProperties = true)
+    {
+        //Assert cloned client
+        clientToCompare.Should().BeEquivalentTo(cloneClientEntity,
+            options => options.Excluding(o => o.Id)
+                .Excluding(o => o.ClientSecrets)
+                .Excluding(o => o.ClientId)
+                .Excluding(o => o.ClientName)
+
+                //Skip the collections because is not possible ignore property in list :-(
+                //Note: I've found the solution above - try ignore property of the list using SelectedMemberPath                        
+                .Excluding(o => o.AllowedGrantTypes)
+                .Excluding(o => o.RedirectUris)
+                .Excluding(o => o.PostLogoutRedirectUris)
+                .Excluding(o => o.AllowedScopes)
+                .Excluding(o => o.ClientSecrets)
+                .Excluding(o => o.Claims)
+                .Excluding(o => o.IdentityProviderRestrictions)
+                .Excluding(o => o.AllowedCorsOrigins)
+                .Excluding(o => o.Properties)
+        );
+
+
+        //New client relations have new id's and client relations therefore is required ignore them
+        if (cloneClientGrantTypes)
         {
-            using (var context = GetDbContext())
-            {
-                //Generate random new client
-                var client = ClientMock.GenerateRandomClient(0, generateClaims: true, generateProperties: true, generateSecrets: true);
-
-                var clientRepository = GetClientRepository(context);
-
-                //Add new client
-                await clientRepository.AddClientAsync(client);
-
-                var clientToClone = await context.Clients.Where(x => x.Id == client.Id).SingleOrDefaultAsync();
-
-                //Try clone it
-                var clonedClientId = await clientRepository.CloneClientAsync(clientToClone, cloneClientGrantTypes: false);
-
-                var cloneClientEntity = await clientRepository.GetClientAsync(clonedClientId);
-                var clientToCompare = await clientRepository.GetClientAsync(clientToClone.Id);
-
-                ClientCloneCompare(cloneClientEntity, clientToCompare, cloneClientGrantTypes: false);
-            }
-        }
-
-        [Fact]
-        public async Task CloneClientWithoutIdPRestrictionsAsync()
-        {
-            using (var context = GetDbContext())
-            {
-                //Generate random new client
-                var client = ClientMock.GenerateRandomClient(0, generateClaims: true, generateProperties: true, generateSecrets: true);
-
-                var clientRepository = GetClientRepository(context);
-
-                //Add new client
-                await clientRepository.AddClientAsync(client);
-
-                var clientToClone = await context.Clients.Where(x => x.Id == client.Id).SingleOrDefaultAsync();
-
-                //Try clone it
-                var clonedClientId = await clientRepository.CloneClientAsync(clientToClone, cloneClientIdPRestrictions: false);
-
-                var cloneClientEntity = await clientRepository.GetClientAsync(clonedClientId);
-                var clientToCompare = await clientRepository.GetClientAsync(clientToClone.Id);
-
-                ClientCloneCompare(cloneClientEntity, clientToCompare, cloneClientIdPRestrictions: false);
-            }
-        }
-
-        [Fact]
-        public async Task CloneClientWithoutPostLogoutRedirectUrisAsync()
-        {
-            using (var context = GetDbContext())
-            {
-                //Generate random new client
-                var client = ClientMock.GenerateRandomClient(0, generateClaims: true, generateProperties: true, generateSecrets: true);
-
-                var clientRepository = GetClientRepository(context);
-
-                //Add new client
-                await clientRepository.AddClientAsync(client);
-
-                var clientToClone = await context.Clients.Where(x => x.Id == client.Id).SingleOrDefaultAsync();
-
-                //Try clone it
-                var clonedClientId = await clientRepository.CloneClientAsync(clientToClone, cloneClientPostLogoutRedirectUris: false);
-
-                var cloneClientEntity = await clientRepository.GetClientAsync(clonedClientId);
-                var clientToCompare = await clientRepository.GetClientAsync(clientToClone.Id);
-
-                ClientCloneCompare(cloneClientEntity, clientToCompare, cloneClientPostLogoutRedirectUris: false);
-            }
-        }
-
-        [Fact]
-        public async Task CloneClientWithoutRedirectUrisAsync()
-        {
-            using (var context = GetDbContext())
-            {
-                //Generate random new client
-                var client = ClientMock.GenerateRandomClient(0, generateClaims: true, generateProperties: true, generateSecrets: true);
-
-                var clientRepository = GetClientRepository(context);
-
-                //Add new client
-                await clientRepository.AddClientAsync(client);
-
-                var clientToClone = await context.Clients.Where(x => x.Id == client.Id).SingleOrDefaultAsync();
-
-                //Try clone it
-                var clonedClientId = await clientRepository.CloneClientAsync(clientToClone, cloneClientRedirectUris: false);
-
-                var cloneClientEntity = await clientRepository.GetClientAsync(clonedClientId);
-                var clientToCompare = await clientRepository.GetClientAsync(clientToClone.Id);
-
-                ClientCloneCompare(cloneClientEntity, clientToCompare, cloneClientRedirectUris: false);
-            }
-        }
-
-        [Fact]
-        public async Task CloneClientWithoutScopesAsync()
-        {
-            using (var context = GetDbContext())
-            {
-                //Generate random new client
-                var client = ClientMock.GenerateRandomClient(0, generateClaims: true, generateProperties: true, generateSecrets: true);
-
-                var clientRepository = GetClientRepository(context);
-
-                //Add new client
-                await clientRepository.AddClientAsync(client);
-
-                var clientToClone = await context.Clients.Where(x => x.Id == client.Id).SingleOrDefaultAsync();
-
-                //Try clone it
-                var clonedClientId = await clientRepository.CloneClientAsync(clientToClone, cloneClientScopes: false);
-
-                var cloneClientEntity = await clientRepository.GetClientAsync(clonedClientId);
-                var clientToCompare = await clientRepository.GetClientAsync(clientToClone.Id);
-
-                ClientCloneCompare(cloneClientEntity, clientToCompare, cloneClientScopes: false);
-            }
-        }
-
-        [Fact]
-        public async Task DeleteClientClaimAsync()
-        {
-            using (var context = GetDbContext())
-            {
-                var clientRepository = GetClientRepository(context);
-
-                //Generate random new client without id
-                var client = ClientMock.GenerateRandomClient(0);
-
-                //Add new client
-                await clientRepository.AddClientAsync(client);
-
-                //Get new client
-                var clientEntity = await clientRepository.GetClientAsync(client.Id);
-
-                //Assert new client
-                ClientAssert(clientEntity, client);
-
-                //Generate random new Client Claim
-                var clientClaim = ClientMock.GenerateRandomClientClaim(0);
-
-                //Add new client claim
-                await clientRepository.AddClientClaimAsync(clientEntity.Id, clientClaim);
-
-                //Get new client claim
-                var newClientClaim =
-                    await context.ClientClaims.Where(x => x.Id == clientClaim.Id).SingleOrDefaultAsync();
-
-                //Assert
-                clientClaim.Should().BeEquivalentTo(newClientClaim,
-                    options => options.Excluding(o => o.Id).Excluding(x => x.Client));
-
-                //Try delete it
-                await clientRepository.DeleteClientClaimAsync(newClientClaim);
-
-                //Get new client claim
-                var deletedClientClaim =
-                    await context.ClientClaims.Where(x => x.Id == clientClaim.Id).SingleOrDefaultAsync();
-
-                //Assert
-                deletedClientClaim.Should().BeNull();
-            }
-        }
-
-        [Fact]
-        public async Task DeleteClientPropertyAsync()
-        {
-            using (var context = GetDbContext())
-            {
-                var clientRepository = GetClientRepository(context);
-
-                //Generate random new client without id
-                var client = ClientMock.GenerateRandomClient(0);
-
-                //Add new client
-                await clientRepository.AddClientAsync(client);
-
-                //Get new client
-                var clientEntity = await clientRepository.GetClientAsync(client.Id);
-
-                //Assert new client
-                ClientAssert(clientEntity, client);
-
-                //Generate random new Client Property
-                var clientProperty = ClientMock.GenerateRandomClientProperty(0);
-
-                //Add new client property
-                await clientRepository.AddClientPropertyAsync(clientEntity.Id, clientProperty);
-
-                //Get new client property
-                var newClientProperties = await context.ClientProperties.Where(x => x.Id == clientProperty.Id)
-                    .SingleOrDefaultAsync();
-
-                //Assert
-                clientProperty.Should().BeEquivalentTo(newClientProperties,
-                    options => options.Excluding(o => o.Id).Excluding(x => x.Client));
-
-                //Try delete it
-                await clientRepository.DeleteClientPropertyAsync(newClientProperties);
-
-                //Get new client property
-                var deletedClientProperty = await context.ClientProperties.Where(x => x.Id == clientProperty.Id)
-                    .SingleOrDefaultAsync();
-
-                //Assert
-                deletedClientProperty.Should().BeNull();
-            }
-        }
-
-        [Fact]
-        public async Task DeleteClientSecretAsync()
-        {
-            using (var context = GetDbContext())
-            {
-                var clientRepository = GetClientRepository(context);
-
-                //Generate random new client without id
-                var client = ClientMock.GenerateRandomClient(0);
-
-                //Add new client
-                await clientRepository.AddClientAsync(client);
-
-                //Get new client
-                var clientEntity = await clientRepository.GetClientAsync(client.Id);
-
-                //Assert new client
-                ClientAssert(clientEntity, client);
-
-                //Generate random new Client Secret
-                var clientSecret = ClientMock.GenerateRandomClientSecret(0);
-
-                //Add new client secret
-                await clientRepository.AddClientSecretAsync(clientEntity.Id, clientSecret);
-
-                //Get new client secret
-                var newSecret = await context.ClientSecrets.Where(x => x.Id == clientSecret.Id).SingleOrDefaultAsync();
-
-                //Assert
-                clientSecret.Should().BeEquivalentTo(newSecret,
-                    options => options.Excluding(o => o.Id).Excluding(x => x.Client));
-
-                //Try delete it
-                await clientRepository.DeleteClientSecretAsync(newSecret);
-
-                //Get new client secret
-                var deletedSecret =
-                    await context.ClientSecrets.Where(x => x.Id == clientSecret.Id).SingleOrDefaultAsync();
-
-                //Assert
-                deletedSecret.Should().BeNull();
-            }
-        }
-
-        [Fact]
-        public async Task GetClientAsync()
-        {
-            using (var context = GetDbContext())
-            {
-                var clientRepository = GetClientRepository(context);
-
-                //Generate random new client without id
-                var client = ClientMock.GenerateRandomClient(0);
-
-                //Add new client
-                await clientRepository.AddClientAsync(client);
-
-                //Get new client
-                var clientEntity = await clientRepository.GetClientAsync(client.Id);
-
-                //Assert new client
-                ClientAssert(clientEntity, client);
-            }
-        }
-
-        [Fact]
-        public async Task GetClientClaimAsync()
-        {
-            using (var context = GetDbContext())
-            {
-                var clientRepository = GetClientRepository(context);
-
-                //Generate random new client without id
-                var client = ClientMock.GenerateRandomClient(0);
-
-                //Add new client
-                await clientRepository.AddClientAsync(client);
-
-                //Get new client
-                var clientEntity = await clientRepository.GetClientAsync(client.Id);
-
-                //Assert new client
-                ClientAssert(clientEntity, client);
-
-                //Generate random client claim
-                var clientClaim = ClientMock.GenerateRandomClientClaim(0);
-
-                //Add new client claim
-                await clientRepository.AddClientClaimAsync(clientEntity.Id, clientClaim);
-
-                //Get new client claim
-                var newClientClaim = await clientRepository.GetClientClaimAsync(clientClaim.Id);
-
-                clientClaim.Should().BeEquivalentTo(newClientClaim,
-                    options => options.Excluding(o => o.Id).Excluding(x => x.Client));
-            }
-        }
-
-        [Fact]
-        public async Task GetClientPropertyAsync()
-        {
-            using (var context = GetDbContext())
-            {
-                var clientRepository = GetClientRepository(context);
-
-                //Generate random new client without id
-                var client = ClientMock.GenerateRandomClient(0);
-
-                //Add new client
-                await clientRepository.AddClientAsync(client);
-
-                //Get new client
-                var clientEntity = await clientRepository.GetClientAsync(client.Id);
-
-                //Assert new client
-                ClientAssert(clientEntity, client);
-
-                //Generate random new Client Property
-                var clientProperty = ClientMock.GenerateRandomClientProperty(0);
-
-                //Add new client Property
-                await clientRepository.AddClientPropertyAsync(clientEntity.Id, clientProperty);
-
-                //Get new client Property
-                var newClientProperty = await clientRepository.GetClientPropertyAsync(clientProperty.Id);
-
-                clientProperty.Should().BeEquivalentTo(newClientProperty,
-                    options => options.Excluding(o => o.Id).Excluding(x => x.Client));
-            }
-        }
-
-        [Fact]
-        public async Task GetClientsAsync()
-        {
-            using (var context = GetDbContext())
-            {
-                var clientRepository = GetClientRepository(context);
-
-                var rnd = new Random();
-                var generateRows = rnd.Next(1, 10);
-
-                //Generate random new clients
-                var randomClients = ClientMock.GenerateRandomClients(0, generateRows);
-
-                foreach (var client in randomClients)
-                    //Add new client
-                    await clientRepository.AddClientAsync(client);
-
-                var clients = await clientRepository.GetClientsAsync();
-
-                //Assert clients count
-                clients.Data.Count.Should().Be(randomClients.Count);
-
-                //Assert that clients are same
-                randomClients.Should().BeEquivalentTo(clients.Data);
-            }
-        }
-
-        [Fact]
-        public async Task GetClientSecretAsync()
-        {
-            using (var context = GetDbContext())
-            {
-                var clientRepository = GetClientRepository(context);
-
-                //Generate random new client without id
-                var client = ClientMock.GenerateRandomClient(0);
-
-                //Add new client
-                await clientRepository.AddClientAsync(client);
-
-                //Get new client
-                var clientEntity = await clientRepository.GetClientAsync(client.Id);
-
-                //Assert new client
-                ClientAssert(clientEntity, client);
-
-                //Generate random new Client Secret
-                var clientSecret = ClientMock.GenerateRandomClientSecret(0);
-
-                //Add new client secret
-                await clientRepository.AddClientSecretAsync(clientEntity.Id, clientSecret);
-
-                //Get new client secret
-                var newSecret = await clientRepository.GetClientSecretAsync(clientSecret.Id);
-
-                clientSecret.Should().BeEquivalentTo(newSecret,
-                    options => options.Excluding(o => o.Id).Excluding(x => x.Client));
-            }
-        }
-
-        [Fact]
-        public async Task RemoveClientAsync()
-        {
-            using (var context = GetDbContext())
-            {
-                var clientRepository = GetClientRepository(context);
-
-                //Generate random new client without id
-                var client = ClientMock.GenerateRandomClient(0);
-
-                //Add new client
-                await clientRepository.AddClientAsync(client);
-
-                //Get new client
-                var clientEntity = await context.Clients.Where(x => x.Id == client.Id).SingleAsync();
-
-                //Assert new client
-                client.Should().BeEquivalentTo(clientEntity, options => options.Excluding(o => o.Id));
-
-                //Detached the added item
-                context.Entry(clientEntity).State = EntityState.Detached;
-
-                //Remove client
-                await clientRepository.RemoveClientAsync(clientEntity);
-
-                //Try Get Removed client
-                var removeClientEntity = await context.Clients.Where(x => x.Id == clientEntity.Id)
-                    .SingleOrDefaultAsync();
-
-                //Assert removed client - it might be null
-                removeClientEntity.Should().BeNull();
-            }
-        }
-
-        [Fact]
-        public async Task UpdateClientAsync()
-        {
-            using (var context = GetDbContext())
-            {
-                var clientRepository = GetClientRepository(context);
-
-                //Generate random new client without id
-                var client = ClientMock.GenerateRandomClient(0);
-
-                //Add new client
-                await clientRepository.AddClientAsync(client);
-
-                //Get new client
-                var clientEntity = await context.Clients.Where(x => x.Id == client.Id).SingleAsync();
-
-                //Assert new client
-                client.Should().BeEquivalentTo(clientEntity, options => options.Excluding(o => o.Id));
-
-                //Detached the added item
-                context.Entry(clientEntity).State = EntityState.Detached;
-
-                //Generete new client with added item id
-                var updatedClient = ClientMock.GenerateRandomClient(clientEntity.Id);
-
-                //Update client
-                await clientRepository.UpdateClientAsync(updatedClient);
-
-                //Get updated client
-                var updatedClientEntity =
-                    await context.Clients.Where(x => x.Id == updatedClient.Id).SingleAsync();
-
-                //Assert updated client
-                updatedClient.Should().BeEquivalentTo(updatedClientEntity);
-            }
-        }
-
-        [Fact]
-        public void GetGrantTypes()
-        {
-            using (var context = GetDbContext())
-            {
-                var clientRepository = GetClientRepository(context);
-
-                //Try get some existing grant
-                var randomClientGrantType = ClientMock.GenerateRandomClientGrantType();
-
-                var grantTypes = clientRepository.GetGrantTypes(randomClientGrantType.GrantType);
-                grantTypes[0].Should().Be(randomClientGrantType.GrantType);
-            }
-        }
-
-        [Fact]
-        public void GetStandardClaims()
-        {
-            using (var context = GetDbContext())
-            {
-                var clientRepository = GetClientRepository(context);
-
-                //Try get some existing claims
-                var randomClientClaim = ClientMock.GenerateRandomClientClaim(0);
-
-                var grantTypes = clientRepository.GetStandardClaims(randomClientClaim.Type);
-                grantTypes.Contains(randomClientClaim.Type).Should().Be(true);
-            }
-        }
-
-        [Fact]
-        public async Task GetScopesIdentityResourceAsync()
-        {
-            using (var context = GetDbContext())
-            {
-                var clientRepository = GetClientRepository(context);
-                var identityResourceRepository = GetIdentityResourceRepository(context);
-                
-                var identityResource = IdentityResourceMock.GenerateRandomIdentityResource(0);
-                await identityResourceRepository.AddIdentityResourceAsync(identityResource);
-                
-                var identityScopes = await clientRepository.GetScopesAsync(identityResource.Name);
-
-                identityScopes[0].Should().Be(identityResource.Name);
-            }
-        }
-
-        [Fact]
-        public async Task GetScopesApiResourceAsync()
-        {
-            using (var context = GetDbContext())
-            {
-                var clientRepository = GetClientRepository(context);
-                var apiScopeRepository = GetApiScopeRepository(context);
-                
-                var apiScope = ApiScopeMock.GenerateRandomApiScope(0);
-                await apiScopeRepository.AddApiScopeAsync(apiScope);
-
-                var apiScopes = await clientRepository.GetScopesAsync(apiScope.Name);
-
-                apiScopes[0].Should().Be(apiScope.Name);
-            }
-        }
-        
-        private void ClientCloneCompare(Client cloneClientEntity, Client clientToCompare, bool cloneClientCorsOrigins = true, bool cloneClientGrantTypes = true, bool cloneClientIdPRestrictions = true, bool cloneClientPostLogoutRedirectUris = true, bool cloneClientScopes = true, bool cloneClientRedirectUris = true, bool cloneClientClaims = true, bool cloneClientProperties = true)
-        {
-            //Assert cloned client
-            clientToCompare.Should().BeEquivalentTo(cloneClientEntity,
-                options => options.Excluding(o => o.Id)
-                    .Excluding(o => o.ClientSecrets)
-                    .Excluding(o => o.ClientId)
-                    .Excluding(o => o.ClientName)
-
-                    //Skip the collections because is not possible ignore property in list :-(
-                    //Note: I've found the solution above - try ignore property of the list using SelectedMemberPath                        
-                    .Excluding(o => o.AllowedGrantTypes)
-                    .Excluding(o => o.RedirectUris)
-                    .Excluding(o => o.PostLogoutRedirectUris)
-                    .Excluding(o => o.AllowedScopes)
-                    .Excluding(o => o.ClientSecrets)
-                    .Excluding(o => o.Claims)
-                    .Excluding(o => o.IdentityProviderRestrictions)
-                    .Excluding(o => o.AllowedCorsOrigins)
-                    .Excluding(o => o.Properties)
-            );
-
-
-            //New client relations have new id's and client relations therefore is required ignore them
-            if (cloneClientGrantTypes)
-            {
-                clientToCompare.AllowedGrantTypes.Should().BeEquivalentTo(cloneClientEntity.AllowedGrantTypes,
-                    option => option.Excluding(x => x.Path.EndsWith("Id"))
-                        .Excluding(x => x.Path.EndsWith("Client")));
-            }
-            else
-            {
-                cloneClientEntity.AllowedGrantTypes.Should().BeEmpty();
-            }
-
-            if (cloneClientCorsOrigins)
-            {
-                clientToCompare.AllowedCorsOrigins.Should().BeEquivalentTo(cloneClientEntity.AllowedCorsOrigins,
-                    option => option.Excluding(x => x.Path.EndsWith("Id"))
-                        .Excluding(x => x.Path.EndsWith("Client")));
-            }
-            else
-            {
-                cloneClientEntity.AllowedCorsOrigins.Should().BeEmpty();
-            }
-
-            if (cloneClientRedirectUris)
-            {
-                clientToCompare.RedirectUris.Should().BeEquivalentTo(cloneClientEntity.RedirectUris,
-                    option => option.Excluding(x => x.Path.EndsWith("Id"))
-                        .Excluding(x => x.Path.EndsWith("Client")));
-            }
-            else
-            {
-                cloneClientEntity.RedirectUris.Should().BeEmpty();
-            }
-
-            if (cloneClientPostLogoutRedirectUris)
-            {
-                clientToCompare.PostLogoutRedirectUris.Should().BeEquivalentTo(cloneClientEntity.PostLogoutRedirectUris,
-                    option => option.Excluding(x => x.Path.EndsWith("Id"))
-                        .Excluding(x => x.Path.EndsWith("Client")));
-            }
-            else
-            {
-                cloneClientEntity.PostLogoutRedirectUris.Should().BeEmpty();
-            }
-
-            if (cloneClientScopes)
-            {
-                clientToCompare.AllowedScopes.Should().BeEquivalentTo(cloneClientEntity.AllowedScopes,
-                    option => option.Excluding(x => x.Path.EndsWith("Id"))
-                        .Excluding(x => x.Path.EndsWith("Client")));
-            }
-            else
-            {
-                cloneClientEntity.AllowedScopes.Should().BeEmpty();
-            }
-
-            if (cloneClientClaims)
-            {
-                clientToCompare.Claims.Should().BeEquivalentTo(cloneClientEntity.Claims,
-                    option => option.Excluding(x => x.Path.EndsWith("Id"))
-                        .Excluding(x => x.Path.EndsWith("Client")));
-            }
-            else
-            {
-                cloneClientEntity.Claims.Should().BeEmpty();
-            }
-
-            if (cloneClientIdPRestrictions)
-            {
-                clientToCompare.IdentityProviderRestrictions.Should().BeEquivalentTo(cloneClientEntity.IdentityProviderRestrictions,
-                    option => option.Excluding(x => x.Path.EndsWith("Id"))
-                        .Excluding(x => x.Path.EndsWith("Client")));
-            }
-            else
-            {
-                cloneClientEntity.IdentityProviderRestrictions.Should().BeEmpty();
-            }
-
-            if (cloneClientProperties)
-            {
-                clientToCompare.Properties.Should().BeEquivalentTo(cloneClientEntity.Properties,
-                    option => option.Excluding(x => x.Path.EndsWith("Id"))
-                        .Excluding(x => x.Path.EndsWith("Client")));
-            }
-            else
-            {
-                cloneClientEntity.Properties.Should().BeEmpty();
-            }
-
-            cloneClientEntity.ClientSecrets.Should().BeEmpty();
-        }
-
-        private void ClientAssert(Client client, Client clientToCompare)
-        {
-            clientToCompare.Should().BeEquivalentTo(client,
-                options => options.Excluding(o => o.Id)
-                    .Excluding(o => o.ClientSecrets)
-                    .Excluding(o => o.ClientId)
-                    .Excluding(o => o.ClientName)
-
-                    //Skip the collections because is not possible ignore property in list :-(
-                    //Note: I've found the solution above - try ignore property of the list using SelectedMemberPath                        
-                    .Excluding(o => o.AllowedGrantTypes)
-                    .Excluding(o => o.RedirectUris)
-                    .Excluding(o => o.PostLogoutRedirectUris)
-                    .Excluding(o => o.AllowedScopes)
-                    .Excluding(o => o.ClientSecrets)
-                    .Excluding(o => o.Claims)
-                    .Excluding(o => o.IdentityProviderRestrictions)
-                    .Excluding(o => o.AllowedCorsOrigins)
-                    .Excluding(o => o.Properties)
-            );
-
-            clientToCompare.AllowedGrantTypes.Should().BeEquivalentTo(client.AllowedGrantTypes,
-                    option => option.Excluding(x => x.Path.EndsWith("Id"))
-                        .Excluding(x => x.Path.EndsWith("Client")));
-
-            clientToCompare.AllowedCorsOrigins.Should().BeEquivalentTo(client.AllowedCorsOrigins,
-                option => option.Excluding(x => x.Path.EndsWith("Id"))
-                    .Excluding(x => x.Path.EndsWith("Client")));
-
-            clientToCompare.RedirectUris.Should().BeEquivalentTo(client.RedirectUris,
-                option => option.Excluding(x => x.Path.EndsWith("Id"))
-                    .Excluding(x => x.Path.EndsWith("Client")));
-
-            clientToCompare.PostLogoutRedirectUris.Should().BeEquivalentTo(client.PostLogoutRedirectUris,
-                option => option.Excluding(x => x.Path.EndsWith("Id"))
-                    .Excluding(x => x.Path.EndsWith("Client")));
-
-            clientToCompare.AllowedScopes.Should().BeEquivalentTo(client.AllowedScopes,
-                option => option.Excluding(x => x.Path.EndsWith("Id"))
-                    .Excluding(x => x.Path.EndsWith("Client")));
-
-            clientToCompare.ClientSecrets.Should().BeEquivalentTo(client.ClientSecrets,
-                option => option.Excluding(x => x.Path.EndsWith("Id"))
-                    .Excluding(x => x.Path.EndsWith("Client")));
-
-            clientToCompare.Claims.Should().BeEquivalentTo(client.Claims,
-                option => option.Excluding(x => x.Path.EndsWith("Id"))
-                    .Excluding(x => x.Path.EndsWith("Client")));
-
-            clientToCompare.IdentityProviderRestrictions.Should().BeEquivalentTo(
-                client.IdentityProviderRestrictions,
-                option => option.Excluding(x => x.Path.EndsWith("Id"))
-                    .Excluding(x => x.Path.EndsWith("Client")));
-
-            clientToCompare.Properties.Should().BeEquivalentTo(client.Properties,
+            clientToCompare.AllowedGrantTypes.Should().BeEquivalentTo(cloneClientEntity.AllowedGrantTypes,
                 option => option.Excluding(x => x.Path.EndsWith("Id"))
                     .Excluding(x => x.Path.EndsWith("Client")));
         }
+        else
+        {
+            cloneClientEntity.AllowedGrantTypes.Should().BeEmpty();
+        }
+
+        if (cloneClientCorsOrigins)
+        {
+            clientToCompare.AllowedCorsOrigins.Should().BeEquivalentTo(cloneClientEntity.AllowedCorsOrigins,
+                option => option.Excluding(x => x.Path.EndsWith("Id"))
+                    .Excluding(x => x.Path.EndsWith("Client")));
+        }
+        else
+        {
+            cloneClientEntity.AllowedCorsOrigins.Should().BeEmpty();
+        }
+
+        if (cloneClientRedirectUris)
+        {
+            clientToCompare.RedirectUris.Should().BeEquivalentTo(cloneClientEntity.RedirectUris,
+                option => option.Excluding(x => x.Path.EndsWith("Id"))
+                    .Excluding(x => x.Path.EndsWith("Client")));
+        }
+        else
+        {
+            cloneClientEntity.RedirectUris.Should().BeEmpty();
+        }
+
+        if (cloneClientPostLogoutRedirectUris)
+        {
+            clientToCompare.PostLogoutRedirectUris.Should().BeEquivalentTo(cloneClientEntity.PostLogoutRedirectUris,
+                option => option.Excluding(x => x.Path.EndsWith("Id"))
+                    .Excluding(x => x.Path.EndsWith("Client")));
+        }
+        else
+        {
+            cloneClientEntity.PostLogoutRedirectUris.Should().BeEmpty();
+        }
+
+        if (cloneClientScopes)
+        {
+            clientToCompare.AllowedScopes.Should().BeEquivalentTo(cloneClientEntity.AllowedScopes,
+                option => option.Excluding(x => x.Path.EndsWith("Id"))
+                    .Excluding(x => x.Path.EndsWith("Client")));
+        }
+        else
+        {
+            cloneClientEntity.AllowedScopes.Should().BeEmpty();
+        }
+
+        if (cloneClientClaims)
+        {
+            clientToCompare.Claims.Should().BeEquivalentTo(cloneClientEntity.Claims,
+                option => option.Excluding(x => x.Path.EndsWith("Id"))
+                    .Excluding(x => x.Path.EndsWith("Client")));
+        }
+        else
+        {
+            cloneClientEntity.Claims.Should().BeEmpty();
+        }
+
+        if (cloneClientIdPRestrictions)
+        {
+            clientToCompare.IdentityProviderRestrictions.Should().BeEquivalentTo(cloneClientEntity.IdentityProviderRestrictions,
+                option => option.Excluding(x => x.Path.EndsWith("Id"))
+                    .Excluding(x => x.Path.EndsWith("Client")));
+        }
+        else
+        {
+            cloneClientEntity.IdentityProviderRestrictions.Should().BeEmpty();
+        }
+
+        if (cloneClientProperties)
+        {
+            clientToCompare.Properties.Should().BeEquivalentTo(cloneClientEntity.Properties,
+                option => option.Excluding(x => x.Path.EndsWith("Id"))
+                    .Excluding(x => x.Path.EndsWith("Client")));
+        }
+        else
+        {
+            cloneClientEntity.Properties.Should().BeEmpty();
+        }
+
+        cloneClientEntity.ClientSecrets.Should().BeEmpty();
+    }
+
+    private void ClientAssert(Client client, Client clientToCompare)
+    {
+        clientToCompare.Should().BeEquivalentTo(client,
+            options => options.Excluding(o => o.Id)
+                .Excluding(o => o.ClientSecrets)
+                .Excluding(o => o.ClientId)
+                .Excluding(o => o.ClientName)
+
+                //Skip the collections because is not possible ignore property in list :-(
+                //Note: I've found the solution above - try ignore property of the list using SelectedMemberPath                        
+                .Excluding(o => o.AllowedGrantTypes)
+                .Excluding(o => o.RedirectUris)
+                .Excluding(o => o.PostLogoutRedirectUris)
+                .Excluding(o => o.AllowedScopes)
+                .Excluding(o => o.ClientSecrets)
+                .Excluding(o => o.Claims)
+                .Excluding(o => o.IdentityProviderRestrictions)
+                .Excluding(o => o.AllowedCorsOrigins)
+                .Excluding(o => o.Properties)
+        );
+
+        clientToCompare.AllowedGrantTypes.Should().BeEquivalentTo(client.AllowedGrantTypes,
+                option => option.Excluding(x => x.Path.EndsWith("Id"))
+                    .Excluding(x => x.Path.EndsWith("Client")));
+
+        clientToCompare.AllowedCorsOrigins.Should().BeEquivalentTo(client.AllowedCorsOrigins,
+            option => option.Excluding(x => x.Path.EndsWith("Id"))
+                .Excluding(x => x.Path.EndsWith("Client")));
+
+        clientToCompare.RedirectUris.Should().BeEquivalentTo(client.RedirectUris,
+            option => option.Excluding(x => x.Path.EndsWith("Id"))
+                .Excluding(x => x.Path.EndsWith("Client")));
+
+        clientToCompare.PostLogoutRedirectUris.Should().BeEquivalentTo(client.PostLogoutRedirectUris,
+            option => option.Excluding(x => x.Path.EndsWith("Id"))
+                .Excluding(x => x.Path.EndsWith("Client")));
+
+        clientToCompare.AllowedScopes.Should().BeEquivalentTo(client.AllowedScopes,
+            option => option.Excluding(x => x.Path.EndsWith("Id"))
+                .Excluding(x => x.Path.EndsWith("Client")));
+
+        clientToCompare.ClientSecrets.Should().BeEquivalentTo(client.ClientSecrets,
+            option => option.Excluding(x => x.Path.EndsWith("Id"))
+                .Excluding(x => x.Path.EndsWith("Client")));
+
+        clientToCompare.Claims.Should().BeEquivalentTo(client.Claims,
+            option => option.Excluding(x => x.Path.EndsWith("Id"))
+                .Excluding(x => x.Path.EndsWith("Client")));
+
+        clientToCompare.IdentityProviderRestrictions.Should().BeEquivalentTo(
+            client.IdentityProviderRestrictions,
+            option => option.Excluding(x => x.Path.EndsWith("Id"))
+                .Excluding(x => x.Path.EndsWith("Client")));
+
+        clientToCompare.Properties.Should().BeEquivalentTo(client.Properties,
+            option => option.Excluding(x => x.Path.EndsWith("Id"))
+                .Excluding(x => x.Path.EndsWith("Client")));
     }
 }

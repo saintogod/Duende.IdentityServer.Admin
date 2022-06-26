@@ -7,26 +7,25 @@ using Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Identity.Dtos.Identity.B
 using Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Identity.Dtos.Identity.Interfaces;
 using Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Shared.Dtos.Common;
 
-namespace Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Identity.Dtos.Identity
+namespace Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Identity.Dtos.Identity;
+
+public class UserRolesDto<TRoleDto, TKey> : BaseUserRolesDto<TKey>, IUserRolesDto
+    where TRoleDto : RoleDto<TKey>
 {
-    public class UserRolesDto<TRoleDto, TKey> : BaseUserRolesDto<TKey>, IUserRolesDto
-        where TRoleDto : RoleDto<TKey>
+    public UserRolesDto()
     {
-        public UserRolesDto()
-        {
-           Roles = new List<TRoleDto>(); 
-        }
-
-        public string UserName { get; set; }
-
-        public List<SelectItemDto> RolesList { get; set; }
-
-        public List<TRoleDto> Roles { get; set; }
-
-        public int PageSize { get; set; }
-
-        public int TotalCount { get; set; }
-
-        List<IRoleDto> IUserRolesDto.Roles => Roles.Cast<IRoleDto>().ToList();
+        Roles = new List<TRoleDto>();
     }
+
+    public string UserName { get; set; }
+
+    public List<SelectItemDto> RolesList { get; set; }
+
+    public List<TRoleDto> Roles { get; set; }
+
+    public int PageSize { get; set; }
+
+    public int TotalCount { get; set; }
+
+    List<IRoleDto> IUserRolesDto.Roles => Roles.Cast<IRoleDto>().ToList();
 }

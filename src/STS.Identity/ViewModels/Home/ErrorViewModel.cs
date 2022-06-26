@@ -6,10 +6,9 @@
 
 using Duende.IdentityServer.Models;
 
-namespace Skoruba.Duende.IdentityServer.STS.Identity.ViewModels.Home
+namespace Skoruba.Duende.IdentityServer.STS.Identity.ViewModels.Home;
+
+public class ErrorViewModel
 {
-    public class ErrorViewModel
-    {
-        public ErrorMessage Error { get; set; }
-    }
+    public ErrorMessage Error { get; set; }
 }

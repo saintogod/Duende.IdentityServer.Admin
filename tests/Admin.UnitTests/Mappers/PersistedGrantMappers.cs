@@ -7,25 +7,24 @@ using Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Mappers;
 using Skoruba.Duende.IdentityServer.Admin.UnitTests.Mocks;
 using Xunit;
 
-namespace Skoruba.Duende.IdentityServer.Admin.UnitTests.Mappers
+namespace Skoruba.Duende.IdentityServer.Admin.UnitTests.Mappers;
+
+public class PersistedGrantMappers
 {
-    public class PersistedGrantMappers
+    [Fact]
+    public void CanMapPersistedGrantToModel()
     {
-        [Fact]
-        public void CanMapPersistedGrantToModel()
-        {
-            var persistedGrantKey = Guid.NewGuid().ToString();
+        var persistedGrantKey = Guid.NewGuid().ToString();
 
-            //Generate entity
-            var persistedGrant = PersistedGrantMock.GenerateRandomPersistedGrant(persistedGrantKey);
+        //Generate entity
+        var persistedGrant = PersistedGrantMock.GenerateRandomPersistedGrant(persistedGrantKey);
 
-            //Try map to DTO
-            var persistedGrantDto = persistedGrant.ToModel();
+        //Try map to DTO
+        var persistedGrantDto = persistedGrant.ToModel();
 
-            //Asert
-            persistedGrantDto.Should().NotBeNull();
+        //Asert
+        persistedGrantDto.Should().NotBeNull();
 
-            persistedGrantDto.Should().BeEquivalentTo(persistedGrant);
-        }
+        persistedGrantDto.Should().BeEquivalentTo(persistedGrant);
     }
 }

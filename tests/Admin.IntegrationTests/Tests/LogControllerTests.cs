@@ -8,71 +8,70 @@ using Skoruba.Duende.IdentityServer.Admin.IntegrationTests.Tests.Base;
 using Skoruba.Duende.IdentityServer.Admin.UI.Configuration.Constants;
 using Xunit;
 
-namespace Skoruba.Duende.IdentityServer.Admin.IntegrationTests.Tests
+namespace Skoruba.Duende.IdentityServer.Admin.IntegrationTests.Tests;
+
+public class LogControllerTests : BaseClassFixture
 {
-	public class LogControllerTests : BaseClassFixture
+    public LogControllerTests(TestFixture fixture)
+        : base(fixture)
     {
-        public LogControllerTests(TestFixture fixture)
-            : base(fixture)
-        {
-        }
+    }
 
-        [Fact]
-        public async Task ReturnRedirectInErrorsLogWithoutAdminRole()
-        {
-            //Remove
-            Client.DefaultRequestHeaders.Clear();
+    [Fact]
+    public async Task ReturnRedirectInErrorsLogWithoutAdminRole()
+    {
+        //Remove
+        Client.DefaultRequestHeaders.Clear();
 
-            // Act
-            var response = await Client.GetAsync("/log/errorslog");
+        // Act
+        var response = await Client.GetAsync("/log/errorslog");
 
-            // Assert           
-            response.StatusCode.Should().Be(HttpStatusCode.Redirect);
+        // Assert           
+        response.StatusCode.Should().Be(HttpStatusCode.Redirect);
 
-            //The redirect to login
-            response.Headers.Location.ToString().Should().Contain(AuthenticationConsts.AccountLoginPage);
-        }
+        //The redirect to login
+        response.Headers.Location.ToString().Should().Contain(AuthenticationConsts.AccountLoginPage);
+    }
 
-        [Fact]
-        public async Task ReturnRedirectInAuditLogWithoutAdminRole()
-        {
-            //Remove
-            Client.DefaultRequestHeaders.Clear();
+    [Fact]
+    public async Task ReturnRedirectInAuditLogWithoutAdminRole()
+    {
+        //Remove
+        Client.DefaultRequestHeaders.Clear();
 
-            // Act
-            var response = await Client.GetAsync("/log/auditlog");
+        // Act
+        var response = await Client.GetAsync("/log/auditlog");
 
-            // Assert           
-            response.StatusCode.Should().Be(HttpStatusCode.Redirect);
+        // Assert           
+        response.StatusCode.Should().Be(HttpStatusCode.Redirect);
 
-            //The redirect to login
-            response.Headers.Location.ToString().Should().Contain(AuthenticationConsts.AccountLoginPage);
-        }
+        //The redirect to login
+        response.Headers.Location.ToString().Should().Contain(AuthenticationConsts.AccountLoginPage);
+    }
 
-        [Fact]
-        public async Task ReturnSuccessInErrorsLogWithAdminRole()
-        {
-            SetupAdminClaimsViaHeaders();
+    [Fact]
+    public async Task ReturnSuccessInErrorsLogWithAdminRole()
+    {
+        SetupAdminClaimsViaHeaders();
 
-            // Act
-            var response = await Client.GetAsync("/log/errorslog");
+        // Act
+        var response = await Client.GetAsync("/log/errorslog");
 
-            // Assert
-            response.EnsureSuccessStatusCode();
-            response.StatusCode.Should().Be(HttpStatusCode.OK);
-        }
+        // Assert
+        response.EnsureSuccessStatusCode();
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+    }
 
-        [Fact]
-        public async Task ReturnSuccessInAuditLogWithAdminRole()
-        {
-            SetupAdminClaimsViaHeaders();
+    [Fact]
+    public async Task ReturnSuccessInAuditLogWithAdminRole()
+    {
+        SetupAdminClaimsViaHeaders();
 
-            // Act
-            var response = await Client.GetAsync("/log/auditlog");
+        // Act
+        var response = await Client.GetAsync("/log/auditlog");
 
-            // Assert
-            response.EnsureSuccessStatusCode();
-            response.StatusCode.Should().Be(HttpStatusCode.OK);
-        }
+        // Assert
+        response.EnsureSuccessStatusCode();
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
 }

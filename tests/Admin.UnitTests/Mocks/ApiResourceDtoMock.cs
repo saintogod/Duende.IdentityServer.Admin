@@ -7,72 +7,71 @@ using Bogus;
 using Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Dtos.Configuration;
 using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Constants;
 
-namespace Skoruba.Duende.IdentityServer.Admin.UnitTests.Mocks
+namespace Skoruba.Duende.IdentityServer.Admin.UnitTests.Mocks;
+
+public static class ApiResourceDtoMock
 {
-    public static class ApiResourceDtoMock
+    public static Faker<ApiResourceDto> GetApiResourceFaker(int id)
     {
-        public static Faker<ApiResourceDto> GetApiResourceFaker(int id)
-        {            
-            var fakerApiResource = new Faker<ApiResourceDto>()
-                .RuleFor(o => o.Name, f => Guid.NewGuid().ToString())
-                .RuleFor(o => o.Id, id)
-                .RuleFor(o => o.Description, f => f.Random.Words(f.Random.Number(1, 5)))
-                .RuleFor(o => o.DisplayName, f => f.Random.Words(f.Random.Number(1, 5)))
-                .RuleFor(o => o.Enabled, f => f.Random.Bool())
-                .RuleFor(o => o.RequireResourceIndicator, f => f.Random.Bool())
-                .RuleFor(o => o.UserClaims, f => Enumerable.Range(1, f.Random.Int(1, 10)).Select(x => f.PickRandom(ClientConsts.GetStandardClaims())).ToList())
-                .RuleFor(o => o.ShowInDiscoveryDocument, f => f.Random.Bool())
-                .RuleFor(o => o.AllowedAccessTokenSigningAlgorithms, f => ClientMock.AllowedSigningAlgorithms().Take(f.Random.Number(1, 5)).ToList());
-            
-            return fakerApiResource;
-        }
+        var fakerApiResource = new Faker<ApiResourceDto>()
+            .RuleFor(o => o.Name, f => Guid.NewGuid().ToString())
+            .RuleFor(o => o.Id, id)
+            .RuleFor(o => o.Description, f => f.Random.Words(f.Random.Number(1, 5)))
+            .RuleFor(o => o.DisplayName, f => f.Random.Words(f.Random.Number(1, 5)))
+            .RuleFor(o => o.Enabled, f => f.Random.Bool())
+            .RuleFor(o => o.RequireResourceIndicator, f => f.Random.Bool())
+            .RuleFor(o => o.UserClaims, f => Enumerable.Range(1, f.Random.Int(1, 10)).Select(x => f.PickRandom(ClientConsts.GetStandardClaims())).ToList())
+            .RuleFor(o => o.ShowInDiscoveryDocument, f => f.Random.Bool())
+            .RuleFor(o => o.AllowedAccessTokenSigningAlgorithms, f => ClientMock.AllowedSigningAlgorithms().Take(f.Random.Number(1, 5)).ToList());
 
-	    public static ApiResourcePropertiesDto GenerateRandomApiResourceProperty(int id, int apiResourceId)
-	    {
-		    var apiResourcePropertyFaker = ApiResourcePropertyFaker(id, apiResourceId);
+        return fakerApiResource;
+    }
 
-		    var propertyTesting = apiResourcePropertyFaker.Generate();
+    public static ApiResourcePropertiesDto GenerateRandomApiResourceProperty(int id, int apiResourceId)
+    {
+        var apiResourcePropertyFaker = ApiResourcePropertyFaker(id, apiResourceId);
 
-		    return propertyTesting;
-	    }
+        var propertyTesting = apiResourcePropertyFaker.Generate();
 
-        public static Faker<ApiResourcePropertiesDto> ApiResourcePropertyFaker(int id, int apiResourceId)
-	    {
-		    var apiResourcePropertyFaker = new Faker<ApiResourcePropertiesDto>()
-			    .StrictMode(false)
-			    .RuleFor(o => o.ApiResourcePropertyId, id)
-			    .RuleFor(o => o.Key, f => Guid.NewGuid().ToString())
-			    .RuleFor(o => o.Value, f => Guid.NewGuid().ToString())
-			    .RuleFor(o => o.ApiResourceId, apiResourceId);
+        return propertyTesting;
+    }
 
-		    return apiResourcePropertyFaker;
-	    }
-        
-        public static Faker<ApiSecretsDto> GetApiSecretFaker(int id, int resourceId)
-        {
-            var fakerApiSecret = new Faker<ApiSecretsDto>()
-                .RuleFor(o => o.Type, f => Guid.NewGuid().ToString())
-                .RuleFor(o => o.Value, f => Guid.NewGuid().ToString())
-                .RuleFor(o => o.ApiSecretId, id)
-                .RuleFor(o => o.ApiResourceId, resourceId)
-                .RuleFor(o => o.Description, f => f.Random.Words(f.Random.Number(1, 5)))
-                .RuleFor(o => o.Expiration, f => f.Date.Future());                
+    public static Faker<ApiResourcePropertiesDto> ApiResourcePropertyFaker(int id, int apiResourceId)
+    {
+        var apiResourcePropertyFaker = new Faker<ApiResourcePropertiesDto>()
+            .StrictMode(false)
+            .RuleFor(o => o.ApiResourcePropertyId, id)
+            .RuleFor(o => o.Key, f => Guid.NewGuid().ToString())
+            .RuleFor(o => o.Value, f => Guid.NewGuid().ToString())
+            .RuleFor(o => o.ApiResourceId, apiResourceId);
 
-            return fakerApiSecret;
-        }
-   
-        public static ApiResourceDto GenerateRandomApiResource(int id)
-        {
-            var apiResource = GetApiResourceFaker(id).Generate();
+        return apiResourcePropertyFaker;
+    }
 
-            return apiResource;
-        }
+    public static Faker<ApiSecretsDto> GetApiSecretFaker(int id, int resourceId)
+    {
+        var fakerApiSecret = new Faker<ApiSecretsDto>()
+            .RuleFor(o => o.Type, f => Guid.NewGuid().ToString())
+            .RuleFor(o => o.Value, f => Guid.NewGuid().ToString())
+            .RuleFor(o => o.ApiSecretId, id)
+            .RuleFor(o => o.ApiResourceId, resourceId)
+            .RuleFor(o => o.Description, f => f.Random.Words(f.Random.Number(1, 5)))
+            .RuleFor(o => o.Expiration, f => f.Date.Future());
 
-        public static ApiSecretsDto GenerateRandomApiSecret(int id, int resourceId)
-        {
-            var apiSecret = GetApiSecretFaker(id, resourceId).Generate();
+        return fakerApiSecret;
+    }
 
-            return apiSecret;
-        }
+    public static ApiResourceDto GenerateRandomApiResource(int id)
+    {
+        var apiResource = GetApiResourceFaker(id).Generate();
+
+        return apiResource;
+    }
+
+    public static ApiSecretsDto GenerateRandomApiSecret(int id, int resourceId)
+    {
+        var apiSecret = GetApiSecretFaker(id, resourceId).Generate();
+
+        return apiSecret;
     }
 }

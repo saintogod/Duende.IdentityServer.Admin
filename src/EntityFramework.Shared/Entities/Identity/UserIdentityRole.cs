@@ -3,10 +3,9 @@
 
 using Microsoft.AspNetCore.Identity;
 
-namespace Skoruba.Duende.IdentityServer.Admin.EntityFramework.Shared.Entities.Identity
+namespace Skoruba.Duende.IdentityServer.Admin.EntityFramework.Shared.Entities.Identity;
+
+public class UserIdentityRole : IdentityRole
 {
-	public class UserIdentityRole : IdentityRole
-	{
-		
-	}
+
 }

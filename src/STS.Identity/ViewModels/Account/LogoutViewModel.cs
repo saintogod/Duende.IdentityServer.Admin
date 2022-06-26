@@ -4,10 +4,9 @@
 // Original file: https://github.com/DuendeSoftware/IdentityServer.Quickstart.UI
 // Modified by Jan Škoruba
 
-namespace Skoruba.Duende.IdentityServer.STS.Identity.ViewModels.Account
+namespace Skoruba.Duende.IdentityServer.STS.Identity.ViewModels.Account;
+
+public class LogoutViewModel : LogoutInputModel
 {
-    public class LogoutViewModel : LogoutInputModel
-    {
-        public bool ShowLogoutPrompt { get; set; } = true;
-    }
+    public bool ShowLogoutPrompt { get; set; } = true;
 }

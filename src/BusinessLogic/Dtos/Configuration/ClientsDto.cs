@@ -3,19 +3,18 @@
 
 using System.Collections.Generic;
 
-namespace Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Dtos.Configuration
+namespace Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Dtos.Configuration;
+
+public class ClientsDto
 {
-	public class ClientsDto
-	{
-		public ClientsDto()
-		{
-			Clients = new List<ClientDto>();
-		}
+    public ClientsDto()
+    {
+        Clients = new List<ClientDto>();
+    }
 
-		public List<ClientDto> Clients { get; set; }
+    public List<ClientDto> Clients { get; set; }
 
-		public int TotalCount { get; set; }		
+    public int TotalCount { get; set; }
 
-		public int PageSize { get; set; }
-	}
+    public int PageSize { get; set; }
 }

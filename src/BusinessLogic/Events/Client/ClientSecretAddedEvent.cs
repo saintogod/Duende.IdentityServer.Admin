@@ -4,21 +4,20 @@
 using System;
 using Skoruba.AuditLogging.Events;
 
-namespace Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Events.Client
+namespace Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Events.Client;
+
+public class ClientSecretAddedEvent : AuditEvent
 {
-    public class ClientSecretAddedEvent : AuditEvent
+    public string Type { get; set; }
+
+    public DateTime? Expiration { get; set; }
+
+    public int ClientId { get; set; }
+
+    public ClientSecretAddedEvent(int clientId, string type, DateTime? expiration)
     {
-        public string Type { get; set; }
-
-        public DateTime? Expiration { get; set; }
-
-        public int ClientId { get; set; }
-
-        public ClientSecretAddedEvent(int clientId, string type, DateTime? expiration)
-        {
-            ClientId = clientId;
-            Type = type;
-            Expiration = expiration;
-        }
+        ClientId = clientId;
+        Type = type;
+        Expiration = expiration;
     }
 }

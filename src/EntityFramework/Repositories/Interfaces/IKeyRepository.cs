@@ -6,15 +6,14 @@ using System.Threading.Tasks;
 using Duende.IdentityServer.EntityFramework.Entities;
 using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Extensions.Common;
 
-namespace Skoruba.Duende.IdentityServer.Admin.EntityFramework.Repositories.Interfaces
+namespace Skoruba.Duende.IdentityServer.Admin.EntityFramework.Repositories.Interfaces;
+
+public interface IKeyRepository
 {
-    public interface IKeyRepository
-    {
-        Task<PagedList<Key>> GetKeysAsync(int page = 1, int pageSize = 10, CancellationToken cancellationToken = default);
-        Task<Key> GetKeyAsync(string id, CancellationToken cancellationToken = default);
-        Task<bool> ExistsKeyAsync(string id, CancellationToken cancellationToken = default);
-        Task DeleteKeyAsync(string id, CancellationToken cancellationToken = default);
-        Task<int> SaveAllChangesAsync(CancellationToken cancellationToken = default);
-        bool AutoSaveChanges { get; set; }
-    }
+    Task<PagedList<Key>> GetKeysAsync(int page = 1, int pageSize = 10, CancellationToken cancellationToken = default);
+    Task<Key> GetKeyAsync(string id, CancellationToken cancellationToken = default);
+    Task<bool> ExistsKeyAsync(string id, CancellationToken cancellationToken = default);
+    Task DeleteKeyAsync(string id, CancellationToken cancellationToken = default);
+    Task<int> SaveAllChangesAsync(CancellationToken cancellationToken = default);
+    bool AutoSaveChanges { get; set; }
 }

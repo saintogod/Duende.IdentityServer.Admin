@@ -3,14 +3,13 @@
 
 using Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Identity.Dtos.Identity.Interfaces;
 
-namespace Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Identity.Dtos.Identity.Base
+namespace Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Identity.Dtos.Identity.Base;
+
+public class BaseRoleClaimDto<TRoleId> : IBaseRoleClaimDto
 {
-    public class BaseRoleClaimDto<TRoleId> : IBaseRoleClaimDto
-    {
-        public int ClaimId { get; set; }
+    public int ClaimId { get; set; }
 
-        public TRoleId RoleId { get; set; }
+    public TRoleId RoleId { get; set; }
 
-        object IBaseRoleClaimDto.RoleId => RoleId;
-    }
+    object IBaseRoleClaimDto.RoleId => RoleId;
 }

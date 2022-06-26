@@ -6,46 +6,45 @@ using Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Dtos.Grant;
 using Skoruba.Duende.IdentityServer.Admin.UnitTests.Mocks;
 using Xunit;
 
-namespace Skoruba.Duende.IdentityServer.Admin.Api.UnitTests.Mappers
+namespace Skoruba.Duende.IdentityServer.Admin.Api.UnitTests.Mappers;
+
+public class PersistedGrantMappers
 {
-    public class PersistedGrantMappers
+    [Fact]
+    public void CanMapPersistedGrantDtoToPersistedGrantSubjectsApiDto()
     {
-        [Fact]
-        public void CanMapPersistedGrantDtoToPersistedGrantSubjectsApiDto()
-        {
-            var persistedGrantDto = PersistedGrantDtoMock.GenerateRandomPersistedGrant(Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
+        var persistedGrantDto = PersistedGrantDtoMock.GenerateRandomPersistedGrant(Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
 
-            var persistedGrantsDto = new PersistedGrantsDto();
-            
-            persistedGrantsDto.PersistedGrants.Add(persistedGrantDto);
+        var persistedGrantsDto = new PersistedGrantsDto();
 
-            var persistedGrantSubjectsApiDto = persistedGrantsDto.ToPersistedGrantApiModel<PersistedGrantSubjectsApiDto>();
+        persistedGrantsDto.PersistedGrants.Add(persistedGrantDto);
 
-            persistedGrantSubjectsApiDto.Should().BeEquivalentTo(persistedGrantsDto, options => options.Excluding(x=> x.SubjectId));
-        }
+        var persistedGrantSubjectsApiDto = persistedGrantsDto.ToPersistedGrantApiModel<PersistedGrantSubjectsApiDto>();
 
-        [Fact]
-        public void CanMapPersistedGrantDtoToPersistedGrantsApiDto()
-        {
-            var persistedGrantDto = PersistedGrantDtoMock.GenerateRandomPersistedGrant(Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
+        persistedGrantSubjectsApiDto.Should().BeEquivalentTo(persistedGrantsDto, options => options.Excluding(x => x.SubjectId));
+    }
 
-            var persistedGrantsDto = new PersistedGrantsDto();
+    [Fact]
+    public void CanMapPersistedGrantDtoToPersistedGrantsApiDto()
+    {
+        var persistedGrantDto = PersistedGrantDtoMock.GenerateRandomPersistedGrant(Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
 
-            persistedGrantsDto.PersistedGrants.Add(persistedGrantDto);
+        var persistedGrantsDto = new PersistedGrantsDto();
 
-            var persistedGrantsApiDto = persistedGrantsDto.ToPersistedGrantApiModel<PersistedGrantsApiDto>();
+        persistedGrantsDto.PersistedGrants.Add(persistedGrantDto);
 
-            persistedGrantsApiDto.Should().BeEquivalentTo(persistedGrantsDto, options => options.Excluding(x => x.SubjectId));
-        }
+        var persistedGrantsApiDto = persistedGrantsDto.ToPersistedGrantApiModel<PersistedGrantsApiDto>();
 
-        [Fact]
-        public void CanMapPersistedGrantDtoToPersistedGrantApiDto()
-        {
-            var persistedGrantDto = PersistedGrantDtoMock.GenerateRandomPersistedGrant(Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
+        persistedGrantsApiDto.Should().BeEquivalentTo(persistedGrantsDto, options => options.Excluding(x => x.SubjectId));
+    }
 
-            var persistedGrantApiDto = persistedGrantDto.ToPersistedGrantApiModel<PersistedGrantApiDto>();
+    [Fact]
+    public void CanMapPersistedGrantDtoToPersistedGrantApiDto()
+    {
+        var persistedGrantDto = PersistedGrantDtoMock.GenerateRandomPersistedGrant(Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
 
-            persistedGrantApiDto.Should().BeEquivalentTo(persistedGrantDto, options => options.Excluding(x => x.SubjectId));
-        }
+        var persistedGrantApiDto = persistedGrantDto.ToPersistedGrantApiModel<PersistedGrantApiDto>();
+
+        persistedGrantApiDto.Should().BeEquivalentTo(persistedGrantDto, options => options.Excluding(x => x.SubjectId));
     }
 }

@@ -12,130 +12,129 @@ using Skoruba.Duende.IdentityServer.Admin.Api.Resources;
 using Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Dtos.Configuration;
 using Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Services.Interfaces;
 
-namespace Skoruba.Duende.IdentityServer.Admin.Api.Controllers
+namespace Skoruba.Duende.IdentityServer.Admin.Api.Controllers;
+
+[Route("api/[controller]")]
+[ApiController]
+[TypeFilter(typeof(ControllerExceptionFilterAttribute))]
+[Produces("application/json", "application/problem+json")]
+[Authorize(Policy = AuthorizationConsts.AdministrationPolicy)]
+public class ApiScopesController : ControllerBase
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    [TypeFilter(typeof(ControllerExceptionFilterAttribute))]
-    [Produces("application/json", "application/problem+json")]
-    [Authorize(Policy = AuthorizationConsts.AdministrationPolicy)]
-    public class ApiScopesController : ControllerBase
+    private readonly IApiErrorResources _errorResources;
+    private readonly IApiScopeService _apiScopeService;
+
+    public ApiScopesController(IApiErrorResources errorResources, IApiScopeService apiScopeService)
     {
-        private readonly IApiErrorResources _errorResources;
-        private readonly IApiScopeService _apiScopeService;
+        _errorResources = errorResources;
+        _apiScopeService = apiScopeService;
+    }
 
-        public ApiScopesController(IApiErrorResources errorResources, IApiScopeService apiScopeService)
+    [HttpGet]
+    public async Task<ActionResult<ApiScopesApiDto>> GetScopes(string search, int page = 1, int pageSize = 10)
+    {
+        var apiScopesDto = await _apiScopeService.GetApiScopesAsync(search, page, pageSize);
+        var apiScopesApiDto = apiScopesDto.ToApiScopeApiModel<ApiScopesApiDto>();
+
+        return Ok(apiScopesApiDto);
+    }
+
+    [HttpGet("{id}")]
+    public async Task<ActionResult<ApiScopeApiDto>> GetScope(int id)
+    {
+        var apiScopesDto = await _apiScopeService.GetApiScopeAsync(id);
+        var apiScopeApiDto = apiScopesDto.ToApiScopeApiModel<ApiScopeApiDto>();
+
+        return Ok(apiScopeApiDto);
+    }
+
+    [HttpGet("{id}/Properties")]
+    public async Task<ActionResult<ApiScopePropertiesApiDto>> GetScopeProperties(int id, int page = 1, int pageSize = 10)
+    {
+        var apiScopePropertiesDto = await _apiScopeService.GetApiScopePropertiesAsync(id, page, pageSize);
+        var apiScopePropertiesApiDto = apiScopePropertiesDto.ToApiScopeApiModel<ApiScopePropertiesApiDto>();
+
+        return Ok(apiScopePropertiesApiDto);
+    }
+
+    [HttpPost]
+    [ProducesResponseType(201)]
+    [ProducesResponseType(400)]
+    public async Task<IActionResult> PostScope([FromBody] ApiScopeApiDto apiScopeApi)
+    {
+        var apiScope = apiScopeApi.ToApiScopeApiModel<ApiScopeDto>();
+
+        if (!apiScope.Id.Equals(default))
         {
-            _errorResources = errorResources;
-            _apiScopeService = apiScopeService;
+            return BadRequest(_errorResources.CannotSetId());
         }
 
-        [HttpGet]
-        public async Task<ActionResult<ApiScopesApiDto>> GetScopes(string search, int page = 1, int pageSize = 10)
-        {
-            var apiScopesDto = await _apiScopeService.GetApiScopesAsync(search, page, pageSize);
-            var apiScopesApiDto = apiScopesDto.ToApiScopeApiModel<ApiScopesApiDto>();
+        var id = await _apiScopeService.AddApiScopeAsync(apiScope);
+        apiScope.Id = id;
 
-            return Ok(apiScopesApiDto);
+        return CreatedAtAction(nameof(GetScope), new { scopeId = id }, apiScope);
+    }
+
+    [HttpPost("{id}/Properties")]
+    [ProducesResponseType(201)]
+    [ProducesResponseType(400)]
+    public async Task<IActionResult> PostProperty(int id, [FromBody] ApiScopePropertyApiDto apiScopePropertyApi)
+    {
+        var apiResourcePropertiesDto = apiScopePropertyApi.ToApiScopeApiModel<ApiScopePropertiesDto>();
+        apiResourcePropertiesDto.ApiScopeId = id;
+
+        if (!apiResourcePropertiesDto.ApiScopePropertyId.Equals(default))
+        {
+            return BadRequest(_errorResources.CannotSetId());
         }
 
-        [HttpGet("{id}")]
-        public async Task<ActionResult<ApiScopeApiDto>> GetScope(int id)
-        {
-            var apiScopesDto = await _apiScopeService.GetApiScopeAsync(id);
-            var apiScopeApiDto = apiScopesDto.ToApiScopeApiModel<ApiScopeApiDto>();
+        var propertyId = await _apiScopeService.AddApiScopePropertyAsync(apiResourcePropertiesDto);
+        apiScopePropertyApi.Id = propertyId;
 
-            return Ok(apiScopeApiDto);
-        }
+        return CreatedAtAction(nameof(GetProperty), new { propertyId }, apiScopePropertyApi);
+    }
 
-        [HttpGet("{id}/Properties")]
-        public async Task<ActionResult<ApiScopePropertiesApiDto>> GetScopeProperties(int id, int page = 1, int pageSize = 10)
-        {
-            var apiScopePropertiesDto = await _apiScopeService.GetApiScopePropertiesAsync(id, page, pageSize);
-            var apiScopePropertiesApiDto = apiScopePropertiesDto.ToApiScopeApiModel<ApiScopePropertiesApiDto>();
+    [HttpGet("Properties/{propertyId}")]
+    public async Task<ActionResult<ApiScopePropertyApiDto>> GetProperty(int propertyId)
+    {
+        var apiScopePropertyAsync = await _apiScopeService.GetApiScopePropertyAsync(propertyId);
+        var resourcePropertyApiDto = apiScopePropertyAsync.ToApiScopeApiModel<ApiScopePropertyApiDto>();
 
-            return Ok(apiScopePropertiesApiDto);
-        }
+        return Ok(resourcePropertyApiDto);
+    }
 
-        [HttpPost]
-        [ProducesResponseType(201)]
-        [ProducesResponseType(400)]
-        public async Task<IActionResult> PostScope([FromBody]ApiScopeApiDto apiScopeApi)
-        {
-            var apiScope = apiScopeApi.ToApiScopeApiModel<ApiScopeDto>();
-            
-            if (!apiScope.Id.Equals(default))
-            {
-                return BadRequest(_errorResources.CannotSetId());
-            }
+    [HttpDelete("Properties/{propertyId}")]
+    public async Task<IActionResult> DeleteProperty(int propertyId)
+    {
+        var apiScopePropertiesDto = new ApiScopePropertiesDto { ApiScopePropertyId = propertyId };
 
-            var id = await _apiScopeService.AddApiScopeAsync(apiScope);
-            apiScope.Id = id;
+        await _apiScopeService.GetApiScopePropertyAsync(apiScopePropertiesDto.ApiScopePropertyId);
+        await _apiScopeService.DeleteApiScopePropertyAsync(apiScopePropertiesDto);
 
-            return CreatedAtAction(nameof(GetScope), new {scopeId = id}, apiScope);
-        }
+        return Ok();
+    }
 
-        [HttpPost("{id}/Properties")]
-        [ProducesResponseType(201)]
-        [ProducesResponseType(400)]
-        public async Task<IActionResult> PostProperty(int id, [FromBody]ApiScopePropertyApiDto apiScopePropertyApi)
-        {
-            var apiResourcePropertiesDto = apiScopePropertyApi.ToApiScopeApiModel<ApiScopePropertiesDto>();
-            apiResourcePropertiesDto.ApiScopeId = id;
+    [HttpPut]
+    public async Task<IActionResult> PutScope([FromBody] ApiScopeApiDto apiScopeApi)
+    {
+        var apiScope = apiScopeApi.ToApiScopeApiModel<ApiScopeDto>();
 
-            if (!apiResourcePropertiesDto.ApiScopePropertyId.Equals(default))
-            {
-                return BadRequest(_errorResources.CannotSetId());
-            }
+        await _apiScopeService.GetApiScopeAsync(apiScope.Id);
 
-            var propertyId = await _apiScopeService.AddApiScopePropertyAsync(apiResourcePropertiesDto);
-            apiScopePropertyApi.Id = propertyId;
+        await _apiScopeService.UpdateApiScopeAsync(apiScope);
 
-            return CreatedAtAction(nameof(GetProperty), new { propertyId }, apiScopePropertyApi);
-        }
+        return Ok();
+    }
 
-        [HttpGet("Properties/{propertyId}")]
-        public async Task<ActionResult<ApiScopePropertyApiDto>> GetProperty(int propertyId)
-        {
-            var apiScopePropertyAsync = await _apiScopeService.GetApiScopePropertyAsync(propertyId);
-            var resourcePropertyApiDto = apiScopePropertyAsync.ToApiScopeApiModel<ApiScopePropertyApiDto>();
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteScope(int id)
+    {
+        var apiScope = new ApiScopeDto { Id = id };
 
-            return Ok(resourcePropertyApiDto);
-        }
+        await _apiScopeService.GetApiScopeAsync(apiScope.Id);
 
-        [HttpDelete("Properties/{propertyId}")]
-        public async Task<IActionResult> DeleteProperty(int propertyId)
-        {
-            var apiScopePropertiesDto = new ApiScopePropertiesDto { ApiScopePropertyId = propertyId };
+        await _apiScopeService.DeleteApiScopeAsync(apiScope);
 
-            await _apiScopeService.GetApiScopePropertyAsync(apiScopePropertiesDto.ApiScopePropertyId);
-            await _apiScopeService.DeleteApiScopePropertyAsync(apiScopePropertiesDto);
-
-            return Ok();
-        }
-
-        [HttpPut]
-        public async Task<IActionResult> PutScope([FromBody]ApiScopeApiDto apiScopeApi)
-        {
-            var apiScope = apiScopeApi.ToApiScopeApiModel<ApiScopeDto>();
-            
-            await _apiScopeService.GetApiScopeAsync(apiScope.Id);
-
-            await _apiScopeService.UpdateApiScopeAsync(apiScope);
-
-            return Ok();
-        }
-
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteScope(int id)
-        {
-            var apiScope = new ApiScopeDto { Id = id };
-
-            await _apiScopeService.GetApiScopeAsync(apiScope.Id);
-
-            await _apiScopeService.DeleteApiScopeAsync(apiScope);
-
-            return Ok();
-        }
+        return Ok();
     }
 }

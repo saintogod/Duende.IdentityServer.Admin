@@ -14,63 +14,62 @@ using Skoruba.Duende.IdentityServer.Shared.Configuration.Helpers;
 using Skoruba.Duende.IdentityServer.STS.Identity.Helpers;
 using Skoruba.Duende.IdentityServer.STS.Identity.ViewModels.Home;
 
-namespace Skoruba.Duende.IdentityServer.STS.Identity.Controllers
+namespace Skoruba.Duende.IdentityServer.STS.Identity.Controllers;
+
+[SecurityHeaders]
+public class HomeController : Controller
 {
-    [SecurityHeaders]
-    public class HomeController : Controller
+    private readonly IIdentityServerInteractionService _interaction;
+
+    public HomeController(IIdentityServerInteractionService interaction)
     {
-        private readonly IIdentityServerInteractionService _interaction;
+        _interaction = interaction;
+    }
 
-        public HomeController(IIdentityServerInteractionService interaction)
+    public IActionResult Index()
+    {
+        return View();
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public IActionResult SetLanguage(string culture, string returnUrl)
+    {
+        Response.Cookies.Append(
+            CookieRequestCultureProvider.DefaultCookieName,
+            CookieRequestCultureProvider.MakeCookieValue(new RequestCulture(culture)),
+            new CookieOptions { Expires = DateTimeOffset.UtcNow.AddYears(1) }
+        );
+        return LocalRedirect(returnUrl);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public IActionResult SelectTheme(string theme, string returnUrl)
+    {
+        Response.Cookies.Append(
+            ThemeHelpers.CookieThemeKey,
+            theme,
+            new CookieOptions { Expires = DateTimeOffset.UtcNow.AddYears(1) }
+        );
+
+        return LocalRedirect(returnUrl);
+    }
+
+    /// <summary>
+    /// Shows the error page
+    /// </summary>
+    public async Task<IActionResult> Error(string errorId)
+    {
+        var vm = new ErrorViewModel();
+
+        // retrieve error details from identityserver
+        var message = await _interaction.GetErrorContextAsync(errorId);
+        if (message != null)
         {
-            _interaction = interaction;
+            vm.Error = message;
         }
 
-        public IActionResult Index()
-        {
-            return View();
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult SetLanguage(string culture, string returnUrl)
-        {
-            Response.Cookies.Append(
-                CookieRequestCultureProvider.DefaultCookieName,
-                CookieRequestCultureProvider.MakeCookieValue(new RequestCulture(culture)),
-                new CookieOptions { Expires = DateTimeOffset.UtcNow.AddYears(1) }
-            );
-            return LocalRedirect(returnUrl);
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult SelectTheme(string theme, string returnUrl)
-        {
-            Response.Cookies.Append(
-                ThemeHelpers.CookieThemeKey,
-                theme,
-                new CookieOptions { Expires = DateTimeOffset.UtcNow.AddYears(1) }
-            );
-
-            return LocalRedirect(returnUrl);
-        }
-
-        /// <summary>
-        /// Shows the error page
-        /// </summary>
-        public async Task<IActionResult> Error(string errorId)
-        {
-            var vm = new ErrorViewModel();
-
-            // retrieve error details from identityserver
-            var message = await _interaction.GetErrorContextAsync(errorId);
-            if (message != null)
-            {
-                vm.Error = message;
-            }
-
-            return View("Error", vm);
-        }
+        return View("Error", vm);
     }
 }

@@ -3,21 +3,20 @@
 
 using AutoMapper;
 
-namespace Skoruba.Duende.IdentityServer.Admin.Api.Mappers
+namespace Skoruba.Duende.IdentityServer.Admin.Api.Mappers;
+
+public static class ApiScopeApiMappers
 {
-    public static class ApiScopeApiMappers
+    static ApiScopeApiMappers()
     {
-        static ApiScopeApiMappers()
-        {
-            Mapper = new MapperConfiguration(cfg => cfg.AddProfile<ApiScopeApiMapperProfile>())
-                .CreateMapper();
-        }
+        Mapper = new MapperConfiguration(cfg => cfg.AddProfile<ApiScopeApiMapperProfile>())
+            .CreateMapper();
+    }
 
-        internal static IMapper Mapper { get; }
+    internal static IMapper Mapper { get; }
 
-        public static T ToApiScopeApiModel<T>(this object source)
-        {
-            return Mapper.Map<T>(source);
-        }
+    public static T ToApiScopeApiModel<T>(this object source)
+    {
+        return Mapper.Map<T>(source);
     }
 }

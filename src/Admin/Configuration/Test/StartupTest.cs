@@ -5,20 +5,19 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Skoruba.Duende.IdentityServer.Admin.UI.Helpers.DependencyInjection;
 
-namespace Skoruba.Duende.IdentityServer.Admin.Configuration.Test
+namespace Skoruba.Duende.IdentityServer.Admin.Configuration.Test;
+
+public class StartupTest : Startup
 {
-	public class StartupTest : Startup
+    public StartupTest(IWebHostEnvironment env, IConfiguration configuration) : base(env, configuration)
     {
-        public StartupTest(IWebHostEnvironment env, IConfiguration configuration) : base(env, configuration)
-        {
-        }
+    }
 
-        public override void ConfigureUIOptions(IdentityServerAdminUIOptions options)
-        {
-            base.ConfigureUIOptions(options);
+    public override void ConfigureUIOptions(IdentityServerAdminUIOptions options)
+    {
+        base.ConfigureUIOptions(options);
 
-            // Use staging DbContexts and auth services.
-            options.Testing.IsStaging = true;
-        }
+        // Use staging DbContexts and auth services.
+        options.Testing.IsStaging = true;
     }
 }

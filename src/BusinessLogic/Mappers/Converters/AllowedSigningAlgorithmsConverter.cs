@@ -8,35 +8,34 @@ using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
 
-namespace Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Mappers.Converters
+namespace Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Mappers.Converters;
+
+public class AllowedSigningAlgorithmsConverter :
+    IValueConverter<List<string>, string>,
+    IValueConverter<string, List<string>>
 {
-    public class AllowedSigningAlgorithmsConverter :
-        IValueConverter<List<string>, string>,
-        IValueConverter<string, List<string>>
+    public static AllowedSigningAlgorithmsConverter Converter = new AllowedSigningAlgorithmsConverter();
+
+    public string Convert(List<string> sourceMember, ResolutionContext context)
     {
-        public static AllowedSigningAlgorithmsConverter Converter = new AllowedSigningAlgorithmsConverter();
-
-        public string Convert(List<string> sourceMember, ResolutionContext context)
+        if (sourceMember == null || !sourceMember.Any())
         {
-            if (sourceMember == null || !sourceMember.Any())
-            {
-                return null;
-            }
-            return sourceMember.Aggregate((x, y) => $"{x},{y}");
+            return null;
         }
+        return sourceMember.Aggregate((x, y) => $"{x},{y}");
+    }
 
-        public List<string> Convert(string sourceMember, ResolutionContext context)
+    public List<string> Convert(string sourceMember, ResolutionContext context)
+    {
+        var list = new List<string>();
+        if (!String.IsNullOrWhiteSpace(sourceMember))
         {
-            var list = new List<string>();
-            if (!String.IsNullOrWhiteSpace(sourceMember))
+            sourceMember = sourceMember.Trim();
+            foreach (var item in sourceMember.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Distinct())
             {
-                sourceMember = sourceMember.Trim();
-                foreach (var item in sourceMember.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Distinct())
-                {
-                    list.Add(item);
-                }
+                list.Add(item);
             }
-            return list;
         }
+        return list;
     }
 }

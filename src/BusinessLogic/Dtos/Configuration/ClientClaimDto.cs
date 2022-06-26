@@ -3,16 +3,15 @@
 
 using System.ComponentModel.DataAnnotations;
 
-namespace Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Dtos.Configuration
+namespace Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Dtos.Configuration;
+
+public class ClientClaimDto
 {
-	public class ClientClaimDto
-	{
-	    public int Id { get; set; }
+    public int Id { get; set; }
 
-	    [Required]
-        public string Type { get; set; }
+    [Required]
+    public string Type { get; set; }
 
-	    [Required]
-        public string Value { get; set; }
-	}
+    [Required]
+    public string Value { get; set; }
 }

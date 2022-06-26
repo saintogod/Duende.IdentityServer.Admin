@@ -8,39 +8,38 @@ using Skoruba.Duende.IdentityServer.Admin.Api.IntegrationTests.Common;
 using Skoruba.Duende.IdentityServer.Admin.Api.IntegrationTests.Tests.Base;
 using Xunit;
 
-namespace Skoruba.Duende.IdentityServer.Admin.Api.IntegrationTests.Tests
+namespace Skoruba.Duende.IdentityServer.Admin.Api.IntegrationTests.Tests;
+
+public class ApiResourcesControllerTests : BaseClassFixture
 {
-    public class ApiResourcesControllerTests : BaseClassFixture
+    public ApiResourcesControllerTests(TestFixture fixture) : base(fixture)
     {
-        public ApiResourcesControllerTests(TestFixture fixture) : base(fixture)
-        {
 
-        }
+    }
 
-        [Fact]
-        public async Task GetApiResourcesAsAdmin()
-        {
-            SetupAdminClaimsViaHeaders();
+    [Fact]
+    public async Task GetApiResourcesAsAdmin()
+    {
+        SetupAdminClaimsViaHeaders();
 
-            var response = await Client.GetAsync("api/apiresources");
+        var response = await Client.GetAsync("api/apiresources");
 
-            // Assert
-            response.EnsureSuccessStatusCode();
-            response.StatusCode.Should().Be(HttpStatusCode.OK);
-        }
+        // Assert
+        response.EnsureSuccessStatusCode();
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+    }
 
-        [Fact]
-        public async Task GetApiResourcesWithoutPermissions()
-        {
-            Client.DefaultRequestHeaders.Clear();
+    [Fact]
+    public async Task GetApiResourcesWithoutPermissions()
+    {
+        Client.DefaultRequestHeaders.Clear();
 
-            var response = await Client.GetAsync("api/apiresources");
+        var response = await Client.GetAsync("api/apiresources");
 
-            // Assert
-            response.StatusCode.Should().Be(HttpStatusCode.Redirect);
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.Redirect);
 
-            //The redirect to login
-            response.Headers.Location?.ToString().Should().Contain(AuthenticationConsts.AccountLoginPage);
-        }
+        //The redirect to login
+        response.Headers.Location?.ToString().Should().Contain(AuthenticationConsts.AccountLoginPage);
     }
 }

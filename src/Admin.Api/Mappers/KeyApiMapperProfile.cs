@@ -5,17 +5,16 @@ using AutoMapper;
 using Skoruba.Duende.IdentityServer.Admin.Api.Dtos.Key;
 using Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Dtos.Key;
 
-namespace Skoruba.Duende.IdentityServer.Admin.Api.Mappers
-{
-    public class KeyApiMapperProfile : Profile
-    {
-        public KeyApiMapperProfile()
-        {
-            CreateMap<KeyDto, KeyApiDto>(MemberList.Destination)
-                .ReverseMap();
+namespace Skoruba.Duende.IdentityServer.Admin.Api.Mappers;
 
-            CreateMap<KeysDto, KeysApiDto>(MemberList.Destination)
-                .ReverseMap();
-        }
+public class KeyApiMapperProfile : Profile
+{
+    public KeyApiMapperProfile()
+    {
+        CreateMap<KeyDto, KeyApiDto>(MemberList.Destination)
+            .ReverseMap();
+
+        CreateMap<KeysDto, KeysApiDto>(MemberList.Destination)
+            .ReverseMap();
     }
 }
