@@ -1,6 +1,12 @@
 <Project>
-
-  <PropertyGroup>    
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <BaseNameSpace>Skoruba.Duende.IdentityServer</BaseNameSpace>
+    <DotnetCoreVer>6.0.*</DotnetCoreVer>
+    <DuendeVer>6.0.*</DuendeVer>
+  </PropertyGroup>
+  
+  <PropertyGroup Label="PackageInfo">    
     <Version>1.1.0</Version>
     <Authors>Jan Škoruba</Authors>
     <PackageTags>Duende IdentityServer Admin OpenIDConnect OAuth2 Identity</PackageTags>

@@ -1,7 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>net6.0</TargetFramework>
+    <RootNamespace>$(BaseNameSpace).Admin.$(MSBuildProjectName)</RootNamespace>
+    <AssemblyName>$(RootNamespace)</AssemblyName>
 		<Description>Entity Framework layer for the administration of the Duende IdentityServer and Asp.Net Core Identity with MySql support</Description>
 	</PropertyGroup>
 
@@ -15,14 +16,6 @@
 	</ItemGroup>
 
 </Project>
-
-
-
-
-
-
-
-
 
 
 

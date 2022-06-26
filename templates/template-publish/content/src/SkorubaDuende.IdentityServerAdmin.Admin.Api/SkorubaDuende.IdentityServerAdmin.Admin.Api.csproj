@@ -38,18 +38,18 @@
 		<PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
 		<PackageReference Include="Serilog.Sinks.MSSqlServer" Version="5.6.1" />
 		<PackageReference Include="Serilog.Sinks.Seq" Version="5.1.1" />
-		<PackageReference Include="Skoruba.Duende.IdentityServer.Admin.BusinessLogic" Version="1.1.0" />
-		<PackageReference Include="Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Identity" Version="1.1.0" />
+		<PackageReference Include="BusinessLogic" Version="1.1.0" />
+		<PackageReference Include="BusinessLogic.Identity" Version="1.1.0" />
 		<PackageReference Include="Skoruba.Duende.IdentityServer.Shared.Configuration" Version="1.1.0" />
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
 		<PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="6.2.3" />
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\SkorubaDuende.IdentityServerAdmin.Admin.EntityFramework.MySql\SkorubaDuende.IdentityServerAdmin.Admin.EntityFramework.MySql.csproj" />
-        <ProjectReference Include="..\SkorubaDuende.IdentityServerAdmin.Admin.EntityFramework.PostgreSQL\SkorubaDuende.IdentityServerAdmin.Admin.EntityFramework.PostgreSQL.csproj" />
-        <ProjectReference Include="..\SkorubaDuende.IdentityServerAdmin.Admin.EntityFramework.SqlServer\SkorubaDuende.IdentityServerAdmin.Admin.EntityFramework.SqlServer.csproj" />
-        <ProjectReference Include="..\SkorubaDuende.IdentityServerAdmin.Shared\SkorubaDuende.IdentityServerAdmin.Shared.csproj" />
+        <ProjectReference Include="..\EntityFramework.MySql\EntityFramework.MySql.csproj" />
+        <ProjectReference Include="..\EntityFramework.PostgreSQL\EntityFramework.PostgreSQL.csproj" />
+        <ProjectReference Include="..\EntityFramework.SqlServer\EntityFramework.SqlServer.csproj" />
+        <ProjectReference Include="..\Shared\Shared.csproj" />
     </ItemGroup>
 
     <ItemGroup>

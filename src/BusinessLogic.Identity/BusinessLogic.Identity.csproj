@@ -1,0 +1,39 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+    <RootNamespace>$(BaseNameSpace).Admin.$(MSBuildProjectName)</RootNamespace>
+    <AssemblyName>$(RootNamespace)</AssemblyName>
+		<Description>Business Logic layer for the administration of the Asp.Net Core Identity and Duende IdentityServer</Description>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Duende.IdentityServer.EntityFramework" Version="$(DuendeVer)" />
+		<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="$(DotnetCoreVer)" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\BusinessLogic.Shared\BusinessLogic.Shared.csproj" />
+		<ProjectReference Include="..\EntityFramework.Identity\EntityFramework.Identity.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<EmbeddedResource Update="Resources\IdentityServiceResource.resx">
+			<Generator></Generator>
+		</EmbeddedResource>
+	</ItemGroup>
+
+</Project>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

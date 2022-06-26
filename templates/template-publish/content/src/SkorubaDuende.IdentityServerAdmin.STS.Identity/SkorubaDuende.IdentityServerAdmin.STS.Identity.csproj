@@ -42,13 +42,13 @@
 		<PackageReference Include="Serilog.Sinks.Seq" Version="5.1.1" />
 		<PackageReference Include="Skoruba.AuditLogging.EntityFramework" Version="1.0.0" />
 		<PackageReference Include="NWebsec.AspNetCore.Middleware" Version="3.0.0" />
-		<PackageReference Include="Skoruba.Duende.IdentityServer.Admin.EntityFramework.Configuration" Version="1.1.0" />
+		<PackageReference Include="EntityFramework.Configuration" Version="1.1.0" />
 		<PackageReference Include="Skoruba.Duende.IdentityServer.Shared.Configuration" Version="1.1.0" />
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\SkorubaDuende.IdentityServerAdmin.Admin.EntityFramework.Shared\SkorubaDuende.IdentityServerAdmin.Admin.EntityFramework.Shared.csproj" />
-        <ProjectReference Include="..\SkorubaDuende.IdentityServerAdmin.Shared\SkorubaDuende.IdentityServerAdmin.Shared.csproj" />
+        <ProjectReference Include="..\EntityFramework.Shared\EntityFramework.Shared.csproj" />
+        <ProjectReference Include="..\Shared\Shared.csproj" />
     </ItemGroup>
 
     <ItemGroup>

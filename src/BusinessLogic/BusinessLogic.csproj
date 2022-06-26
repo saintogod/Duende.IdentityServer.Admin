@@ -1,0 +1,74 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+    <RootNamespace>$(BaseNameSpace).Admin.$(MSBuildProjectName)</RootNamespace>
+    <AssemblyName>$(RootNamespace)</AssemblyName>
+		<Description>Business Logic layer for the administration of the Duende IdentityServer</Description>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Duende.IdentityServer.EntityFramework" Version="$(DuendeVer)" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\BusinessLogic.Shared\BusinessLogic.Shared.csproj" />
+		<ProjectReference Include="..\EntityFramework\EntityFramework.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Compile Update="Resources\ApiResourceServiceResource.Designer.cs">
+			<DesignTime>True</DesignTime>
+			<AutoGen>True</AutoGen>
+			<DependentUpon>ApiResourceServiceResource.resx</DependentUpon>
+		</Compile>
+		<Compile Update="Resources\ApiScopeServiceResource.Designer.cs">
+			<DesignTime>True</DesignTime>
+			<AutoGen>True</AutoGen>
+			<DependentUpon>ApiScopeServiceResource.resx</DependentUpon>
+		</Compile>
+		<Compile Update="Resources\IdentityResourceServiceResource.Designer.cs">
+			<DesignTime>True</DesignTime>
+			<AutoGen>True</AutoGen>
+			<DependentUpon>IdentityResourceServiceResource.resx</DependentUpon>
+		</Compile>
+		<Compile Update="Resources\KeyServiceResource.Designer.cs">
+		  <DesignTime>True</DesignTime>
+		  <AutoGen>True</AutoGen>
+		  <DependentUpon>KeyServiceResource.resx</DependentUpon>
+		</Compile>
+	</ItemGroup>
+
+	<ItemGroup>
+		<EmbeddedResource Update="Resources\ApiResourceServiceResource.resx">
+			<Generator>ResXFileCodeGenerator</Generator>
+			<LastGenOutput>ApiResourceServiceResource.Designer.cs</LastGenOutput>
+		</EmbeddedResource>
+		<EmbeddedResource Update="Resources\ApiScopeServiceResource.resx">
+			<Generator>PublicResXFileCodeGenerator</Generator>
+			<LastGenOutput>ApiScopeServiceResource.Designer.cs</LastGenOutput>
+		</EmbeddedResource>
+		<EmbeddedResource Update="Resources\IdentityResourceServiceResource.resx">
+			<Generator>ResXFileCodeGenerator</Generator>
+			<LastGenOutput>IdentityResourceServiceResource.Designer.cs</LastGenOutput>
+		</EmbeddedResource>
+		<EmbeddedResource Update="Resources\KeyServiceResource.resx">
+		  <Generator>ResXFileCodeGenerator</Generator>
+		  <LastGenOutput>KeyServiceResource.Designer.cs</LastGenOutput>
+		</EmbeddedResource>
+	</ItemGroup>
+
+</Project>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+    <RootNamespace>$(BaseNameSpace).Admin.$(MSBuildProjectName)</RootNamespace>
+    <AssemblyName>$(RootNamespace)</AssemblyName>
+		<Description>Shared Business Logic layer for the administration of the Duende IdentityServer and Asp.Net Core Identity</Description>
+	</PropertyGroup>
+
+</Project>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

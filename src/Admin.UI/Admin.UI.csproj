@@ -1,0 +1,47 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <PropertyGroup>
+    <RootNamespace>$(BaseNameSpace).$(MSBuildProjectName)</RootNamespace>
+    <AssemblyName>$(RootNamespace)</AssemblyName>
+    <Description>The package with UI for the administration of the Duende IdentityServer</Description>
+    <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
+    <StaticWebAssetBasePath Condition="$(StaticWebAssetBasePath) == ''">/</StaticWebAssetBasePath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Areas\AdminUI\Views\**\*.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AspNetCore.HealthChecks.MySql" Version="$(DotnetCoreVer)" />
+    <PackageReference Include="AspNetCore.HealthChecks.NpgSql" Version="$(DotnetCoreVer)" />
+    <PackageReference Include="AspNetCore.HealthChecks.OpenIdConnectServer" Version="$(DotnetCoreVer)" />
+    <PackageReference Include="AspNetCore.HealthChecks.SqlServer" Version="$(DotnetCoreVer)" />
+    <PackageReference Include="AspNetCore.HealthChecks.UI.Client" Version="$(DotnetCoreVer)" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="$(DotnetCoreVer)" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="$(DotnetCoreVer)" />
+    <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" Version="$(DotnetCoreVer)" />
+    <PackageReference Include="NWebsec.AspNetCore.Middleware" Version="3.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\BusinessLogic.Identity\BusinessLogic.Identity.csproj" />
+    <ProjectReference Include="..\BusinessLogic\BusinessLogic.csproj" />
+    <ProjectReference Include="..\EntityFramework.Configuration\EntityFramework.Configuration.csproj" />
+    <ProjectReference Include="..\Shared.Configuration\Shared.Configuration.csproj" />
+  </ItemGroup>
+
+</Project>
+
+
+
+
+
+
+
+
+
