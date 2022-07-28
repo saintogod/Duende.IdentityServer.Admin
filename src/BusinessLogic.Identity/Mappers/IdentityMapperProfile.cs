@@ -3,10 +3,10 @@
 
 // Modified by Jan Škoruba
 
-using System;
-using System.Collections.Generic;
 using AutoMapper;
+
 using Microsoft.AspNetCore.Identity;
+
 using Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Identity.Dtos.Identity;
 using Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Shared.ExceptionHandling;
 using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Extensions.Common;

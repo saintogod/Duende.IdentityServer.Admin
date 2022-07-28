@@ -1,26 +1,28 @@
 ﻿// Copyright (c) Jan Škoruba. All Rights Reserved.
 // Licensed under the Apache License, Version 2.0.
 
-using System.Collections.Generic;
-using System.Linq;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
+
 using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace Skoruba.Duende.IdentityServer.Admin.Api.Configuration.Authorization;
 
 public class AuthorizeCheckOperationFilter : IOperationFilter
 {
-    private readonly AdminApiConfiguration _adminApiConfiguration;
+    private readonly AdminApiConfiguration adminApiConfiguration;
 
-    public AuthorizeCheckOperationFilter(AdminApiConfiguration adminApiConfiguration)
+    public AuthorizeCheckOperationFilter(IOptions<AdminApiConfiguration> adminApiConfiguration)
     {
-        _adminApiConfiguration = adminApiConfiguration;
+        this.adminApiConfiguration = adminApiConfiguration.Value;
     }
+
     public void Apply(OpenApiOperation operation, OperationFilterContext context)
     {
-        var hasAuthorize = context.MethodInfo.DeclaringType != null && (context.MethodInfo.DeclaringType.GetCustomAttributes(true).OfType<AuthorizeAttribute>().Any()
-                                                                        || context.MethodInfo.GetCustomAttributes(true).OfType<AuthorizeAttribute>().Any());
+        var hasAuthorize = context.MethodInfo.DeclaringType != null
+            && (context.MethodInfo.DeclaringType.GetCustomAttributes(true).OfType<AuthorizeAttribute>().Any() // the controller has [Authorize]
+                || context.MethodInfo.GetCustomAttributes(true).OfType<AuthorizeAttribute>().Any());// the method has [Authorize]
 
         if (hasAuthorize)
         {
@@ -29,15 +31,12 @@ public class AuthorizeCheckOperationFilter : IOperationFilter
 
             operation.Security = new List<OpenApiSecurityRequirement>
             {
-                new OpenApiSecurityRequirement
+                new ()
                 {
-                    [
-                        new OpenApiSecurityScheme {Reference = new OpenApiReference
-                            {
-                                Type = ReferenceType.SecurityScheme,
-                                Id = "oauth2"}
-                        }
-                    ] = new[] { _adminApiConfiguration.OidcApiName }
+                    {
+                        new () { Reference = new () { Type = ReferenceType.SecurityScheme, Id = "oauth2" } }, 
+                        new[] { adminApiConfiguration.OidcApiName }
+                    }
                 }
             };
 

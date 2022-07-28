@@ -4,11 +4,9 @@
 // Original file: https://github.com/DuendeSoftware/IdentityServer.Quickstart.UI
 // Modified by Jan Škoruba
 
-using System;
-
 namespace Skoruba.Duende.IdentityServer.STS.Identity.Configuration;
 
-public class AccountOptions
+public static class AccountOptions
 {
     public static bool AllowLocalLogin = true;
     public static bool AllowRememberLogin = true;

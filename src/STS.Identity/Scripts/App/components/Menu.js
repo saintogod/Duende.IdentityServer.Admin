@@ -1,22 +1,22 @@
 ﻿var Menu = {
-	
-	init: function() {
+  
+  init: function() {
 
-		$(function () {
-			Menu.itemClick();
-		});
+    $(function () {
+      Menu.itemClick();
+    });
 
-	},
+  },
 
-	itemClick: function() {
+  itemClick: function() {
 
-		$(".menu-button").click(function (e) {
-			e.preventDefault();
+    $(".menu-button").click(function (e) {
+      e.preventDefault();
 
-			var isMenuVisible = $(".menu-item").is(":visible");
-			isMenuVisible ? $(".menu-item").css("display", "") : $(".menu-item").show();
-		});
-	}
+      var isMenuVisible = $(".menu-item").is(":visible");
+      isMenuVisible ? $(".menu-item").css("display", "") : $(".menu-item").show();
+    });
+  }
 
 
 };

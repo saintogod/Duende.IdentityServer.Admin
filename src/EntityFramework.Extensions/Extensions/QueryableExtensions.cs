@@ -1,8 +1,6 @@
 ﻿// Copyright (c) Jan Škoruba. All Rights Reserved.
 // Licensed under the Apache License, Version 2.0.
 
-using System;
-using System.Linq;
 using System.Linq.Expressions;
 
 namespace Skoruba.Duende.IdentityServer.Admin.EntityFramework.Extensions.Extensions;

@@ -1,13 +1,12 @@
 ﻿// Copyright (c) Jan Škoruba. All Rights Reserved.
 // Licensed under the Apache License, Version 2.0.
 
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Threading.Tasks;
+
 using AutoMapper;
+
 using Microsoft.AspNetCore.Identity;
+
 using Skoruba.AuditLogging.Services;
 using Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Identity.Dtos.Identity;
 using Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Identity.Events.Identity;
@@ -114,6 +113,7 @@ public class IdentityService<TUserDto, TRoleDto, TUser, TRole, TKey, TUserClaim,
 
         return usersDto;
     }
+
     public virtual async Task<TRolesDto> GetRolesAsync(string search, int page = 1, int pageSize = 10)
     {
         PagedList<TRole> pagedList = await IdentityRepository.GetRolesAsync(search, page, pageSize);

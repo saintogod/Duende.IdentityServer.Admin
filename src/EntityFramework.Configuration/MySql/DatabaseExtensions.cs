@@ -1,20 +1,21 @@
 ﻿// Copyright (c) Jan Škoruba. All Rights Reserved.
 // Licensed under the Apache License, Version 2.0.
 
-using System;
 using System.Reflection;
+
 using Duende.IdentityServer.EntityFramework.Storage;
+
 using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
+
 using Skoruba.AuditLogging.EntityFramework.DbContexts;
 using Skoruba.AuditLogging.EntityFramework.Entities;
 using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Configuration.Configuration;
 using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Interfaces;
 
-namespace Skoruba.Duende.IdentityServer.Admin.EntityFramework.Configuration.MySql;
+namespace Microsoft.Extensions.DependencyInjection;
 
-public static class DatabaseExtensions
+public static partial class DatabaseExtensions
 {
     /// <summary>
     /// Register DbContexts for IdentityServer ConfigurationStore and PersistedGrants, Identity and Logging

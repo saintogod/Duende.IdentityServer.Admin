@@ -4,12 +4,11 @@
 // Original file: https://github.com/DuendeSoftware/IdentityServer.Quickstart.UI
 // Modified by Jan Škoruba
 
-using System;
-using System.Threading.Tasks;
 using Duende.IdentityServer.Services;
-using Microsoft.AspNetCore.Http;
+
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
+
 using Skoruba.Duende.IdentityServer.Shared.Configuration.Helpers;
 using Skoruba.Duende.IdentityServer.STS.Identity.Helpers;
 using Skoruba.Duende.IdentityServer.STS.Identity.ViewModels.Home;

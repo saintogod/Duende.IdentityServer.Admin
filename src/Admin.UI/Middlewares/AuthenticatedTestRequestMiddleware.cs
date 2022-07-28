@@ -2,9 +2,8 @@
 // Licensed under the Apache License, Version 2.0.
 
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Security.Claims;
-using System.Threading.Tasks;
+
 using Microsoft.AspNetCore.Http;
 
 namespace Skoruba.Duende.IdentityServer.Admin.UI.Middlewares;

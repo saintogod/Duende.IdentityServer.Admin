@@ -8,16 +8,16 @@ namespace Skoruba.Duende.IdentityServer.STS.Identity.ViewComponents;
 
 public class IdentityServerAdminLinkViewComponent : ViewComponent
 {
-    private readonly IRootConfiguration _configuration;
+    private readonly IRootConfiguration configuration;
 
     public IdentityServerAdminLinkViewComponent(IRootConfiguration configuration)
     {
-        _configuration = configuration;
+        this.configuration = configuration;
     }
 
     public IViewComponentResult Invoke()
     {
-        var identityAdminUrl = _configuration.AdminConfiguration.IdentityAdminBaseUrl;
+        var identityAdminUrl = configuration.AdminConfiguration.IdentityAdminBaseUrl;
 
         return View(model: identityAdminUrl);
     }

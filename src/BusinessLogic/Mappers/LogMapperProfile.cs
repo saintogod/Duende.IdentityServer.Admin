@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0.
 
 using AutoMapper;
+
 using Skoruba.AuditLogging.EntityFramework.Entities;
 using Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Dtos.Log;
 using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Entities;

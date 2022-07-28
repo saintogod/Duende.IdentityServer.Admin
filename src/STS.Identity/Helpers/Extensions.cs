@@ -19,14 +19,14 @@ public static class Extensions
     /// <returns></returns>
     public static bool IsNativeClient(this AuthorizationRequest context)
     {
-        return !context.RedirectUri.StartsWith("https", StringComparison.Ordinal)
-               && !context.RedirectUri.StartsWith("http", StringComparison.Ordinal);
+        return !context.RedirectUri.StartsWith(Uri.UriSchemeHttps, StringComparison.Ordinal)
+               && !context.RedirectUri.StartsWith(Uri.UriSchemeHttp, StringComparison.Ordinal);
     }
 
     public static IActionResult LoadingPage(this Controller controller, string viewName, string redirectUri)
     {
         controller.HttpContext.Response.StatusCode = 200;
-        controller.HttpContext.Response.Headers["Location"] = "";
+        controller.HttpContext.Response.Headers.Location = string.Empty;
 
         return controller.View(viewName, new RedirectViewModel { RedirectUrl = redirectUri });
     }

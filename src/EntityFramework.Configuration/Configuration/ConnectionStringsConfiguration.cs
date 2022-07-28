@@ -3,7 +3,7 @@
 
 namespace Skoruba.Duende.IdentityServer.Admin.EntityFramework.Configuration.Configuration;
 
-public class ConnectionStringsConfiguration
+public sealed record ConnectionStringsConfiguration
 {
     public string ConfigurationDbConnection { get; set; }
 

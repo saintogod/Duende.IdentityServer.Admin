@@ -1,31 +1,36 @@
 FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS base
-WORKDIR /app
+
 EXPOSE 80
 EXPOSE 443
+COPY share/cacerts.crt /usr/local/share/ca-certificates
+RUN update-ca-certificates
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
-COPY ["src/Skoruba.Duende.IdentityServer.Admin.Api/Skoruba.Duende.IdentityServer.Admin.Api.csproj", "src/Skoruba.Duende.IdentityServer.Admin.Api/"]
-COPY ["src/Skoruba.Duende.IdentityServer.Admin.EntityFramework.PostgreSQL/Skoruba.Duende.IdentityServer.Admin.EntityFramework.PostgreSQL.csproj", "src/Skoruba.Duende.IdentityServer.Admin.EntityFramework.PostgreSQL/"]
-COPY ["src/Skoruba.Duende.IdentityServer.Admin.EntityFramework.Shared/Skoruba.Duende.IdentityServer.Admin.EntityFramework.Shared.csproj", "src/Skoruba.Duende.IdentityServer.Admin.EntityFramework.Shared/"]
-COPY ["src/Skoruba.Duende.IdentityServer.Admin.EntityFramework.Identity/Skoruba.Duende.IdentityServer.Admin.EntityFramework.Identity.csproj", "src/Skoruba.Duende.IdentityServer.Admin.EntityFramework.Identity/"]
-COPY ["src/Skoruba.Duende.IdentityServer.Admin.EntityFramework/Skoruba.Duende.IdentityServer.Admin.EntityFramework.csproj", "src/Skoruba.Duende.IdentityServer.Admin.EntityFramework/"]
-COPY ["src/Skoruba.Duende.IdentityServer.Admin.EntityFramework.Extensions/Skoruba.Duende.IdentityServer.Admin.EntityFramework.Extensions.csproj", "src/Skoruba.Duende.IdentityServer.Admin.EntityFramework.Extensions/"]
-COPY ["src/Skoruba.Duende.IdentityServer.Admin.EntityFramework.Configuration/Skoruba.Duende.IdentityServer.Admin.EntityFramework.Configuration.csproj", "src/Skoruba.Duende.IdentityServer.Admin.EntityFramework.Configuration/"]
-COPY ["src/Skoruba.Duende.IdentityServer.Shared.Configuration/Skoruba.Duende.IdentityServer.Shared.Configuration.csproj", "src/Skoruba.Duende.IdentityServer.Shared.Configuration/"]
-COPY ["src/Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Identity/Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Identity.csproj", "src/Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Identity/"]
-COPY ["src/Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Shared/Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Shared.csproj", "src/Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Shared/"]
-COPY ["src/Skoruba.Duende.IdentityServer.Admin.EntityFramework.MySql/Skoruba.Duende.IdentityServer.Admin.EntityFramework.MySql.csproj", "src/Skoruba.Duende.IdentityServer.Admin.EntityFramework.MySql/"]
-COPY ["src/Skoruba.Duende.IdentityServer.Admin.EntityFramework.SqlServer/Skoruba.Duende.IdentityServer.Admin.EntityFramework.SqlServer.csproj", "src/Skoruba.Duende.IdentityServer.Admin.EntityFramework.SqlServer/"]
-COPY ["src/Skoruba.Duende.IdentityServer.Shared/Skoruba.Duende.IdentityServer.Shared.csproj", "src/Skoruba.Duende.IdentityServer.Shared/"]
-COPY ["src/Skoruba.Duende.IdentityServer.Admin.BusinessLogic/Skoruba.Duende.IdentityServer.Admin.BusinessLogic.csproj", "src/Skoruba.Duende.IdentityServer.Admin.BusinessLogic/"]
-RUN dotnet restore "src/Skoruba.Duende.IdentityServer.Admin.Api/Skoruba.Duende.IdentityServer.Admin.Api.csproj"
+
+COPY ["Directory.Build.props", "src/"]
+COPY ["src/Admin.Api/Admin.Api.csproj", "src/Admin.Api/"]
+COPY ["src/Admin.BusinessLogic.Identity/Admin.BusinessLogic.Identity.csproj", "src/Admin.BusinessLogic.Identity/"]
+COPY ["src/Admin.BusinessLogic.Shared/Admin.BusinessLogic.Shared.csproj", "src/Admin.BusinessLogic.Shared/"]
+COPY ["src/Admin.BusinessLogic/Admin.BusinessLogic.csproj", "src/Admin.BusinessLogic/"]
+COPY ["src/Admin.EntityFramework.Configuration/Admin.EntityFramework.Configuration.csproj", "src/Admin.EntityFramework.Configuration/"]
+COPY ["src/Admin.EntityFramework.Extensions/Admin.EntityFramework.Extensions.csproj", "src/Admin.EntityFramework.Extensions/"]
+COPY ["src/Admin.EntityFramework.Identity/Admin.EntityFramework.Identity.csproj", "src/Admin.EntityFramework.Identity/"]
+COPY ["src/Admin.EntityFramework.MySql/Admin.EntityFramework.MySql.csproj", "src/Admin.EntityFramework.MySql/"]
+COPY ["src/Admin.EntityFramework.PostgreSQL/Admin.EntityFramework.PostgreSQL.csproj", "src/Admin.EntityFramework.PostgreSQL/"]
+COPY ["src/Admin.EntityFramework.Shared/Admin.EntityFramework.Shared.csproj", "src/Admin.EntityFramework.Shared/"]
+COPY ["src/Admin.EntityFramework.SqlServer/Admin.EntityFramework.SqlServer.csproj", "src/Admin.EntityFramework.SqlServer/"]
+COPY ["src/Admin.EntityFramework/Admin.EntityFramework.csproj", "src/Admin.EntityFramework/"]
+COPY ["src/Shared.Configuration/Shared.Configuration.csproj", "src/Shared.Configuration/"]
+COPY ["src/Shared/Shared.csproj", "src/Shared/"]
+
+RUN dotnet restore "src/Admin.Api/Admin.Api.csproj"
 COPY . .
-WORKDIR "/src/src/Skoruba.Duende.IdentityServer.Admin.Api"
-RUN dotnet build "Skoruba.Duende.IdentityServer.Admin.Api.csproj" -c Release -o /app/build
+WORKDIR "/src/src/Admin.Api"
+RUN dotnet build "Admin.Api.csproj" -c Release -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "Skoruba.Duende.IdentityServer.Admin.Api.csproj" -c Release -o /app/publish
+RUN dotnet publish "Admin.Api.csproj" -c Release -o /app/publish
 
 FROM base AS final
 WORKDIR /app

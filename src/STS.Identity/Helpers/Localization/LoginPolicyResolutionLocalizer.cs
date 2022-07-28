@@ -9,14 +9,10 @@ public static class LoginPolicyResolutionLocalizer
 {
     public static string GetUserNameLocalizationKey(LoginResolutionPolicy policy)
     {
-        switch (policy)
+        return policy switch
         {
-            case LoginResolutionPolicy.Username:
-                return "Username";
-            case LoginResolutionPolicy.Email:
-                return "Email";
-            default:
-                return "Username";
-        }
+            LoginResolutionPolicy.Email => nameof(LoginResolutionPolicy.Email),
+            _ => nameof(LoginResolutionPolicy.Username),
+        };
     }
 }

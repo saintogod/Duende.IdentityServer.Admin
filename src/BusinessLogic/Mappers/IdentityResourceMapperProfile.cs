@@ -3,9 +3,10 @@
 
 // Modified by Jan Škoruba
 
-using System.Linq;
 using AutoMapper;
+
 using Duende.IdentityServer.EntityFramework.Entities;
+
 using Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Dtos.Configuration;
 using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Extensions.Common;
 

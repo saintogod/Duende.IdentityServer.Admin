@@ -1,14 +1,13 @@
 ﻿// Copyright (c) Jan Škoruba. All Rights Reserved.
 // Licensed under the Apache License, Version 2.0.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Threading.Tasks;
+
 using Duende.IdentityServer.EntityFramework.Entities;
 using Duende.IdentityServer.Models;
+
 using Microsoft.EntityFrameworkCore;
+
 using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Constants;
 using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Extensions.Common;
 using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Extensions.Enums;
@@ -16,6 +15,7 @@ using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Extensions.Extensions;
 using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Helpers;
 using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Interfaces;
 using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Repositories.Interfaces;
+
 using Client = Duende.IdentityServer.EntityFramework.Entities.Client;
 using ClientClaim = Duende.IdentityServer.EntityFramework.Entities.ClientClaim;
 

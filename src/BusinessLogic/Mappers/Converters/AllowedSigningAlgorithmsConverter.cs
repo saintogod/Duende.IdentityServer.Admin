@@ -3,9 +3,6 @@
 
 // Modified by Jan Škoruba - original file: https://github.com/IdentityServer/IdentityServer4/blob/main/src/EntityFramework.Storage/src/Mappers/AllowedSigningAlgorithmsConverter.cs
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using AutoMapper;
 
 namespace Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Mappers.Converters;

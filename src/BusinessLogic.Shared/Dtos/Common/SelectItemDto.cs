@@ -3,15 +3,4 @@
 
 namespace Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Shared.Dtos.Common;
 
-public class SelectItemDto
-{
-    public SelectItemDto(string id, string text)
-    {
-        Id = id;
-        Text = text;
-    }
-
-    public string Id { get; set; }
-
-    public string Text { get; set; }
-}
+public sealed record SelectItemDto(string Id, string Text);

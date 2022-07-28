@@ -1,17 +1,18 @@
 ﻿// Copyright (c) Jan Škoruba. All Rights Reserved.
 // Licensed under the Apache License, Version 2.0.
 
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 using Duende.IdentityServer.EntityFramework.Mappers;
 using Duende.IdentityServer.Models;
+
 using IdentityModel;
+
 using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+
 using Skoruba.AuditLogging.EntityFramework.DbContexts;
 using Skoruba.AuditLogging.EntityFramework.Entities;
 using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Configuration.Configuration;
@@ -27,12 +28,9 @@ public static class DbMigrationHelpers
     /// </summary>
     /// <param name="host"></param>
     /// <param name="applyDbMigrationWithDataSeedFromProgramArguments"></param>
-    /// <param name="seedConfiguration"></param>
-    /// <param name="databaseMigrationsConfiguration"></param>
     public static async Task<bool> ApplyDbMigrationsWithDataSeedAsync<TIdentityServerDbContext, TIdentityDbContext,
         TPersistedGrantDbContext, TLogDbContext, TAuditLogDbContext, TDataProtectionDbContext, TUser, TRole>(
-        IHost host, bool applyDbMigrationWithDataSeedFromProgramArguments, SeedConfiguration seedConfiguration,
-        DatabaseMigrationsConfiguration databaseMigrationsConfiguration)
+        IHost host, bool applyDbMigrationWithDataSeedFromProgramArguments)
         where TIdentityServerDbContext : DbContext, IAdminConfigurationDbContext
         where TIdentityDbContext : DbContext
         where TPersistedGrantDbContext : DbContext, IAdminPersistedGrantDbContext
@@ -48,14 +46,16 @@ public static class DbMigrationHelpers
         {
             var services = serviceScope.ServiceProvider;
 
-            if ((databaseMigrationsConfiguration != null && databaseMigrationsConfiguration.ApplyDatabaseMigrations)
-                || (applyDbMigrationWithDataSeedFromProgramArguments))
+            var configuration = services.GetRequiredService<IConfiguration>();
+
+            if (applyDbMigrationWithDataSeedFromProgramArguments
+                || configuration.GetValue($"{ nameof(DatabaseMigrationsConfiguration)}:{nameof(DatabaseMigrationsConfiguration.ApplyDatabaseMigrations)}", false))
             {
                 migrationComplete = await EnsureDatabasesMigratedAsync<TIdentityDbContext, TIdentityServerDbContext, TPersistedGrantDbContext, TLogDbContext, TAuditLogDbContext, TDataProtectionDbContext>(services);
             }
 
-            if ((seedConfiguration != null && seedConfiguration.ApplySeed)
-                || (applyDbMigrationWithDataSeedFromProgramArguments))
+            if (applyDbMigrationWithDataSeedFromProgramArguments 
+                || configuration.GetValue($"{nameof(SeedConfiguration)}:{nameof(SeedConfiguration.ApplySeed)}", false))
             {
                 var seedComplete = await EnsureSeedDataAsync<TIdentityServerDbContext, TUser, TRole>(services);
 

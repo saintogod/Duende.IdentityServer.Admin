@@ -3,7 +3,7 @@
 
 namespace Skoruba.Duende.IdentityServer.Admin.EntityFramework.Configuration.Configuration;
 
-public class DatabaseMigrationsConfiguration
+public sealed record DatabaseMigrationsConfiguration
 {
     public bool ApplyDatabaseMigrations { get; set; } = false;
 

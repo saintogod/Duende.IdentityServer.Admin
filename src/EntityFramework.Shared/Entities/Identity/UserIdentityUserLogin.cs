@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Skoruba.Duende.IdentityServer.Admin.EntityFramework.Shared.Entities.Identity;
 
-public class UserIdentityUserLogin : IdentityUserLogin<string>
+public sealed class UserIdentityUserLogin : IdentityUserLogin<string>
 {
 
 }

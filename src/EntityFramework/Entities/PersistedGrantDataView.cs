@@ -3,7 +3,7 @@
 
 namespace Skoruba.Duende.IdentityServer.Admin.EntityFramework.Entities;
 
-public class PersistedGrantDataView
+public sealed record PersistedGrantDataView
 {
     public string SubjectId { get; set; }
 

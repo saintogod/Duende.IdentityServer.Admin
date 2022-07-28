@@ -18,18 +18,8 @@ public static class Md5HashHelper
     /// <returns></returns>
     public static string GetHash(string input)
     {
-        using (var md5 = MD5.Create())
-        {
-            var bytes = md5.ComputeHash(Encoding.UTF8.GetBytes(input));
-
-            var sBuilder = new StringBuilder();
-
-            foreach (var dataByte in bytes)
-            {
-                sBuilder.Append(dataByte.ToString("x2"));
-            }
-
-            return sBuilder.ToString();
-        }
+        using var md5 = MD5.Create();
+        var bytes = md5.ComputeHash(Encoding.UTF8.GetBytes(input));
+        return Convert.ToHexString(bytes);
     }
 }

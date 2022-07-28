@@ -1,10 +1,6 @@
-﻿using System.IO;
-using System.Reflection;
+﻿using System.Reflection;
 
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
-using Microsoft.Extensions.Hosting;
 
 using Skoruba.Duende.IdentityServer.Admin.UI.Helpers.ApplicationBuilder;
 

@@ -1,12 +1,13 @@
 ﻿// Copyright (c) Jan Škoruba. All Rights Reserved.
 // Licensed under the Apache License, Version 2.0.
 
-using System;
 using HealthChecks.UI.Client;
+
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+
 using Skoruba.Duende.IdentityServer.Admin.UI.Configuration;
 using Skoruba.Duende.IdentityServer.Admin.UI.Configuration.Constants;
 
@@ -44,10 +45,7 @@ public static class AdminUIApplicationBuilderExtensions
     /// <param name="pattern"></param>
     public static IEndpointConventionBuilder MapIdentityServerAdminUIHealthChecks(this IEndpointRouteBuilder endpoint, string pattern = "/health", Action<HealthCheckOptions> configureAction = null)
     {
-        var options = new HealthCheckOptions
-        {
-            ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
-        };
+        HealthCheckOptions options = new() { ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse };
 
         configureAction?.Invoke(options);
 

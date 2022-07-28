@@ -7,5 +7,4 @@ namespace Skoruba.Duende.IdentityServer.Shared.Dtos.Identity;
 
 public class IdentityUserRolesDto : UserRolesDto<IdentityRoleDto, string>
 {
-
 }

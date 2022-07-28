@@ -3,7 +3,7 @@
 
 namespace Skoruba.Duende.IdentityServer.Admin.UI.Configuration;
 
-public class TestingConfiguration
+public sealed record TestingConfiguration
 {
     /// <summary>
     /// Use test instead of production services and pipelines.

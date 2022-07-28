@@ -3,7 +3,7 @@
 
 namespace Skoruba.Duende.IdentityServer.STS.Identity.Configuration.Constants;
 
-public class ConfigurationConsts
+public static class ConfigurationConsts
 {
     public const string AdminConnectionStringKey = "AdminConnection";
 

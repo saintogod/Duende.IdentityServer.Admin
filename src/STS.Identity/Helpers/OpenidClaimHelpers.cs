@@ -1,13 +1,13 @@
 ﻿// Copyright (c) Jan Škoruba. All Rights Reserved.
 // Licensed under the Apache License, Version 2.0.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
+
 using IdentityModel;
+
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+
 using Skoruba.Duende.IdentityServer.STS.Identity.Configuration.Constants;
 
 namespace Skoruba.Duende.IdentityServer.STS.Identity.Helpers;

@@ -1,8 +1,8 @@
 ﻿// Copyright (c) Jan Škoruba. All Rights Reserved.
 // Licensed under the Apache License, Version 2.0.
 
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
+
 using Skoruba.AuditLogging.Events;
 
 namespace Skoruba.Duende.IdentityServer.Admin.Api.Configuration.AuditLogging;
@@ -13,7 +13,7 @@ public class ApiAuditAction : IAuditAction
     {
         Action = new
         {
-            TraceIdentifier = accessor.HttpContext.TraceIdentifier,
+            accessor.HttpContext.TraceIdentifier,
             RequestUrl = accessor.HttpContext.Request.GetDisplayUrl(),
             HttpMethod = accessor.HttpContext.Request.Method
         };

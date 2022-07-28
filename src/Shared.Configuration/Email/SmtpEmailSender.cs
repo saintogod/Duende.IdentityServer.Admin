@@ -1,11 +1,11 @@
 ﻿// Copyright (c) Jan Škoruba. All Rights Reserved.
 // Licensed under the Apache License, Version 2.0.
 
-using System;
 using System.Net.Mail;
-using System.Threading.Tasks;
+
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.Extensions.Logging;
+
 using Skoruba.Duende.IdentityServer.Shared.Configuration.Configuration.Email;
 
 namespace Skoruba.Duende.IdentityServer.Shared.Configuration.Email;

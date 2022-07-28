@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Skoruba.Duende.IdentityServer.Admin.EntityFramework.Shared.Entities.Identity;
 
-public class UserIdentityUserRole : IdentityUserRole<string>
+public sealed class UserIdentityUserRole : IdentityUserRole<string>
 {
 
 }

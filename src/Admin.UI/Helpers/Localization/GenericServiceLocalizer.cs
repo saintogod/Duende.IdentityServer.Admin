@@ -13,7 +13,7 @@ namespace Skoruba.Duende.IdentityServer.Admin.UI.Helpers.Localization;
 
 public class GenericControllerLocalizer<TResourceSource> : IGenericControllerLocalizer<TResourceSource>
 {
-    private IStringLocalizer _localizer;
+    private readonly IStringLocalizer _localizer;
 
     /// <summary>
     /// Creates a new <see cref="T:Microsoft.Extensions.Localization.StringLocalizer`1" />.

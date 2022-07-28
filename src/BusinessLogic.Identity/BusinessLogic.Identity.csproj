@@ -1,26 +1,44 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-	<PropertyGroup>
-    <RootNamespace>$(BaseNameSpace).Admin.$(MSBuildProjectName)</RootNamespace>
+  <PropertyGroup>
+    <RootNamespace>$(BaseNamespace).Admin.$(MSBuildProjectName)</RootNamespace>
     <AssemblyName>$(RootNamespace)</AssemblyName>
-		<Description>Business Logic layer for the administration of the Asp.Net Core Identity and Duende IdentityServer</Description>
-	</PropertyGroup>
+    <Description>Business Logic layer for the administration of the Asp.Net Core Identity and Duende IdentityServer</Description>
+  </PropertyGroup>
 
-	<ItemGroup>
-		<PackageReference Include="Duende.IdentityServer.EntityFramework" Version="$(DuendeVer)" />
-		<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="$(DotnetCoreVer)" />
-	</ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Duende.IdentityServer.EntityFramework" Version="$(DuendeVer)" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="$(DotnetCoreVer)" />
+  </ItemGroup>
 
-	<ItemGroup>
-		<ProjectReference Include="..\BusinessLogic.Shared\BusinessLogic.Shared.csproj" />
-		<ProjectReference Include="..\EntityFramework.Identity\EntityFramework.Identity.csproj" />
-	</ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\BusinessLogic.Shared\BusinessLogic.Shared.csproj" />
+    <ProjectReference Include="..\EntityFramework.Identity\EntityFramework.Identity.csproj" />
+  </ItemGroup>
 
-	<ItemGroup>
-		<EmbeddedResource Update="Resources\IdentityServiceResource.resx">
-			<Generator></Generator>
-		</EmbeddedResource>
-	</ItemGroup>
+  <ItemGroup>
+    <Compile Update="Resources\PersistedGrantServiceResource.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>PersistedGrantServiceResource.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\IdentityServiceResource.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>IdentityServiceResource.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Resources\IdentityServiceResource.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>PersistedGrantServiceResource.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\PersistedGrantServiceResource.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>PersistedGrantServiceResource.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
 
 </Project>
 

@@ -6,5 +6,6 @@ namespace Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Identity.Dtos.Identi
 public interface IBaseRoleDto
 {
     object Id { get; }
+
     bool IsDefaultId();
 }

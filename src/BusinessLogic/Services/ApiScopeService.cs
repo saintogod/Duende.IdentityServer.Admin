@@ -1,9 +1,8 @@
 ﻿// Copyright (c) Jan Škoruba. All Rights Reserved.
 // Licensed under the Apache License, Version 2.0.
 
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Duende.IdentityServer.EntityFramework.Entities;
+
 using Skoruba.AuditLogging.Services;
 using Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Dtos.Configuration;
 using Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Events.ApiScope;
@@ -28,7 +27,6 @@ public class ApiScopeService : IApiScopeService
         ApiScopeRepository = apiScopeRepository;
         AuditEventLogger = auditEventLogger;
         ApiScopeServiceResources = apiScopeServiceResources;
-
     }
 
     public virtual async Task<ApiScopesDto> GetApiScopesAsync(string search, int page = 1, int pageSize = 10)

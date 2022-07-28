@@ -1,8 +1,6 @@
 ﻿// Copyright (c) Jan Škoruba. All Rights Reserved.
 // Licensed under the Apache License, Version 2.0.
 
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
 using Skoruba.Duende.IdentityServer.Admin.UI.Helpers.DependencyInjection;
 
 namespace Skoruba.Duende.IdentityServer.Admin.Configuration.Test;

@@ -1,17 +1,17 @@
-using System.Linq;
-using System.Threading.Tasks;
 using Duende.IdentityServer.Models;
 using Duende.IdentityServer.Validation;
+
+using IdentityModel;
 
 namespace Skoruba.Duende.IdentityServer.STS.Identity.Helpers;
 
 public class DelegationGrantValidator : IExtensionGrantValidator
 {
-    private readonly ITokenValidator _validator;
+    private readonly ITokenValidator validator;
 
     public DelegationGrantValidator(ITokenValidator validator)
     {
-        _validator = validator;
+        this.validator = validator;
     }
 
     public string GrantType => "delegation";
@@ -26,7 +26,7 @@ public class DelegationGrantValidator : IExtensionGrantValidator
             return;
         }
 
-        var result = await _validator.ValidateAccessTokenAsync(userToken);
+        var result = await validator.ValidateAccessTokenAsync(userToken);
         if (result.IsError)
         {
             context.Result = new GrantValidationResult(TokenRequestErrors.InvalidGrant);
@@ -34,7 +34,7 @@ public class DelegationGrantValidator : IExtensionGrantValidator
         }
 
         // get user's identity
-        var sub = result.Claims.FirstOrDefault(c => c.Type == "sub").Value;
+        var sub = result.Claims.FirstOrDefault(c => c.Type == JwtClaimTypes.Subject).Value;
 
         context.Result = new GrantValidationResult(sub, GrantType);
         return;

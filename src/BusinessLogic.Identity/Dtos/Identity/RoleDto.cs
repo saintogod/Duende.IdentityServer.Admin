@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0.
 
 using System.ComponentModel.DataAnnotations;
+
 using Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Identity.Dtos.Identity.Base;
 using Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Identity.Dtos.Identity.Interfaces;
 

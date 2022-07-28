@@ -4,15 +4,12 @@
 
 // Modified by Jan Škoruba and J. Arturo
 
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
-using System.Threading.Tasks;
+
 using IdentityModel;
+
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace Skoruba.Duende.IdentityServer.STS.Identity.Helpers;
@@ -20,7 +17,7 @@ namespace Skoruba.Duende.IdentityServer.STS.Identity.Helpers;
 public class ApplicationSignInManager<TUser> : SignInManager<TUser>
     where TUser : class
 {
-    private readonly IHttpContextAccessor _contextAccessor;
+    private readonly IHttpContextAccessor contextAccessor;
 
     public ApplicationSignInManager(UserManager<TUser> userManager,
         IHttpContextAccessor contextAccessor,
@@ -31,27 +28,27 @@ public class ApplicationSignInManager<TUser> : SignInManager<TUser>
         IUserConfirmation<TUser> confirmation) : base(userManager, contextAccessor,
             claimsFactory, optionsAccessor, logger, schemes, confirmation)
     {
-        _contextAccessor = contextAccessor;
+        this.contextAccessor = contextAccessor;
     }
 
     public override async Task SignInWithClaimsAsync(TUser user, AuthenticationProperties authenticationProperties, IEnumerable<Claim> additionalClaims)
     {
         var claims = additionalClaims.ToList();
 
-        var externalResult = await _contextAccessor.HttpContext.AuthenticateAsync(IdentityConstants.ExternalScheme);
-        if (externalResult != null && externalResult.Succeeded)
+        var externalResult = await contextAccessor.HttpContext.AuthenticateAsync(IdentityConstants.ExternalScheme);
+        if (externalResult?.Succeeded == true)
         {
             var sid = externalResult.Principal.Claims.FirstOrDefault(x => x.Type == JwtClaimTypes.SessionId);
-            if (sid != null)
+            if (sid is not null)
             {
                 claims.Add(new Claim(JwtClaimTypes.SessionId, sid.Value));
             }
 
-            if (authenticationProperties != null)
+            if (authenticationProperties is not null)
             {
                 // if the external provider issued an id_token, we'll keep it for sign out
                 var idToken = externalResult.Properties.GetTokenValue("id_token");
-                if (idToken != null)
+                if (idToken is not null)
                 {
                     authenticationProperties.StoreTokens(new[] { new AuthenticationToken { Name = "id_token", Value = idToken } });
                 }

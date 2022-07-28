@@ -1,21 +1,17 @@
-﻿using System;
-using System.IO;
-using System.Security.Cryptography.X509Certificates;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
+﻿using System.Security.Cryptography.X509Certificates;
+
 using Skoruba.Duende.IdentityServer.Shared.Configuration.Configuration.Common;
-using Skoruba.Duende.IdentityServer.Shared.Configuration.Helpers;
 
 namespace Skoruba.Duende.IdentityServer.STS.Identity.Helpers;
 
 public static class IdentityServerBuilderExtensions
 {
-    private const string CertificateNotFound = "Certificate not found";
-    private const string SigningCertificateThumbprintNotFound = "Signing certificate thumbprint not found";
-    private const string SigningCertificatePathIsNotSpecified = "Signing certificate file path is not specified";
+    private const string certificateNotFound = "Certificate not found";
+    private const string signingCertificateThumbprintNotFound = "Signing certificate thumbprint not found";
+    private const string signingCertificatePathIsNotSpecified = "Signing certificate file path is not specified";
 
-    private const string ValidationCertificateThumbprintNotFound = "Validation certificate thumbprint not found";
-    private const string ValidationCertificatePathIsNotSpecified = "Validation certificate file path is not specified";
+    private const string validationCertificateThumbprintNotFound = "Validation certificate thumbprint not found";
+    private const string validationCertificatePathIsNotSpecified = "Validation certificate file path is not specified";
 
     /// <summary>
     /// Add custom signing certificate from certification store according thumbprint or from file
@@ -26,13 +22,12 @@ public static class IdentityServerBuilderExtensions
     public static IIdentityServerBuilder AddCustomSigningCredential(this IIdentityServerBuilder builder, IConfiguration configuration)
     {
         var certificateConfiguration = configuration.GetSection(nameof(CertificateConfiguration)).Get<CertificateConfiguration>();
-        var azureKeyVaultConfiguration = configuration.GetSection(nameof(AzureKeyVaultConfiguration)).Get<AzureKeyVaultConfiguration>();
 
         if (certificateConfiguration.UseSigningCertificateThumbprint)
         {
             if (string.IsNullOrWhiteSpace(certificateConfiguration.SigningCertificateThumbprint))
             {
-                throw new Exception(SigningCertificateThumbprintNotFound);
+                throw new Exception(signingCertificateThumbprintNotFound);
             }
 
             StoreLocation storeLocation = StoreLocation.LocalMachine;
@@ -59,53 +54,40 @@ public static class IdentityServerBuilderExtensions
             var certCollection = certStore.Certificates.Find(X509FindType.FindByThumbprint, certificateConfiguration.SigningCertificateThumbprint, validOnly);
             if (certCollection.Count == 0)
             {
-                throw new Exception(CertificateNotFound);
+                throw new Exception(certificateNotFound);
             }
 
             var certificate = certCollection[0];
 
-            builder.AddSigningCredential(certificate);
+            return builder.AddSigningCredential(certificate);
         }
-        else if (certificateConfiguration.UseSigningCertificateForAzureKeyVault)
-        {
-            var x509Certificate2Certs = AzureKeyVaultHelpers.GetCertificates(azureKeyVaultConfiguration).GetAwaiter().GetResult();
 
-            builder.AddSigningCredential(x509Certificate2Certs.ActiveCertificate);
-        }
-        else if (certificateConfiguration.UseSigningCertificatePfxFile)
+        if (certificateConfiguration.UseSigningCertificatePfxFile)
         {
             if (string.IsNullOrWhiteSpace(certificateConfiguration.SigningCertificatePfxFilePath))
             {
-                throw new Exception(SigningCertificatePathIsNotSpecified);
+                throw new Exception(signingCertificatePathIsNotSpecified);
             }
 
-            if (File.Exists(certificateConfiguration.SigningCertificatePfxFilePath))
-            {
-
-                try
-                {
-                    builder.AddSigningCredential(new X509Certificate2(certificateConfiguration.SigningCertificatePfxFilePath, certificateConfiguration.SigningCertificatePfxFilePassword));
-                }
-                catch (Exception e)
-                {
-                    throw new Exception("There was an error adding the key file - during the creation of the signing key", e);
-                }
-            }
-            else
+            if (!File.Exists(certificateConfiguration.SigningCertificatePfxFilePath))
             {
                 throw new Exception($"Signing key file: {certificateConfiguration.SigningCertificatePfxFilePath} not found");
             }
-        }
-        else if (certificateConfiguration.UseTemporarySigningKeyForDevelopment)
-        {
-            builder.AddDeveloperSigningCredential();
-        }
-        else
-        {
-            throw new Exception("Signing credential is not specified");
+            try
+            {
+                return builder.AddSigningCredential(new X509Certificate2(certificateConfiguration.SigningCertificatePfxFilePath, certificateConfiguration.SigningCertificatePfxFilePassword));
+            }
+            catch (Exception e)
+            {
+                throw new Exception("There was an error adding the key file - during the creation of the signing key", e);
+            }
         }
 
-        return builder;
+        if (certificateConfiguration.UseTemporarySigningKeyForDevelopment)
+        {
+            return builder.AddDeveloperSigningCredential();
+        }
+        throw new Exception("Signing credential is not specified");
     }
 
     /// <summary>
@@ -118,13 +100,12 @@ public static class IdentityServerBuilderExtensions
     public static IIdentityServerBuilder AddCustomValidationKey(this IIdentityServerBuilder builder, IConfiguration configuration)
     {
         var certificateConfiguration = configuration.GetSection(nameof(CertificateConfiguration)).Get<CertificateConfiguration>();
-        var azureKeyVaultConfiguration = configuration.GetSection(nameof(AzureKeyVaultConfiguration)).Get<AzureKeyVaultConfiguration>();
 
         if (certificateConfiguration.UseValidationCertificateThumbprint)
         {
             if (string.IsNullOrWhiteSpace(certificateConfiguration.ValidationCertificateThumbprint))
             {
-                throw new Exception(ValidationCertificateThumbprintNotFound);
+                throw new Exception(validationCertificateThumbprintNotFound);
             }
 
             var certStore = new X509Store(StoreName.My, StoreLocation.LocalMachine);
@@ -133,48 +114,33 @@ public static class IdentityServerBuilderExtensions
             var certCollection = certStore.Certificates.Find(X509FindType.FindByThumbprint, certificateConfiguration.ValidationCertificateThumbprint, false);
             if (certCollection.Count == 0)
             {
-                throw new Exception(CertificateNotFound);
+                throw new Exception(certificateNotFound);
             }
 
             var certificate = certCollection[0];
 
-            builder.AddValidationKey(certificate);
-
+            return builder.AddValidationKey(certificate);
         }
-        else if (certificateConfiguration.UseValidationCertificateForAzureKeyVault)
-        {
-            var x509Certificate2Certs = AzureKeyVaultHelpers.GetCertificates(azureKeyVaultConfiguration).GetAwaiter().GetResult();
 
-            if (x509Certificate2Certs.SecondaryCertificate != null)
-            {
-                builder.AddValidationKey(x509Certificate2Certs.SecondaryCertificate);
-            }
-        }
-        else if (certificateConfiguration.UseValidationCertificatePfxFile)
+        if (certificateConfiguration.UseValidationCertificatePfxFile)
         {
             if (string.IsNullOrWhiteSpace(certificateConfiguration.ValidationCertificatePfxFilePath))
             {
-                throw new Exception(ValidationCertificatePathIsNotSpecified);
+                throw new Exception(validationCertificatePathIsNotSpecified);
             }
 
-            if (File.Exists(certificateConfiguration.ValidationCertificatePfxFilePath))
-            {
-                try
-                {
-                    builder.AddValidationKey(new X509Certificate2(certificateConfiguration.ValidationCertificatePfxFilePath, certificateConfiguration.ValidationCertificatePfxFilePassword));
-
-                }
-                catch (Exception e)
-                {
-                    throw new Exception("There was an error adding the key file - during the creation of the validation key", e);
-                }
-            }
-            else
-            {
+            if (!File.Exists(certificateConfiguration.ValidationCertificatePfxFilePath))
                 throw new Exception($"Validation key file: {certificateConfiguration.ValidationCertificatePfxFilePath} not found");
+
+            try
+            {
+                return builder.AddValidationKey(new X509Certificate2(certificateConfiguration.ValidationCertificatePfxFilePath, certificateConfiguration.ValidationCertificatePfxFilePassword));
+            }
+            catch (Exception e)
+            {
+                throw new Exception("There was an error adding the key file - during the creation of the validation key", e);
             }
         }
-
         return builder;
     }
 }

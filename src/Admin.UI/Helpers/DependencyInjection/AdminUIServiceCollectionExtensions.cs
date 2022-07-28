@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0.
 
 using System;
+
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
 using Microsoft.AspNetCore.Hosting;
@@ -9,6 +10,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+
 using Skoruba.AuditLogging.EntityFramework.DbContexts;
 using Skoruba.AuditLogging.EntityFramework.Entities;
 using Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Extensions;
@@ -16,6 +18,7 @@ using Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Identity.Dtos.Identity;
 using Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Identity.Extensions;
 using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Interfaces;
 using Skoruba.Duende.IdentityServer.Shared.Configuration.Helpers;
+
 using static Skoruba.Duende.IdentityServer.Admin.UI.Helpers.StartupHelpers;
 
 namespace Skoruba.Duende.IdentityServer.Admin.UI.Helpers.DependencyInjection;
@@ -131,7 +134,7 @@ public static class AdminUIServiceCollectionExtensions
         }
 
         // Save data protection keys to db, using a common application name shared between Admin and STS
-        services.AddDataProtection<TDataProtectionDbContext>(options.DataProtection, options.AzureKeyVault);
+        services.AddDataProtection<TDataProtectionDbContext>();
 
         // Add Asp.Net Core Identity Configuration and OpenIdConnect auth as well
         if (!options.Testing.IsStaging)

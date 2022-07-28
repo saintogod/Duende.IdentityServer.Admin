@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-    <RootNamespace>$(BaseNameSpace).Admin.$(MSBuildProjectName)</RootNamespace>
+    <RootNamespace>$(BaseNamespace).Admin.$(MSBuildProjectName)</RootNamespace>
     <AssemblyName>$(RootNamespace)</AssemblyName>
 		<Description>Entity Framework layer for the administration of the Asp.Net Core Identity and Duende IdentityServer</Description>
 	</PropertyGroup>

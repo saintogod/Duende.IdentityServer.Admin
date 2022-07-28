@@ -55,16 +55,6 @@ public class IdentityServerAdminUIOptions
     public Action<IdentityOptions> IdentityConfigureAction { get; set; } = options => { };
 
     /// <summary>
-    /// The settings for data protection.
-    /// </summary>
-    public DataProtectionConfiguration DataProtection { get; set; } = new DataProtectionConfiguration();
-
-    /// <summary>
-    /// The settings for Azure key vault.
-    /// </summary>
-    public AzureKeyVaultConfiguration AzureKeyVault { get; set; } = new AzureKeyVaultConfiguration();
-
-    /// <summary>
     /// Identity data to seed the databases.
     /// </summary>
     public IdentityData IdentityData { get; set; } = new IdentityData();
@@ -102,8 +92,6 @@ public class IdentityServerAdminUIOptions
         configuration.GetSection(nameof(DatabaseMigrationsConfiguration)).Bind(DatabaseMigrations);
         configuration.GetSection(nameof(AuditLoggingConfiguration)).Bind(AuditLogging);
         configuration.GetSection(nameof(CultureConfiguration)).Bind(Culture);
-        configuration.GetSection(nameof(DataProtectionConfiguration)).Bind(DataProtection);
-        configuration.GetSection(nameof(AzureKeyVaultConfiguration)).Bind(AzureKeyVault);
         IdentityConfigureAction = options => configuration.GetSection(nameof(IdentityOptions)).Bind(options);
         configuration.GetSection(nameof(SecurityConfiguration)).Bind(Security);
         configuration.GetSection(nameof(HttpConfiguration)).Bind(Http);

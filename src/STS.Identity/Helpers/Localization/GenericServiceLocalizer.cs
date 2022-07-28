@@ -4,16 +4,15 @@
 // https://github.com/aspnet/Extensions/blob/master/src/Localization/Abstractions/src/StringLocalizerOfT.cs
 // Modified by Jan Škoruba
 
-using System;
-using System.Collections.Generic;
 using System.Reflection;
+
 using Microsoft.Extensions.Localization;
 
 namespace Skoruba.Duende.IdentityServer.STS.Identity.Helpers.Localization;
 
 public class GenericControllerLocalizer<TResourceSource> : IGenericControllerLocalizer<TResourceSource>
 {
-    private IStringLocalizer _localizer;
+    private readonly IStringLocalizer localizer;
 
     /// <summary>
     /// Creates a new <see cref="T:Microsoft.Extensions.Localization.StringLocalizer`1" />.
@@ -26,9 +25,9 @@ public class GenericControllerLocalizer<TResourceSource> : IGenericControllerLoc
         var type = typeof(TResourceSource);
         var assemblyName = type.GetTypeInfo().Assembly.GetName().Name;
         var typeName = type.Name.Remove(type.Name.IndexOf('`'));
-        var baseName = (type.Namespace + "." + typeName).Substring(assemblyName.Length).Trim('.');
+        var baseName = (type.Namespace + "." + typeName)[assemblyName.Length..].Trim('.');
 
-        _localizer = factory.Create(baseName, assemblyName);
+        localizer = factory.Create(baseName, assemblyName);
     }
 
     public virtual LocalizedString this[string name]
@@ -37,7 +36,7 @@ public class GenericControllerLocalizer<TResourceSource> : IGenericControllerLoc
         {
             if (name == null)
                 throw new ArgumentNullException(nameof(name));
-            return _localizer[name];
+            return localizer[name];
         }
     }
 
@@ -47,12 +46,12 @@ public class GenericControllerLocalizer<TResourceSource> : IGenericControllerLoc
         {
             if (name == null)
                 throw new ArgumentNullException(nameof(name));
-            return _localizer[name, arguments];
+            return localizer[name, arguments];
         }
     }
 
     public IEnumerable<LocalizedString> GetAllStrings(bool includeParentCultures)
     {
-        return _localizer.GetAllStrings(includeParentCultures);
+        return localizer.GetAllStrings(includeParentCultures);
     }
 }

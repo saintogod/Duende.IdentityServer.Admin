@@ -29,8 +29,4 @@ public class CertificateConfiguration
     public string ValidationCertificatePfxFilePath { get; set; }
 
     public string ValidationCertificatePfxFilePassword { get; set; }
-
-    public bool UseSigningCertificateForAzureKeyVault { get; set; }
-
-    public bool UseValidationCertificateForAzureKeyVault { get; set; }
 }

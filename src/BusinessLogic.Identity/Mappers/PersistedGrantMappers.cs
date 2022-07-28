@@ -2,7 +2,9 @@
 // Licensed under the Apache License, Version 2.0.
 
 using AutoMapper;
+
 using Duende.IdentityServer.EntityFramework.Entities;
+
 using Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Identity.Dtos.Grant;
 using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Entities;
 using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Extensions.Common;

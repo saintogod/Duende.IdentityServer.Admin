@@ -1,21 +1,16 @@
 ﻿// Copyright (c) Jan Škoruba. All Rights Reserved.
 // Licensed under the Apache License, Version 2.0.
 
-using System;
-using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
+
 using HealthChecks.UI.Client;
-using Microsoft.AspNetCore.Builder;
+
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+
 using Skoruba.AuditLogging.EntityFramework.Entities;
 using Skoruba.Duende.IdentityServer.Admin.Api.Configuration;
 using Skoruba.Duende.IdentityServer.Admin.Api.Configuration.Authorization;
-using Skoruba.Duende.IdentityServer.Admin.Api.Configuration.Constants;
 using Skoruba.Duende.IdentityServer.Admin.Api.ExceptionHandling;
 using Skoruba.Duende.IdentityServer.Admin.Api.Helpers;
 using Skoruba.Duende.IdentityServer.Admin.Api.Mappers;
@@ -51,7 +46,7 @@ public class Startup
         // Add DbContexts
         RegisterDbContexts(services);
 
-        services.AddDataProtection<IdentityServerDataProtectionDbContext>(Configuration);
+        services.AddDataProtection<IdentityServerDataProtectionDbContext>();
 
         // Add email senders which is currently setup for SendGrid and SMTP
         services.AddEmailSenders(Configuration);

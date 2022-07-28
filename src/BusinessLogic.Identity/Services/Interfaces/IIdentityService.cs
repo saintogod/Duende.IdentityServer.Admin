@@ -1,10 +1,8 @@
 ﻿// Copyright (c) Jan Škoruba. All Rights Reserved.
 // Licensed under the Apache License, Version 2.0.
 
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
+
 using Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Identity.Dtos.Identity;
 
 namespace Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Identity.Services.Interfaces;
@@ -39,7 +37,9 @@ public interface IIdentityService<TUserDto, TRoleDto, TUser, TRole, TKey, TUserC
     Task<bool> ExistsRoleAsync(string roleId);
 
     Task<TUsersDto> GetUsersAsync(string search, int page = 1, int pageSize = 10);
+
     Task<TUsersDto> GetRoleUsersAsync(string roleId, string search, int page = 1, int pageSize = 10);
+
     Task<TUsersDto> GetClaimUsersAsync(string claimType, string claimValue, int page = 1, int pageSize = 10);
 
     Task<TRolesDto> GetRolesAsync(string search, int page = 1, int pageSize = 10);

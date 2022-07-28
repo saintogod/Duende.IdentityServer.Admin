@@ -6,7 +6,7 @@
 
 namespace Skoruba.Duende.IdentityServer.STS.Identity.Configuration;
 
-public class ConsentOptions
+public static class ConsentOptions
 {
     public static bool EnableOfflineAccess = true;
     public static string OfflineAccessDisplayName = "Offline Access";

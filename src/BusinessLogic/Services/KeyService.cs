@@ -1,10 +1,7 @@
 ﻿// Copyright (c) Jan Škoruba. All Rights Reserved.
 // Licensed under the Apache License, Version 2.0.
 
-using System.Threading;
-using System.Threading.Tasks;
 using Skoruba.AuditLogging.Services;
-using Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Dtos.Grant;
 using Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Dtos.Key;
 using Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Events.Key;
 using Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Mappers;

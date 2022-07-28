@@ -7,5 +7,4 @@ namespace Skoruba.Duende.IdentityServer.Shared.Dtos.Identity;
 
 public class IdentityRoleClaimDto : RoleClaimDto<string>
 {
-
 }

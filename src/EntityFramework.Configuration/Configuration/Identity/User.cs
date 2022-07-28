@@ -1,11 +1,9 @@
 ﻿// Copyright (c) Jan Škoruba. All Rights Reserved.
 // Licensed under the Apache License, Version 2.0.
 
-using System.Collections.Generic;
-
 namespace Skoruba.Duende.IdentityServer.Admin.EntityFramework.Configuration.Configuration.Identity;
 
-public class User
+public sealed record User
 {
     public string Username { get; set; }
     public string Email { get; set; }

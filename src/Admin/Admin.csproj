@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
 	<PropertyGroup>
-    <RootNamespace>$(BaseNameSpace).$(MSBuildProjectName)</RootNamespace>
+    <RootNamespace>$(BaseNamespace).$(MSBuildProjectName)</RootNamespace>
     <AssemblyName>$(RootNamespace)</AssemblyName>
 		<UserSecretsId>8fe260ca-ef4c-4fa3-9364-029146f8d339</UserSecretsId>
 		<DockerComposeProjectPath>..\..\docker-compose.dcproj</DockerComposeProjectPath>

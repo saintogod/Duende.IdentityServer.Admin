@@ -1,11 +1,8 @@
 ﻿// Copyright (c) Jan Škoruba. All Rights Reserved.
 // Licensed under the Apache License, Version 2.0.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Duende.IdentityServer.Models;
+
 using Skoruba.AuditLogging.Services;
 using Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Dtos.Configuration;
 using Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Dtos.Enums;
@@ -55,29 +52,35 @@ public class ClientService : IClientService
         {
             case ClientType.Empty:
                 break;
+
             case ClientType.Web:
                 client.AllowedGrantTypes.AddRange(GrantTypes.Code);
                 client.RequirePkce = true;
                 client.RequireClientSecret = true;
                 break;
+
             case ClientType.Spa:
                 client.AllowedGrantTypes.AddRange(GrantTypes.Code);
                 client.RequirePkce = true;
                 client.RequireClientSecret = false;
                 break;
+
             case ClientType.Native:
                 client.AllowedGrantTypes.AddRange(GrantTypes.Code);
                 client.RequirePkce = true;
                 client.RequireClientSecret = false;
                 break;
+
             case ClientType.Machine:
                 client.AllowedGrantTypes.AddRange(GrantTypes.ClientCredentials);
                 break;
+
             case ClientType.Device:
                 client.AllowedGrantTypes.AddRange(GrantTypes.DeviceFlow);
                 client.RequireClientSecret = false;
                 client.AllowOfflineAccess = true;
                 break;
+
             default:
                 throw new ArgumentOutOfRangeException();
         }
