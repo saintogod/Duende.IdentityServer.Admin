@@ -10,17 +10,17 @@ WORKDIR /src
 
 COPY src/Directory.Build.props ./
 COPY src/Admin.Api/Admin.Api.csproj Admin.Api/
-COPY src/Admin.BusinessLogic.Identity/Admin.BusinessLogic.Identity.csproj Admin.BusinessLogic.Identity/
-COPY src/Admin.BusinessLogic.Shared/Admin.BusinessLogic.Shared.csproj Admin.BusinessLogic.Shared/
-COPY src/Admin.BusinessLogic/Admin.BusinessLogic.csproj Admin.BusinessLogic/
-COPY src/Admin.EntityFramework.Configuration/Admin.EntityFramework.Configuration.csproj Admin.EntityFramework.Configuration/
-COPY src/Admin.EntityFramework.Extensions/Admin.EntityFramework.Extensions.csproj Admin.EntityFramework.Extensions/
-COPY src/Admin.EntityFramework.Identity/Admin.EntityFramework.Identity.csproj Admin.EntityFramework.Identity/
-COPY src/Admin.EntityFramework.MySql/Admin.EntityFramework.MySql.csproj Admin.EntityFramework.MySql/
-COPY src/Admin.EntityFramework.PostgreSQL/Admin.EntityFramework.PostgreSQL.csproj Admin.EntityFramework.PostgreSQL/
-COPY src/Admin.EntityFramework.Shared/Admin.EntityFramework.Shared.csproj Admin.EntityFramework.Shared/
-COPY src/Admin.EntityFramework.SqlServer/Admin.EntityFramework.SqlServer.csproj Admin.EntityFramework.SqlServer/
-COPY src/Admin.EntityFramework/Admin.EntityFramework.csproj Admin.EntityFramework/
+COPY src/BusinessLogic.Identity/BusinessLogic.Identity.csproj BusinessLogic.Identity/
+COPY src/BusinessLogic.Shared/BusinessLogic.Shared.csproj BusinessLogic.Shared/
+COPY src/BusinessLogic/BusinessLogic.csproj BusinessLogic/
+COPY src/EntityFramework.Configuration/EntityFramework.Configuration.csproj EntityFramework.Configuration/
+COPY src/EntityFramework.Extensions/EntityFramework.Extensions.csproj EntityFramework.Extensions/
+COPY src/EntityFramework.Identity/EntityFramework.Identity.csproj EntityFramework.Identity/
+COPY src/EntityFramework.MySql/EntityFramework.MySql.csproj EntityFramework.MySql/
+COPY src/EntityFramework.PostgreSQL/EntityFramework.PostgreSQL.csproj EntityFramework.PostgreSQL/
+COPY src/EntityFramework.Shared/EntityFramework.Shared.csproj EntityFramework.Shared/
+COPY src/EntityFramework.SqlServer/EntityFramework.SqlServer.csproj EntityFramework.SqlServer/
+COPY src/EntityFramework/EntityFramework.csproj EntityFramework/
 COPY src/Shared.Configuration/Shared.Configuration.csproj Shared.Configuration/
 COPY src/Shared/Shared.csproj Shared/
 
