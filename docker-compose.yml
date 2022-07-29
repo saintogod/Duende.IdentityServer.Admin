@@ -24,6 +24,9 @@ services:
       - './shared/dev.key:/etc/st.ids/dev.key'
     networks:
       - saintogod
+    links:
+      - "ids.admin.api:admin-api.saintogod.local"
+      - "ids.sts:sso.saintogod.local"
 
   ids.admin.api:
     image: 'saintogod/ids-admin-api'
@@ -45,6 +48,9 @@ services:
       - saintogod
     depends_on:
       - ids.sts
+    links:
+      - "ids.admin:admin.saintogod.local"
+      - "ids.sts:sso.saintogod.local"
 
   ids.sts:
     image: 'saintogod/ids-sts'
@@ -63,6 +69,9 @@ services:
       - './shared/dev.key:/etc/st.ids/dev.key'
     networks:
       - saintogod
+    links:
+      - "ids.admin.api:admin-api.saintogod.local"
+      - "ids.admin:admin.saintogod.local"
 
 networks:
   saintogod:
