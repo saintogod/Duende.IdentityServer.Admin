@@ -270,15 +270,15 @@ __pycache__/
 
 # Cake - Uncomment if you are using it
 # tools/
-/src/Admin/appsettings.production.json
 /src/Admin/Scripts/Libs/
 /src/Admin/Data/Migrations/
 
 # Don't ignore these log folders
-!/src/Admin.UI/Resources/Views/Log/
 !/src/BusinessLogic/Dtos/Log/
 !/src/BusinessLogic/Events/Log/
 !**/Views/Log/
+
+/src/Admin/appsettings.production.json
 /src/Admin.Api/appsettings.Production.json
 
 appsettings.*.json

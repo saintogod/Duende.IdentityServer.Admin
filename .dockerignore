@@ -1,7 +1,9 @@
 **/.classpath
 **/.dockerignore
+**/.editorconfig
 **/.env
 **/.git
+**/.github
 **/.gitignore
 **/.project
 **/.settings
@@ -22,5 +24,10 @@
 **/secrets.dev.yaml
 **/values.dev.yaml
 **/_ReSharper.Caches
+build
+docs
+obj
+templates
+tests
 LICENSE
 README.md

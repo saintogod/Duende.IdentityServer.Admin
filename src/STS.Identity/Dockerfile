@@ -6,7 +6,7 @@ COPY share/cacerts.crt /usr/local/share/ca-certificates
 RUN update-ca-certificates
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
-WORKDIR /src
+WORKDIR /code
 
 COPY ["Directory.Build.props", "src/"]
 COPY ["src/BusinessLogic.Identity/BusinessLogic.Identity.csproj", "src/BusinessLogic.Identity/"]
@@ -24,11 +24,11 @@ RUN dotnet restore "src/STS.Identity/STS.Identity.csproj"
 
 COPY . .
 
-WORKDIR "/src/src/STS.Identity"
-RUN dotnet build "STS.Identity.csproj" -c Release -o /app/build
+WORKDIR "/code/src/STS.Identity"
+RUN dotnet build "STS.Identity.csproj" -c Release -o /app/build --no-restore
 
 FROM build AS publish
-RUN dotnet publish "STS.Identity.csproj" -c Release -o /app/publish
+RUN dotnet publish "STS.Identity.csproj" -c Release -o /app/publish --no-restore
 
 FROM base AS final
 WORKDIR /app

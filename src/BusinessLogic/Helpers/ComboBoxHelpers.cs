@@ -16,14 +16,4 @@ public static class ComboBoxHelpers
 
         list.AddRange(listValues);
     }
-
-    public static void PopulateValue(string jsonValue)
-    {
-        if (string.IsNullOrEmpty(jsonValue)) return;
-
-        var selectedValue = JsonConvert.DeserializeObject<string>(jsonValue);
-        if (selectedValue == null) return;
-
-        jsonValue = selectedValue;
-    }
 }

@@ -109,7 +109,7 @@ public class ApiResourceService : IApiResourceService
         return await ApiResourceRepository.CanInsertApiResourcePropertyAsync(resource);
     }
 
-    private void HashApiSharedSecret(ApiSecretsDto apiSecret)
+    private static void HashApiSharedSecret(ApiSecretsDto apiSecret)
     {
         if (apiSecret.Type != SharedSecret) return;
 

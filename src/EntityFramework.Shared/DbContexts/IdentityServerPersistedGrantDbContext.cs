@@ -2,7 +2,9 @@
 // Licensed under the Apache License, Version 2.0.
 
 using Duende.IdentityServer.EntityFramework.DbContexts;
+
 using Microsoft.EntityFrameworkCore;
+
 using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Interfaces;
 
 namespace Skoruba.Duende.IdentityServer.Admin.EntityFramework.Shared.DbContexts;

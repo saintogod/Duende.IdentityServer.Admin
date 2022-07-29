@@ -25,7 +25,6 @@ function processScripts() {
             './node_modules/holderjs/holder.js',
             './node_modules/knockout/build/output/knockout-latest.js',
             './node_modules/toastr/toastr.js',
-            './node_modules/moment/min/moment.min.js',
             './node_modules/tempusdominus-bootstrap-4/build/js/tempusdominus-bootstrap-4.js',
             './node_modules/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js',
             './node_modules/bootstrap-datepicker/dist/locales/bootstrap-datepicker.fa.min.js',

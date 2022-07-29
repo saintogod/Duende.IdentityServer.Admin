@@ -47,10 +47,10 @@ public class IdentityService<TUserDto, TRoleDto, TUser, TRole, TKey, TUserClaim,
     where TUserClaimDto : UserClaimDto<TKey>
     where TRoleClaimDto : RoleClaimDto<TKey>
 {
-    protected readonly IIdentityRepository<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken> IdentityRepository;
-    protected readonly IIdentityServiceResources IdentityServiceResources;
-    protected readonly IMapper Mapper;
-    protected readonly IAuditEventLogger AuditEventLogger;
+    protected IIdentityRepository<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken> IdentityRepository { get; }
+    protected IIdentityServiceResources IdentityServiceResources { get; }
+    protected IMapper Mapper { get; }
+    protected IAuditEventLogger AuditEventLogger { get; }
 
     public IdentityService(IIdentityRepository<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken> identityRepository,
         IIdentityServiceResources identityServiceResources,
@@ -358,7 +358,7 @@ public class IdentityService<TUserDto, TRoleDto, TUser, TRole, TKey, TUserClaim,
     {
         if (id == null)
         {
-            return default(TKey);
+            return default;
         }
         return (TKey)TypeDescriptor.GetConverter(typeof(TKey)).ConvertFromInvariantString(id);
     }

@@ -6,7 +6,7 @@ indent_style = space
 end_of_line = lf
 
 # Xml files
-[*.xml]
+[*.{xml,json,csproj,config}]
 indent_size = 2
 
 [*.cs]

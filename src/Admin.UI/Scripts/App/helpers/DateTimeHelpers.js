@@ -2,7 +2,7 @@
 //https://sebnilsson.com/blog/display-local-datetime-with-moment-js-in-asp-net/
 
 $(function () {
-
+  var formatter = new Intl.DateTimeFormat();
 	$('.local-datetime').each(function () {
 		var $this = $(this), utcDate = parseInt($this.attr('data-utc'), 10) || 0;
 
@@ -10,9 +10,7 @@ $(function () {
 			return;
 		}
 
-		var local = moment.utc(utcDate).local();
-		var formattedDate = local.format('DD MMM YYYY HH:mm');
-		$this.text(formattedDate);
+		$this.text(formatter.format(utcDate));
 	});
 	
 	$('[data-toggle="tooltip"]').tooltip();

@@ -19,14 +19,8 @@
         },
 
         init: function() {
-
             adminSecrets.eventHandlers();
-
         }
-
     };
-
-
     adminSecrets.init();
-
 })
