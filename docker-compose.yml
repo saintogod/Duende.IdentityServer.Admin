@@ -10,11 +10,14 @@ services:
     container_name: ids-admin
     hostname: ids-admin
     environment:
+      - AdminConfiguration__IdentityAdminRedirectUri=https://admin.saintogod.local/signin-oidc
+      - AdminConfiguration__IdentityServerBaseUrl=https://sso.saintogod.local
       - ASPNETCORE_ENVIRONMENT=Development
     depends_on:
       - ids.sts
     volumes:
       - './shared/serilog.json:/usr/share/Saintogod/serilog.json'
+      - './shared/deployment.json:/usr/share/Saintogod/deployment.json'
       - './shared/identitydata.json:/usr/share/Saintogod/identitydata.json'
       - './shared/identityserverdata.json:/usr/share/Saintogod/identityserverdata.json'
       - './shared/dev.crt:/etc/saintogod/dev.crt'
@@ -30,9 +33,12 @@ services:
     container_name: ids-admin-api
     hostname: ids-admin-api
     environment:
+      - AdminApiConfiguration__ApiBaseUrl=https://admin-api.saintogod.local
+      - AdminApiConfiguration__IdentityServerBaseUrl=https://sso.saintogod.local
       - ASPNETCORE_ENVIRONMENT=Development
     volumes:
       - './shared/serilog.json:/usr/share/Saintogod/serilog.json'
+      - './shared/deployment.json:/usr/share/Saintogod/deployment.json'
       - './shared/dev.crt:/etc/saintogod/dev.crt'
       - './shared/dev.key:/etc/saintogod/dev.key'
     networks:
@@ -48,9 +54,11 @@ services:
     container_name: ids-sts
     hostname: ids-sts
     environment:
+      - AdminConfiguration__IdentityAdminBaseUrl=https://admin.saintogod.local
       - ASPNETCORE_ENVIRONMENT=Development
     volumes:
       - './shared/serilog.json:/usr/share/Saintogod/serilog.json'
+      - './shared/deployment.json:/usr/share/Saintogod/deployment.json'
       - './shared/dev.crt:/etc/saintogod/dev.crt'
       - './shared/dev.key:/etc/saintogod/dev.key'
     networks:

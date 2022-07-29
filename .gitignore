@@ -278,10 +278,11 @@ __pycache__/
 !/src/BusinessLogic/Events/Log/
 !**/Views/Log/
 
-/src/Admin/appsettings.*.json
-/src/Admin.Api/appsettings.*.json
-
-appsettings.*.json
+/src/**/appsettings.*.json
 
 /shared/dev.*
 /shared/deployment.json
+/shared/dev.*
+/shared/identitydata.json
+/shared/identityserverdata.json
+/shared/serilog.json

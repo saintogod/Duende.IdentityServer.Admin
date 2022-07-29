@@ -24,6 +24,7 @@
 **/secrets.dev.yaml
 **/values.dev.yaml
 **/_ReSharper.Caches
+shared/*.sample.json
 build
 docs
 obj
