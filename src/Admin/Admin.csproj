@@ -49,6 +49,12 @@
 		<ProjectReference Include="..\Shared\Shared.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Content Update="identityserverdata.json">
+	    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+	  </Content>
+	</ItemGroup>
+
 </Project>
 
 

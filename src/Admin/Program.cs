@@ -4,11 +4,8 @@
 using Serilog;
 
 using Skoruba.Duende.IdentityServer.Admin;
-using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Shared.DbContexts;
-using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Shared.Entities.Identity;
-using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Shared.Helpers;
 
-var configuration = GetConfiguration(args);
+var configuration = GlobalConfigurationHelper.GetConfiguration<Startup>(args);
 
 Log.Logger = new LoggerConfiguration()
     .ReadFrom.Configuration(configuration)
@@ -29,52 +26,14 @@ finally
     Log.CloseAndFlush();
 }
 
-static IConfiguration GetConfiguration(string[] args)
-{
-    var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-    var isDevelopment = environment == Environments.Development;
-
-    var configurationBuilder = new ConfigurationBuilder()
-        .SetBasePath(Directory.GetCurrentDirectory())
-        .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-        .AddJsonFile($"appsettings.{environment}.json", optional: true, reloadOnChange: true)
-        .AddJsonFile("serilog.json", optional: true, reloadOnChange: true)
-        .AddJsonFile($"serilog.{environment}.json", optional: true, reloadOnChange: true)
-        .AddJsonFile("deployment.json", optional: true, reloadOnChange: false);
-
-    if (isDevelopment)
-    {
-        configurationBuilder.AddUserSecrets<Startup>(true);
-    }
-
-    configurationBuilder.AddCommandLine(args);
-    configurationBuilder.AddEnvironmentVariables();
-
-    return configurationBuilder.Build();
-}
-
 static IHostBuilder CreateHostBuilder(string[] args) =>
    Host.CreateDefaultBuilder(args)
         .ConfigureAppConfiguration((hostContext, configApp) =>
         {
-            configApp.AddJsonFile("serilog.json", optional: true, reloadOnChange: true);
+            configApp.ResetProviders<Startup>(args);
             configApp.AddJsonFile("identitydata.json", optional: true, reloadOnChange: true);
             configApp.AddJsonFile("identityserverdata.json", optional: true, reloadOnChange: true);
 
-            var env = hostContext.HostingEnvironment;
-
-            configApp.AddJsonFile($"serilog.{env.EnvironmentName}.json", optional: true, reloadOnChange: true)
-            .AddJsonFile($"identitydata.{env.EnvironmentName}.json", optional: true, reloadOnChange: true)
-            .AddJsonFile($"identityserverdata.{env.EnvironmentName}.json", optional: true, reloadOnChange: true)
-            .AddJsonFile("deployment.json", optional: true, reloadOnChange: false);
-
-            if (env.IsDevelopment())
-            {
-                configApp.AddUserSecrets<Startup>(true);
-            }
-
-            configApp.AddEnvironmentVariables();
-            configApp.AddCommandLine(args);
         })
        .ConfigureWebHostDefaults(webBuilder =>
        {
