@@ -8,7 +8,7 @@ RUN update-ca-certificates
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
 
-COPY Directory.Build.props ./
+COPY src/Directory.Build.props ./
 COPY src/Admin.Api/Admin.Api.csproj Admin.Api/
 COPY src/Admin.BusinessLogic.Identity/Admin.BusinessLogic.Identity.csproj Admin.BusinessLogic.Identity/
 COPY src/Admin.BusinessLogic.Shared/Admin.BusinessLogic.Shared.csproj Admin.BusinessLogic.Shared/
