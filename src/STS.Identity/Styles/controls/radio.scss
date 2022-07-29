@@ -13,7 +13,6 @@ label.radio-img > input + img {
 
 label.radio-img > input:checked + img {
 	background-color: $radioBackgroundColor;
-	-ms-border-radius: 15px;
 	border-radius: 15px;
 }
 
