@@ -51,7 +51,7 @@ public static class GlobalConfigurationHelper
             catch
             { }
         }
-        Console.WriteLine($"Using AppFolder at: {configFolder}");
+
         configBuilder.AddJsonFile("serilog.json", optional: true, reloadOnChange: true)
             .AddJsonFile(Path.Combine(configFolder, "serilog.json"), optional: true, reloadOnChange: true)
             .AddJsonFile(Path.Combine(configFolder, "deployment.json"), optional: true, reloadOnChange: true);
