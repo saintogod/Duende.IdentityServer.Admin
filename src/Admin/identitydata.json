@@ -2,21 +2,25 @@
   "IdentityData": {
     "Roles": [
       {
-        "Name": "SkorubaIdentityAdminAdministrator"
+        "Name": "SaintogodIdentityAdministrator"
       }
     ],
     "Users": [
       {
-        "Username": "admin",
-        "Password": "Pa$$word123",
-        "Email": "admin@skoruba.com",
+        "Username": "saint",
+        "Password": "St.god1314",
+        "Email": "ting@saintogod.com",
         "Roles": [
-          "SkorubaIdentityAdminAdministrator"
+          "SaintogodIdentityAdministrator"
         ],
         "Claims": [
           {
             "Type": "name",
-            "Value": "admin"
+            "Value": "saint"
+          },
+          {
+            "Type": "level",
+            "Value": "senior"
           }
         ]
       }

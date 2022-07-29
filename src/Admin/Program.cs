@@ -4,13 +4,9 @@
 using Serilog;
 
 using Skoruba.Duende.IdentityServer.Admin;
-using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Configuration.Configuration;
 using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Shared.DbContexts;
 using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Shared.Entities.Identity;
 using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Shared.Helpers;
-
-const string SeedArgs = "/seed";
-const string MigrateOnlyArgs = "/migrateonly";
 
 var configuration = GetConfiguration(args);
 
@@ -39,7 +35,7 @@ finally
 
 static async Task<bool> MigrateOnlyOperationAsync(string[] args, IHost host, bool migrationComplete)
 {
-    if (args.Any(x => x == MigrateOnlyArgs))
+    if (host.Services.GetRequiredService<IConfiguration>().GetValue("Migrateonly", false))
     {
         await host.StopAsync();
 
@@ -54,15 +50,12 @@ static async Task<bool> MigrateOnlyOperationAsync(string[] args, IHost host, boo
     return false;
 }
 
-static async Task<bool> ApplyDbMigrationsWithDataSeedAsync(string[] args, IHost host)
+static Task<bool> ApplyDbMigrationsWithDataSeedAsync(string[] args, IHost host)
 {
-    var applyDbMigrationWithDataSeedFromProgramArguments = args.Any(x => x == SeedArgs);
-
-    return await DbMigrationHelpers
+    return DbMigrationHelpers
         .ApplyDbMigrationsWithDataSeedAsync<IdentityServerConfigurationDbContext, AdminIdentityDbContext,
             IdentityServerPersistedGrantDbContext, AdminLogDbContext, AdminAuditLogDbContext,
-            IdentityServerDataProtectionDbContext, UserIdentity, UserIdentityRole>(host,
-            applyDbMigrationWithDataSeedFromProgramArguments);
+            IdentityServerDataProtectionDbContext, UserIdentity, UserIdentityRole>(host);
 }
 
 static IConfiguration GetConfiguration(string[] args)

@@ -1,34 +1,33 @@
 FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS base
 
-EXPOSE 80
 EXPOSE 443
 COPY share/cacerts.crt /usr/local/share/ca-certificates
 RUN update-ca-certificates
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
-WORKDIR /code
+WORKDIR /src
 
-COPY ["Directory.Build.props", "src/"]
-COPY ["src/BusinessLogic.Identity/BusinessLogic.Identity.csproj", "src/BusinessLogic.Identity/"]
-COPY ["src/BusinessLogic.Shared/BusinessLogic.Shared.csproj", "src/BusinessLogic.Shared/"]
-COPY ["src/EntityFramework.Configuration/EntityFramework.Configuration.csproj", "src/EntityFramework.Configuration/"]
-COPY ["src/EntityFramework.Extensions/EntityFramework.Extensions.csproj", "src/EntityFramework.Extensions/"]
-COPY ["src/EntityFramework.Identity/EntityFramework.Identity.csproj", "src/EntityFramework.Identity/"]
-COPY ["src/EntityFramework.Shared/EntityFramework.Shared.csproj", "src/EntityFramework.Shared/"]
-COPY ["src/EntityFramework/EntityFramework.csproj", "src/EntityFramework/"]
-COPY ["src/Shared.Configuration/Shared.Configuration.csproj", "src/Shared.Configuration/"]
-COPY ["src/Shared/Shared.csproj", "src/Shared/"]
-COPY ["src/STS.Identity/STS.Identity.csproj", "src/STS.Identity/"]
+COPY src/Directory.Build.props ./
+COPY src/BusinessLogic.Identity/BusinessLogic.Identity.csproj BusinessLogic.Identity/
+COPY src/BusinessLogic.Shared/BusinessLogic.Shared.csproj BusinessLogic.Shared/
+COPY src/EntityFramework.Configuration/EntityFramework.Configuration.csproj EntityFramework.Configuration/
+COPY src/EntityFramework.Extensions/EntityFramework.Extensions.csproj EntityFramework.Extensions/
+COPY src/EntityFramework.Identity/EntityFramework.Identity.csproj EntityFramework.Identity/
+COPY src/EntityFramework.Shared/EntityFramework.Shared.csproj EntityFramework.Shared/
+COPY src/EntityFramework/EntityFramework.csproj EntityFramework/
+COPY src/Shared.Configuration/Shared.Configuration.csproj Shared.Configuration/
+COPY src/Shared/Shared.csproj Shared/
+COPY src/STS.Identity/STS.Identity.csproj STS.Identity/
 
-RUN dotnet restore "src/STS.Identity/STS.Identity.csproj"
+RUN dotnet restore STS.Identity/STS.Identity.csproj
 
-COPY . .
+COPY src/ ./
 
-WORKDIR "/code/src/STS.Identity"
-RUN dotnet build "STS.Identity.csproj" -c Release -o /app/build --no-restore
+WORKDIR /src/STS.Identity
+RUN dotnet build STS.Identity.csproj -c Release -o /app/build --no-restore
 
 FROM build AS publish
-RUN dotnet publish "STS.Identity.csproj" -c Release -o /app/publish --no-restore
+RUN dotnet publish STS.Identity.csproj -c Release -o /app/publish --no-restore
 
 FROM base AS final
 WORKDIR /app

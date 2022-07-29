@@ -63,8 +63,8 @@
     ],
     "ApiScopes": [
       {
-        "Name": "skoruba_identity_admin_api",
-        "DisplayName": "skoruba_identity_admin_api",
+        "Name": "saintogod_identity_admin_api",
+        "DisplayName": "saintogod_identity_admin_api",
         "Required": true,
         "UserClaims": [
           "role",
@@ -74,35 +74,35 @@
     ],
     "ApiResources": [
       {
-        "Name": "skoruba_identity_admin_api",
+        "Name": "saintogod_identity_admin_api",
         "Scopes": [
-          "skoruba_identity_admin_api"
+          "saintogod_identity_admin_api"
         ]
       }
     ],
     "Clients": [
       {
-        "ClientId": "skoruba_identity_admin",
-        "ClientName": "skoruba_identity_admin",
-        "ClientUri": "https://localhost:44303",
+        "ClientId": "saintogod_identity_admin",
+        "ClientName": "Saintogod Identity Admin Site",
+        "ClientUri": "https://admin.saintogod.local:44303",
         "AllowedGrantTypes": [
           "authorization_code"
         ],
         "RequirePkce": true,
         "ClientSecrets": [
           {
-            "Value": "skoruba_admin_client_secret"
+            "Value": "saintogod_admin_client_secret"
           }
         ],
         "RedirectUris": [
-          "https://localhost:44303/signin-oidc"
+          "https://admin.saintogod.local:44303/signin-oidc"
         ],
-        "FrontChannelLogoutUri": "https://localhost:44303/signout-oidc",
+        "FrontChannelLogoutUri": "https://admin.saintogod.local:44303/signout-oidc",
         "PostLogoutRedirectUris": [
-          "https://localhost:44303/signout-callback-oidc"
+          "https://admin.saintogod.local:44303/signout-callback-oidc"
         ],
         "AllowedCorsOrigins": [
-          "https://localhost:44303"
+          "https://admin.saintogod.local:44303"
         ],
         "AllowedScopes": [
           "openid",
@@ -112,21 +112,21 @@
         ]
       },
       {
-        "ClientId": "skoruba_identity_admin_api_swaggerui",
-        "ClientName": "skoruba_identity_admin_api_swaggerui",
+        "ClientId": "saintogod_identity_admin_api_swaggerui",
+        "ClientName": "Saintogod Identity Admin API Swagger UI",
         "AllowedGrantTypes": [
           "authorization_code"
         ],
         "RequireClientSecret": false,
         "RequirePkce": true,
         "RedirectUris": [
-          "https://localhost:44302/swagger/oauth2-redirect.html"
+          "https://admin-api.saintogod.local:44302/swagger/oauth2-redirect.html"
         ],
         "AllowedScopes": [
-          "skoruba_identity_admin_api"
+          "saintogod_identity_admin_api"
         ],
         "AllowedCorsOrigins": [
-          "https://localhost:44302"
+          "https://admin-api.saintogod.local:44302"
         ]
       }
     ]

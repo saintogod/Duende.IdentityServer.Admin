@@ -9,8 +9,8 @@ namespace Skoruba.Duende.IdentityServer.Admin.EntityFramework.Configuration.Conf
 
 public sealed record IdentityServerData
 {
-    public Client[] Clients { get; set; } = Array.Empty<Client>();
-    public IdentityResource[] IdentityResources { get; set; } = Array.Empty<IdentityResource>();
-    public ApiResource[] ApiResources { get; set; } = Array.Empty<ApiResource>();
-    public ApiScope[] ApiScopes { get; set; } = Array.Empty<ApiScope>();
+    public Client[] Clients { get; init; } = Array.Empty<Client>();
+    public IdentityResource[] IdentityResources { get; init; } = Array.Empty<IdentityResource>();
+    public ApiResource[] ApiResources { get; init; } = Array.Empty<ApiResource>();
+    public ApiScope[] ApiScopes { get; init; } = Array.Empty<ApiScope>();
 }

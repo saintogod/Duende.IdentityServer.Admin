@@ -30,7 +30,7 @@ public static class DbMigrationHelpers
     /// <param name="applyDbMigrationWithDataSeedFromProgramArguments"></param>
     public static async Task<bool> ApplyDbMigrationsWithDataSeedAsync<TIdentityServerDbContext, TIdentityDbContext,
         TPersistedGrantDbContext, TLogDbContext, TAuditLogDbContext, TDataProtectionDbContext, TUser, TRole>(
-        IHost host, bool applyDbMigrationWithDataSeedFromProgramArguments)
+        IHost host)
         where TIdentityServerDbContext : DbContext, IAdminConfigurationDbContext
         where TIdentityDbContext : DbContext
         where TPersistedGrantDbContext : DbContext, IAdminPersistedGrantDbContext
@@ -48,14 +48,12 @@ public static class DbMigrationHelpers
 
             var configuration = services.GetRequiredService<IConfiguration>();
 
-            if (applyDbMigrationWithDataSeedFromProgramArguments
-                || configuration.GetValue($"{ nameof(DatabaseMigrationsConfiguration)}:{nameof(DatabaseMigrationsConfiguration.ApplyDatabaseMigrations)}", false))
+            if (configuration.GetValue($"{ nameof(DatabaseMigrationsConfiguration)}:{nameof(DatabaseMigrationsConfiguration.ApplyDatabaseMigrations)}", false))
             {
                 migrationComplete = await EnsureDatabasesMigratedAsync<TIdentityDbContext, TIdentityServerDbContext, TPersistedGrantDbContext, TLogDbContext, TAuditLogDbContext, TDataProtectionDbContext>(services);
             }
 
-            if (applyDbMigrationWithDataSeedFromProgramArguments 
-                || configuration.GetValue($"{nameof(SeedConfiguration)}:{nameof(SeedConfiguration.ApplySeed)}", false))
+            if (configuration.GetValue($"{nameof(SeedConfiguration)}:{nameof(SeedConfiguration.ApplySeed)}", false))
             {
                 var seedComplete = await EnsureSeedDataAsync<TIdentityServerDbContext, TUser, TRole>(services);
 
