@@ -44,7 +44,7 @@ dlldata.c
 project.lock.json
 project.fragment.lock.json
 artifacts/
-Properties/launchSettings.json
+/**/Properties/launchSettings.json
 
 *_i.c
 *_p.c
@@ -278,9 +278,10 @@ __pycache__/
 !/src/BusinessLogic/Events/Log/
 !**/Views/Log/
 
-/src/Admin/appsettings.production.json
-/src/Admin.Api/appsettings.Production.json
+/src/Admin/appsettings.*.json
+/src/Admin.Api/appsettings.*.json
 
 appsettings.*.json
 
-/shared/nginx/certs/
+/shared/dev.*
+/shared/deployment.json

@@ -17,6 +17,8 @@ services:
       - './shared/serilog.json:/usr/share/Saintogod/serilog.json'
       - './shared/identitydata.json:/usr/share/Saintogod/identitydata.json'
       - './shared/identityserverdata.json:/usr/share/Saintogod/identityserverdata.json'
+      - './shared/dev.crt:/etc/saintogod/dev.crt'
+      - './shared/dev.key:/etc/saintogod/dev.key'
     networks:
       - saintogod
 
@@ -31,6 +33,8 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
     volumes:
       - './shared/serilog.json:/usr/share/Saintogod/serilog.json'
+      - './shared/dev.crt:/etc/saintogod/dev.crt'
+      - './shared/dev.key:/etc/saintogod/dev.key'
     networks:
       - saintogod
     depends_on:
@@ -47,6 +51,8 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
     volumes:
       - './shared/serilog.json:/usr/share/Saintogod/serilog.json'
+      - './shared/dev.crt:/etc/saintogod/dev.crt'
+      - './shared/dev.key:/etc/saintogod/dev.key'
     networks:
       - saintogod
 
