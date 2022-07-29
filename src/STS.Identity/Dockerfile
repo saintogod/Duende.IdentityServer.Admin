@@ -35,4 +35,4 @@ WORKDIR /app
 COPY --from=publish /app/publish .
 
 ENV ASPNETCORE_FORWARDEDHEADERS_ENABLED=true
-ENTRYPOINT ["dotnet", "Skoruba.Duende.IdentityServer.STS.Identity.dll"]
+ENTRYPOINT ["dotnet", "Skoruba.Duende.IdentityServer.Admin.STS.Identity.dll"]
