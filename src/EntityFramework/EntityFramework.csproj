@@ -16,17 +16,3 @@
 		<ProjectReference Include="..\EntityFramework.Extensions\EntityFramework.Extensions.csproj" />
 	</ItemGroup>
 </Project>
-
-
-
-
-
-
-
-
-
-
-
-
-
-

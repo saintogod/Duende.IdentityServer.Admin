@@ -13,9 +13,28 @@ Log.Logger = new LoggerConfiguration()
 
 try
 {
-    await CreateHostBuilder(args)
+    Host.CreateDefaultBuilder(args)
+        .ConfigureAppConfiguration((hostContext, configApp) =>
+        {
+            configApp.ResetProviders<Startup>(args, "identitydata.json", "identityserverdata.json");
+        })
+        .ConfigureLogging((context, logging) =>
+        {
+            logging.AddSerilog();
+        })
+        .ConfigureWebHostDefaults(webBuilder =>
+        {
+            webBuilder.ConfigureKestrel(options => options.AddServerHeader = false);
+            webBuilder.UseStartup<Startup>();
+        })
+        .UseSerilog((hostContext, loggerConfig) =>
+        {
+            loggerConfig
+                .ReadFrom.Configuration(hostContext.Configuration)
+                .Enrich.WithProperty("ApplicationName", hostContext.HostingEnvironment.ApplicationName);
+        })
         .Build()
-        .RunAsync();
+        .Run();
 }
 catch (Exception ex)
 {
@@ -25,24 +44,3 @@ finally
 {
     Log.CloseAndFlush();
 }
-
-static IHostBuilder CreateHostBuilder(string[] args) =>
-   Host.CreateDefaultBuilder(args)
-        .ConfigureAppConfiguration((hostContext, configApp) =>
-        {
-            configApp.ResetProviders<Startup>(args);
-            configApp.AddJsonFile("identitydata.json", optional: true, reloadOnChange: true);
-            configApp.AddJsonFile("identityserverdata.json", optional: true, reloadOnChange: true);
-
-        })
-       .ConfigureWebHostDefaults(webBuilder =>
-       {
-           webBuilder.ConfigureKestrel(options => options.AddServerHeader = false);
-           webBuilder.UseStartup<Startup>();
-       })
-       .UseSerilog((hostContext, loggerConfig) =>
-       {
-           loggerConfig
-               .ReadFrom.Configuration(hostContext.Configuration)
-               .Enrich.WithProperty("ApplicationName", hostContext.HostingEnvironment.ApplicationName);
-       });

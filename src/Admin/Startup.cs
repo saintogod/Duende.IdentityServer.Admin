@@ -19,16 +19,16 @@ namespace Skoruba.Duende.IdentityServer.Admin;
 
 public class Startup
 {
+    public IConfiguration Configuration { get; }
+
+    public IWebHostEnvironment HostingEnvironment { get; }
+
     public Startup(IWebHostEnvironment env, IConfiguration configuration)
     {
         JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
         HostingEnvironment = env;
         Configuration = configuration;
     }
-
-    public IConfiguration Configuration { get; }
-
-    public IWebHostEnvironment HostingEnvironment { get; }
 
     public void ConfigureServices(IServiceCollection services)
     {

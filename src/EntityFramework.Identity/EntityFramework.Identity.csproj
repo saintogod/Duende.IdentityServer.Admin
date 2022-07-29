@@ -7,7 +7,6 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Duende.IdentityServer.EntityFramework" Version="$(DuendeVer)" />
 		<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="$(DotnetCoreVer)" />
 	</ItemGroup>
 
@@ -16,17 +15,3 @@
 	</ItemGroup>
 
 </Project>
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -57,10 +57,6 @@
 		</EmbeddedResource>
 	</ItemGroup>
 
-	<ItemGroup>
-	  <EditorConfigFiles Remove="S:\Workspace\Mine\Duende.IdentityServer.Admin\src\BusinessLogic\.editorconfig" />
-	</ItemGroup>
-
 </Project>
 
 

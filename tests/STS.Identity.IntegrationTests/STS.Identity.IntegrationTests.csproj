@@ -2,9 +2,8 @@
 
   <ItemGroup>
     <PackageReference Include="HtmlAgilityPack" Version="1.11.43" />
-    <PackageReference Include="IdentityModel" Version="6.0.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="6.0.1" />
-    <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="6.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="6.0.7" />
+    <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="6.0.7" />
   </ItemGroup>
 
   <ItemGroup>

@@ -6,10 +6,8 @@ public static class GlobalConfigurationHelper
 {
     public static IConfiguration GetConfiguration<TStartup>(string[] args) where TStartup: class
     {
-        Console.WriteLine($"Currnet Config folder is {Directory.GetCurrentDirectory()}");
-
         var configBuilder = new ConfigurationBuilder()
-            .SetBasePath(Directory.GetCurrentDirectory());
+            .SetBasePath(AppDomain.CurrentDomain.BaseDirectory);
 
         configBuilder.ResetProviders<TStartup>(args);
         return configBuilder.Build();
@@ -21,7 +19,6 @@ public static class GlobalConfigurationHelper
 
         var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
         var isDevelopment = environment == Environments.Development;
-        Console.WriteLine($"Currnet Config folder is {Directory.GetCurrentDirectory()}");
 
         configBuilder.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
             .AddJsonFile($"appsettings.{environment}.json", optional: true, reloadOnChange: true)
@@ -54,6 +51,7 @@ public static class GlobalConfigurationHelper
             catch
             { }
         }
+
         configBuilder.AddJsonFile("serilog.json", optional: true, reloadOnChange: true)
             .AddJsonFile(Path.Combine(configFolder, "serilog.json"), optional: true, reloadOnChange: true)
             .AddJsonFile(Path.Combine(configFolder, "deployment.json"), optional: true, reloadOnChange: true);

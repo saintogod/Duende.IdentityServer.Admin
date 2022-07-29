@@ -1,39 +1,17 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-    <PropertyGroup>
-      <RootNamespace>$(BaseNamespace).Admin.$(MSBuildProjectName)</RootNamespace>
-      <AssemblyName>$(RootNamespace)</AssemblyName>
-		<Description>Entity Framework layer for the administration of the Duende IdentityServer and Asp.Net Core Identity with PostrgreSQL support</Description>
-    </PropertyGroup>
+  <PropertyGroup>
+    <RootNamespace>$(BaseNamespace).Admin.$(MSBuildProjectName)</RootNamespace>
+    <AssemblyName>$(RootNamespace)</AssemblyName>
+    <Description>Entity Framework layer for the administration of the Duende IdentityServer and Asp.Net Core Identity with PostrgreSQL support</Description>
+  </PropertyGroup>
 
-    <ItemGroup>
-        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.5" />
-    </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.5" />
+  </ItemGroup>
 
-    <ItemGroup>
-	    <ProjectReference Include="..\EntityFramework.Shared\EntityFramework.Shared.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Migrations\DataProtection\" />
-      <Folder Include="Migrations\IdentityServerConfiguration\" />
-      <Folder Include="Migrations\IdentityServerGrants\" />
-      <Folder Include="Migrations\Identity\" />
-      <Folder Include="Migrations\Logging\" />
-    </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\EntityFramework.Shared\EntityFramework.Shared.csproj" />
+  </ItemGroup>
 
 </Project>
-
-
-
-
-
-
-
-
-
-
-
-
-
-

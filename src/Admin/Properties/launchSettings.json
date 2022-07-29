@@ -1,12 +1,12 @@
 {
   "profiles": {
-    "Admin.Site": {
+    "Admin": {
       "commandName": "Project",
       "launchBrowser": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
-      "applicationUrl": "https://localhost:44303"
+      "applicationUrl": "https://localhost:21377;http://localhost:21378"
     }
   }
 }

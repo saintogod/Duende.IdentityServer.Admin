@@ -16,53 +16,31 @@
     <PackageReference Include="AspNetCore.HealthChecks.SqlServer" Version="$(DotnetCoreVer)" />
     <PackageReference Include="AspNetCore.HealthChecks.UI" Version="$(DotnetCoreVer)" />
     <PackageReference Include="AspNetCore.HealthChecks.UI.Client" Version="$(DotnetCoreVer)" />
-    <PackageReference Include="Microsoft.AspNetCore.DataProtection.EntityFrameworkCore" Version="$(DotnetCoreVer)" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="$(DotnetCoreVer)" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="$(DotnetCoreVer)" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="$(DotnetCoreVer)" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="$(DotnetCoreVer)" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="$(DotnetCoreVer)">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks" Version="$(DotnetCoreVer)" />
     <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" Version="$(DotnetCoreVer)" />
     <PackageReference Include="Microsoft.Identity.Web" Version="1.25.1" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.16.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="$(DotnetCoreVer)" />
     <PackageReference Include="Duende.IdentityServer.AspNetIdentity" Version="$(DuendeVer)" />
-    <PackageReference Include="Duende.IdentityServer.EntityFramework" Version="$(DuendeVer)" />
-    <PackageReference Include="Serilog" Version="2.11.0" />
     <PackageReference Include="Serilog.Enrichers.Environment" Version="2.2.0" />
     <PackageReference Include="Serilog.Enrichers.Thread" Version="3.1.0" />
-    <PackageReference Include="Serilog.Extensions.Hosting" Version="4.2.0" />
+    <PackageReference Include="Serilog.Extensions.Hosting" Version="5.0.1" />
     <PackageReference Include="Serilog.Settings.Configuration" Version="3.3.0" />
     <PackageReference Include="Serilog.Sinks.Console" Version="4.0.1" />
     <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
     <PackageReference Include="Serilog.Sinks.Seq" Version="5.1.1" />
-    <PackageReference Include="Skoruba.AuditLogging.EntityFramework" Version="1.0.0" />
     <PackageReference Include="NWebsec.AspNetCore.Middleware" Version="3.0.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\EntityFramework.Configuration\EntityFramework.Configuration.csproj" />
     <ProjectReference Include="..\EntityFramework.Shared\EntityFramework.Shared.csproj" />
     <ProjectReference Include="..\Shared.Configuration\Shared.Configuration.csproj" />
     <ProjectReference Include="..\Shared\Shared.csproj" />
   </ItemGroup>
 
 </Project>
-
-
-
-
-
-
-
-
-
-
-
-
-
-

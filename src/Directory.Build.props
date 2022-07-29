@@ -4,7 +4,7 @@
     <BaseNamespace>Skoruba.Duende.IdentityServer</BaseNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
     <DotnetCoreVer>6.0.*</DotnetCoreVer>
-    <DuendeVer>6.0.*</DuendeVer>
+    <DuendeVer>6.1.*</DuendeVer>
   </PropertyGroup>
   
   <PropertyGroup Label="PackageInfo">    
