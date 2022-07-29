@@ -34,5 +34,6 @@ FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
 
+VOLUME ["/etc/st.ids", "/var/log/st.ids", "/usr/share/st.ids"]
 ENV ASPNETCORE_FORWARDEDHEADERS_ENABLED=true
 ENTRYPOINT ["dotnet", "Skoruba.Duende.IdentityServer.Admin.STS.Identity.dll"]

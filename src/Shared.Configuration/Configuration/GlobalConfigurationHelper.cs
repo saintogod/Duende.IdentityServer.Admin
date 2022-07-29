@@ -40,7 +40,7 @@ public static class GlobalConfigurationHelper
         var configFolder = Environment.GetEnvironmentVariable("APPCONFIGFOLDER");
         if (string.IsNullOrEmpty(configFolder))
         {
-            configFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "Saintogod");
+            configFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "st.ids");
         }
         if (!Directory.Exists(configFolder))
         {

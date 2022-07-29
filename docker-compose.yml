@@ -16,12 +16,12 @@ services:
     depends_on:
       - ids.sts
     volumes:
-      - './shared/serilog.json:/usr/share/Saintogod/serilog.json'
-      - './shared/deployment.json:/usr/share/Saintogod/deployment.json'
-      - './shared/identitydata.json:/usr/share/Saintogod/identitydata.json'
-      - './shared/identityserverdata.json:/usr/share/Saintogod/identityserverdata.json'
-      - './shared/dev.crt:/etc/saintogod/dev.crt'
-      - './shared/dev.key:/etc/saintogod/dev.key'
+      - './shared/serilog.json:/usr/share/st.ids/serilog.json'
+      - './shared/deployment.json:/usr/share/st.ids/deployment.json'
+      - './shared/identitydata.json:/usr/share/st.ids/identitydata.json'
+      - './shared/identityserverdata.json:/usr/share/st.ids/identityserverdata.json'
+      - './shared/dev.crt:/etc/st.ids/dev.crt'
+      - './shared/dev.key:/etc/st.ids/dev.key'
     networks:
       - saintogod
 
@@ -37,10 +37,10 @@ services:
       - AdminApiConfiguration__IdentityServerBaseUrl=https://sso.saintogod.local
       - ASPNETCORE_ENVIRONMENT=Development
     volumes:
-      - './shared/serilog.json:/usr/share/Saintogod/serilog.json'
-      - './shared/deployment.json:/usr/share/Saintogod/deployment.json'
-      - './shared/dev.crt:/etc/saintogod/dev.crt'
-      - './shared/dev.key:/etc/saintogod/dev.key'
+      - './shared/serilog.json:/usr/share/st.ids/serilog.json'
+      - './shared/deployment.json:/usr/share/st.ids/deployment.json'
+      - './shared/dev.crt:/etc/st.ids/dev.crt'
+      - './shared/dev.key:/etc/st.ids/dev.key'
     networks:
       - saintogod
     depends_on:
@@ -57,10 +57,10 @@ services:
       - AdminConfiguration__IdentityAdminBaseUrl=https://admin.saintogod.local
       - ASPNETCORE_ENVIRONMENT=Development
     volumes:
-      - './shared/serilog.json:/usr/share/Saintogod/serilog.json'
-      - './shared/deployment.json:/usr/share/Saintogod/deployment.json'
-      - './shared/dev.crt:/etc/saintogod/dev.crt'
-      - './shared/dev.key:/etc/saintogod/dev.key'
+      - './shared/serilog.json:/usr/share/st.ids/serilog.json'
+      - './shared/deployment.json:/usr/share/st.ids/deployment.json'
+      - './shared/dev.crt:/etc/st.ids/dev.crt'
+      - './shared/dev.key:/etc/st.ids/dev.key'
     networks:
       - saintogod
 
