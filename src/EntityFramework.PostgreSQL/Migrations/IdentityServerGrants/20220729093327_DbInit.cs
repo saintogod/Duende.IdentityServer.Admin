@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
@@ -50,7 +51,9 @@ namespace Skoruba.Duende.IdentityServer.Admin.EntityFramework.PostgreSQL.Migrati
                 name: "PersistedGrants",
                 columns: table => new
                 {
-                    Key = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Key = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: true),
                     Type = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     SubjectId = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: true),
                     SessionId = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
@@ -63,7 +66,28 @@ namespace Skoruba.Duende.IdentityServer.Admin.EntityFramework.PostgreSQL.Migrati
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_PersistedGrants", x => x.Key);
+                    table.PrimaryKey("PK_PersistedGrants", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ServerSideSessions",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Key = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    Scheme = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    SubjectId = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    SessionId = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                    DisplayName = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                    Created = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    Renewed = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    Expires = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    Data = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ServerSideSessions", x => x.Id);
                 });
 
             migrationBuilder.CreateIndex(
@@ -93,6 +117,12 @@ namespace Skoruba.Duende.IdentityServer.Admin.EntityFramework.PostgreSQL.Migrati
                 column: "Expiration");
 
             migrationBuilder.CreateIndex(
+                name: "IX_PersistedGrants_Key",
+                table: "PersistedGrants",
+                column: "Key",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_PersistedGrants_SubjectId_ClientId_Type",
                 table: "PersistedGrants",
                 columns: new[] { "SubjectId", "ClientId", "Type" });
@@ -101,6 +131,32 @@ namespace Skoruba.Duende.IdentityServer.Admin.EntityFramework.PostgreSQL.Migrati
                 name: "IX_PersistedGrants_SubjectId_SessionId_Type",
                 table: "PersistedGrants",
                 columns: new[] { "SubjectId", "SessionId", "Type" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ServerSideSessions_DisplayName",
+                table: "ServerSideSessions",
+                column: "DisplayName");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ServerSideSessions_Expires",
+                table: "ServerSideSessions",
+                column: "Expires");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ServerSideSessions_Key",
+                table: "ServerSideSessions",
+                column: "Key",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ServerSideSessions_SessionId",
+                table: "ServerSideSessions",
+                column: "SessionId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ServerSideSessions_SubjectId",
+                table: "ServerSideSessions",
+                column: "SubjectId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -113,6 +169,9 @@ namespace Skoruba.Duende.IdentityServer.Admin.EntityFramework.PostgreSQL.Migrati
 
             migrationBuilder.DropTable(
                 name: "PersistedGrants");
+
+            migrationBuilder.DropTable(
+                name: "ServerSideSessions");
         }
     }
 }

@@ -103,6 +103,7 @@ namespace Skoruba.Duende.IdentityServer.Admin.EntityFramework.PostgreSQL.Migrati
                     DeviceCodeLifetime = table.Column<int>(type: "integer", nullable: false),
                     CibaLifetime = table.Column<int>(type: "integer", nullable: true),
                     PollingInterval = table.Column<int>(type: "integer", nullable: true),
+                    CoordinateLifetimeWithUserSession = table.Column<bool>(type: "boolean", nullable: true),
                     Created = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     Updated = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     LastAccessed = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),

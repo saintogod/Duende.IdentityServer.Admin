@@ -12,7 +12,7 @@ using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Shared.DbContexts;
 namespace Skoruba.Duende.IdentityServer.Admin.EntityFramework.PostgreSQL.Migrations.Logging
 {
     [DbContext(typeof(AdminLogDbContext))]
-    [Migration("20220729035850_DbInit")]
+    [Migration("20220729093416_DbInit")]
     partial class DbInit
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

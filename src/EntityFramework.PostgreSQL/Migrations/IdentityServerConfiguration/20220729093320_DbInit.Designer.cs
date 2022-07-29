@@ -12,7 +12,7 @@ using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Shared.DbContexts;
 namespace Skoruba.Duende.IdentityServer.Admin.EntityFramework.PostgreSQL.Migrations.IdentityServerConfiguration
 {
     [DbContext(typeof(IdentityServerConfigurationDbContext))]
-    [Migration("20220729024935_DbInit")]
+    [Migration("20220729093320_DbInit")]
     partial class DbInit
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -370,6 +370,9 @@ namespace Skoruba.Duende.IdentityServer.Admin.EntityFramework.PostgreSQL.Migrati
 
                     b.Property<int?>("ConsentLifetime")
                         .HasColumnType("integer");
+
+                    b.Property<bool?>("CoordinateLifetimeWithUserSession")
+                        .HasColumnType("boolean");
 
                     b.Property<DateTime>("Created")
                         .HasColumnType("timestamp without time zone");

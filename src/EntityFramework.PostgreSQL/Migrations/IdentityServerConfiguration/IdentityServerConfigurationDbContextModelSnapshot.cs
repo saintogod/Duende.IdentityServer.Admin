@@ -369,6 +369,9 @@ namespace Skoruba.Duende.IdentityServer.Admin.EntityFramework.PostgreSQL.Migrati
                     b.Property<int?>("ConsentLifetime")
                         .HasColumnType("integer");
 
+                    b.Property<bool?>("CoordinateLifetimeWithUserSession")
+                        .HasColumnType("boolean");
+
                     b.Property<DateTime>("Created")
                         .HasColumnType("timestamp without time zone");
 
