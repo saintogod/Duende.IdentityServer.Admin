@@ -26,9 +26,11 @@
     "jquery-validation": "1.19.3",
     "jquery-validation-unobtrusive": "3.2.11",
     "knockout": "3.5.1",
-    "sass": "1.54.0",
+    "moment": "2.27.0",
+    "moment-timezone": "0.5.31",
     "open-iconic": "1.1.1",
     "popper.js": "1.16.1",
+    "sass": "1.54.0",
     "tempusdominus-bootstrap-4": "5.1.2",
     "tempusdominus-core": "5.0.3",
     "toastr": "2.1.4"
