@@ -611,7 +611,7 @@ public static class StartupHelpers
         app.ConfigureLocalization();
     }
 
-    public static void UseRoutingDependentMiddleware(this IApplicationBuilder app, TestingConfiguration testingConfiguration)
+    public static IApplicationBuilder UseRoutingDependentMiddleware(this IApplicationBuilder app, TestingConfiguration testingConfiguration)
     {
         app.UseAuthentication();
         if (testingConfiguration.IsStaging)
@@ -620,5 +620,6 @@ public static class StartupHelpers
         }
 
         app.UseAuthorization();
+        return app;
     }
 }

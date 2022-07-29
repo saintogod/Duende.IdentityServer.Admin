@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Jan Škoruba. All Rights Reserved.
 // Licensed under the Apache License, Version 2.0.
 
+using System.Security.Claims;
+
 using Duende.IdentityServer.EntityFramework.Mappers;
 using Duende.IdentityServer.Models;
 
@@ -11,7 +13,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 
 using Skoruba.AuditLogging.EntityFramework.DbContexts;
 using Skoruba.AuditLogging.EntityFramework.Entities;
@@ -30,7 +31,7 @@ public static class DbMigrationHelpers
     /// <param name="applyDbMigrationWithDataSeedFromProgramArguments"></param>
     public static async Task<bool> ApplyDbMigrationsWithDataSeedAsync<TIdentityServerDbContext, TIdentityDbContext,
         TPersistedGrantDbContext, TLogDbContext, TAuditLogDbContext, TDataProtectionDbContext, TUser, TRole>(
-        IHost host)
+        IServiceProvider sp, IConfiguration configuration)
         where TIdentityServerDbContext : DbContext, IAdminConfigurationDbContext
         where TIdentityDbContext : DbContext
         where TPersistedGrantDbContext : DbContext, IAdminPersistedGrantDbContext
@@ -42,26 +43,22 @@ public static class DbMigrationHelpers
     {
         var migrationComplete = false;
 
-        using (var serviceScope = host.Services.CreateScope())
+        using var serviceScope = sp.CreateScope();
+        var services = serviceScope.ServiceProvider;
+
+        if (configuration.GetValue($"{nameof(DatabaseMigrationsConfiguration)}:{nameof(DatabaseMigrationsConfiguration.ApplyDatabaseMigrations)}", false))
         {
-            var services = serviceScope.ServiceProvider;
-
-            var configuration = services.GetRequiredService<IConfiguration>();
-
-            if (configuration.GetValue($"{ nameof(DatabaseMigrationsConfiguration)}:{nameof(DatabaseMigrationsConfiguration.ApplyDatabaseMigrations)}", false))
-            {
-                migrationComplete = await EnsureDatabasesMigratedAsync<TIdentityDbContext, TIdentityServerDbContext, TPersistedGrantDbContext, TLogDbContext, TAuditLogDbContext, TDataProtectionDbContext>(services);
-            }
-
-            if (configuration.GetValue($"{nameof(SeedConfiguration)}:{nameof(SeedConfiguration.ApplySeed)}", false))
-            {
-                var seedComplete = await EnsureSeedDataAsync<TIdentityServerDbContext, TUser, TRole>(services);
-
-                return migrationComplete && seedComplete;
-            }
+            migrationComplete = await EnsureDatabasesMigratedAsync<TIdentityDbContext, TIdentityServerDbContext, TPersistedGrantDbContext, TLogDbContext, TAuditLogDbContext, TDataProtectionDbContext>(services);
         }
 
+        if (configuration.GetValue($"{nameof(SeedConfiguration)}:{nameof(SeedConfiguration.ApplySeed)}", false))
+        {
+            var seedComplete = await EnsureSeedDataAsync<TIdentityServerDbContext, TUser, TRole>(services);
+
+            return migrationComplete && seedComplete;
+        }
         return migrationComplete;
+
     }
 
     public static async Task<bool> EnsureDatabasesMigratedAsync<TIdentityDbContext, TConfigurationDbContext, TPersistedGrantDbContext, TLogDbContext, TAuditLogDbContext, TDataProtectionDbContext>(IServiceProvider services)
@@ -160,7 +157,7 @@ public static class DbMigrationHelpers
                 {
                     foreach (var claim in r.Claims)
                     {
-                        await roleManager.AddClaimAsync(role, new System.Security.Claims.Claim(claim.Type, claim.Value));
+                        await roleManager.AddClaimAsync(role, new Claim(claim.Type, claim.Value));
                     }
                 }
             }
@@ -195,7 +192,7 @@ public static class DbMigrationHelpers
             {
                 foreach (var claim in user.Claims)
                 {
-                    await userManager.AddClaimAsync(identityUser, new System.Security.Claims.Claim(claim.Type, claim.Value));
+                    await userManager.AddClaimAsync(identityUser, new Claim(claim.Type, claim.Value));
                 }
 
                 foreach (var role in user.Roles)

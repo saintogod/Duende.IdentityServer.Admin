@@ -23,9 +23,7 @@ public static class AdminUIApplicationBuilderExtensions
     /// <returns></returns>
     public static IApplicationBuilder UseIdentityServerAdminUI(this IApplicationBuilder app)
     {
-        app.UseRoutingDependentMiddleware(app.ApplicationServices.GetRequiredService<TestingConfiguration>());
-
-        return app;
+        return app.UseRoutingDependentMiddleware(app.ApplicationServices.GetRequiredService<TestingConfiguration>());
     }
 
     /// <summary>

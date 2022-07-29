@@ -8,6 +8,7 @@ using Skoruba.Duende.IdentityServer.Admin.Configuration.Database;
 using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Shared.DbContexts;
 using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Shared.Entities.Identity;
 using Skoruba.Duende.IdentityServer.Admin.Helpers;
+using Skoruba.Duende.IdentityServer.Admin.Services;
 using Skoruba.Duende.IdentityServer.Admin.UI.Helpers.ApplicationBuilder;
 using Skoruba.Duende.IdentityServer.Admin.UI.Helpers.DependencyInjection;
 using Skoruba.Duende.IdentityServer.Shared.Configuration.Helpers;
@@ -45,6 +46,7 @@ public class Startup
 
         // Add email senders which is currently setup for SendGrid and SMTP
         services.AddEmailSenders(Configuration);
+        services.AddHostedService<DataMigrator>();
     }
 
     public void Configure(IApplicationBuilder app)

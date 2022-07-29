@@ -16,12 +16,9 @@ Log.Logger = new LoggerConfiguration()
 
 try
 {
-    var host = CreateHostBuilder(args).Build();
-
-    var migrationComplete = await ApplyDbMigrationsWithDataSeedAsync(args, host);
-    if (await MigrateOnlyOperationAsync(args, host, migrationComplete)) return;
-
-    await host.RunAsync();
+    await CreateHostBuilder(args)
+        .Build()
+        .RunAsync();
 }
 catch (Exception ex)
 {
@@ -30,32 +27,6 @@ catch (Exception ex)
 finally
 {
     Log.CloseAndFlush();
-}
-
-
-static async Task<bool> MigrateOnlyOperationAsync(string[] args, IHost host, bool migrationComplete)
-{
-    if (host.Services.GetRequiredService<IConfiguration>().GetValue("MigrateOnly", false))
-    {
-        await host.StopAsync();
-
-        if (!migrationComplete)
-        {
-            Environment.ExitCode = -1;
-        }
-
-        return true;
-    }
-
-    return false;
-}
-
-static Task<bool> ApplyDbMigrationsWithDataSeedAsync(string[] args, IHost host)
-{
-    return DbMigrationHelpers
-        .ApplyDbMigrationsWithDataSeedAsync<IdentityServerConfigurationDbContext, AdminIdentityDbContext,
-            IdentityServerPersistedGrantDbContext, AdminLogDbContext, AdminAuditLogDbContext,
-            IdentityServerDataProtectionDbContext, UserIdentity, UserIdentityRole>(host);
 }
 
 static IConfiguration GetConfiguration(string[] args)
