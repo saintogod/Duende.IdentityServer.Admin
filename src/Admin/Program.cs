@@ -35,7 +35,7 @@ finally
 
 static async Task<bool> MigrateOnlyOperationAsync(string[] args, IHost host, bool migrationComplete)
 {
-    if (host.Services.GetRequiredService<IConfiguration>().GetValue("Migrateonly", false))
+    if (host.Services.GetRequiredService<IConfiguration>().GetValue("MigrateOnly", false))
     {
         await host.StopAsync();
 
