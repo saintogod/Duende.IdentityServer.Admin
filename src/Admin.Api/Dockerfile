@@ -37,5 +37,6 @@ RUN dotnet publish Admin.Api.csproj -c Release -o /app/publish --no-restore
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+
 ENV ASPNETCORE_FORWARDEDHEADERS_ENABLED=true
 ENTRYPOINT ["Skoruba.Duende.IdentityServer.Admin.Api.exe"]

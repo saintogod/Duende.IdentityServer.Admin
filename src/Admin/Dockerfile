@@ -1,6 +1,7 @@
 FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS base
 
 EXPOSE 443
+
 COPY shared/cacerts.crt /usr/local/share/ca-certificates
 RUN update-ca-certificates
 
@@ -24,17 +25,19 @@ COPY src/EntityFramework/EntityFramework.csproj EntityFramework/
 COPY src/Shared.Configuration/Shared.Configuration.csproj Shared.Configuration/
 COPY src/Shared/Shared.csproj Shared/
 
-RUN dotnet restore "Admin/Admin.csproj"
-COPY . .
+RUN dotnet restore Admin/Admin.csproj
 
-WORKDIR "/src/Admin"
-RUN dotnet build "Admin.csproj" -c Release -o /app/build --no-restore
+COPY src/ ./
+
+WORKDIR /src/Admin
+RUN dotnet build Admin.csproj -c Release -o /app/build --no-restore
 
 FROM build AS publish
-RUN dotnet publish "Admin.csproj" -c Release -o /app/publish --no-restore
+RUN dotnet publish Admin.csproj -c Release -o /app/publish --no-restore
 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+
 ENV ASPNETCORE_FORWARDEDHEADERS_ENABLED=true
-ENTRYPOINT ["Skoruba.Duende.IdentityServer.Admin.exe"]
+ENTRYPOINT ["dotnet" "Skoruba.Duende.IdentityServer.Admin.dll"]

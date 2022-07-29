@@ -1,6 +1,7 @@
 FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS base
 
 EXPOSE 443
+
 COPY shared/cacerts.crt /usr/local/share/ca-certificates
 RUN update-ca-certificates
 
