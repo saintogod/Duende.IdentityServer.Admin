@@ -8,36 +8,15 @@ services:
       context: .
       dockerfile: src/Admin/Dockerfile
     container_name: ids-admin
-    hostname: admin.saintogod.local
+    hostname: ids-admin
     environment:
-      - VIRTUAL_HOST=admin.saintogod.local
-      - 'ConnectionStrings__ConfigurationDbConnection=server=mysql;database=saintogod_ids;user=saint;password=qxmjO90_sB4f~Z#-x@K4nmkG'
-      - 'ConnectionStrings__PersistedGrantDbConnection=server=mysql;database=saintogod_ids;user=saint;password=qxmjO90_sB4f~Z#-x@K4nmkG'
-      - 'ConnectionStrings__IdentityDbConnection=server=mysql;database=saintogod_ids;user=saint;password=qxmjO90_sB4f~Z#-x@K4nmkG'
-      - 'ConnectionStrings__AdminLogDbConnection=server=mysql;database=saintogod_ids;user=saint;password=qxmjO90_sB4f~Z#-x@K4nmkG'
-      - 'ConnectionStrings__AdminAuditLogDbConnection=server=mysql;database=saintogod_ids;user=saint;password=qxmjO90_sB4f~Z#-x@K4nmkG'
-      - 'ConnectionStrings__DataProtectionDbConnection=server=mysql;database=saintogod_ids;user=saint;password=qxmjO90_sB4f~Z#-x@K4nmkG'
-      - 'AdminConfiguration__IdentityAdminBaseUrl=https://admin.saintogod.local'
-      - 'AdminConfiguration__IdentityAdminRedirectUri=https://admin.saintogod.local/signin-oidc'
-      - 'AdminConfiguration__IdentityServerBaseUrl=https://sts.saintogod.local'
-      - AdminConfiguration__RequireHttpsMetadata=false
-      - 'IdentityServerData__Clients__0__ClientUri=https://admin.saintogod.local'
-      - 'IdentityServerData__Clients__0__RedirectUris__0=https://admin.saintogod.local/signin-oidc'
-      - 'IdentityServerData__Clients__0__FrontChannelLogoutUri=https://admin.saintogod.local/signin-oidc'
-      - 'IdentityServerData__Clients__0__PostLogoutRedirectUris__0=https://admin.saintogod.local/signout-callback-oidc'
-      - 'IdentityServerData__Clients__0__AllowedCorsOrigins__0=https://admin.saintogod.local'
-      - 'IdentityServerData__Clients__1__RedirectUris__0=https://admin-api.saintogod.local/swagger/oauth2-redirect.html'
-      - 'Serilog__WriteTo__1__Args__connectionString=server=mysql;database=saintogod_ids;user=saint;password=qxmjO90_sB4f~Z#-x@K4nmkG'
-      - DockerConfiguration__UpdateCaCertificate=true
       - ASPNETCORE_ENVIRONMENT=Development
-    command: dotnet Skoruba.Duende.IdentityServer.Admin.dll /seed
     depends_on:
       - ids.sts
     volumes:
-      - './shared/serilog.json:/app/serilog.json'
-      - './shared/identitydata.json:/app/identitydata.json'
-      - './shared/identityserverdata.json:/app/identityserverdata.json'
-      - './shared/cacerts.crt:/usr/local/share/ca-certificates/cacerts.crt'
+      - './shared/serilog.json:/usr/share/Saintogod/serilog.json'
+      - './shared/identitydata.json:/usr/share/Saintogod/identitydata.json'
+      - './shared/identityserverdata.json:/usr/share/Saintogod/identityserverdata.json'
     networks:
       - saintogod
 
@@ -47,25 +26,15 @@ services:
       context: .
       dockerfile: src/Admin.Api/Dockerfile
     container_name: ids-admin-api
-    hostname: admin-api.saintogod.local
+    hostname: ids-admin-api
     environment:
-      - VIRTUAL_HOST=admin-api.saintogod.local
-      - AdminApiConfiguration__RequireHttpsMetadata=false
-      - 'AdminApiConfiguration__ApiBaseUrl=https://admin-api.saintogod.local'
-      - 'AdminApiConfiguration__IdentityServerBaseUrl=https://sts.saintogod.local'
-      - 'ConnectionStrings__ConfigurationDbConnection=server=mysql;database=saintogod_ids;user=saint;password=qxmjO90_sB4f~Z#-x@K4nmkG'
-      - 'ConnectionStrings__PersistedGrantDbConnection=server=mysql;database=saintogod_ids;user=saint;password=qxmjO90_sB4f~Z#-x@K4nmkG'
-      - 'ConnectionStrings__IdentityDbConnection=server=mysql;database=saintogod_ids;user=saint;password=qxmjO90_sB4f~Z#-x@K4nmkG'
-      - 'ConnectionStrings__AdminLogDbConnection=server=mysql;database=saintogod_ids;user=saint;password=qxmjO90_sB4f~Z#-x@K4nmkG'
-      - 'ConnectionStrings__AdminAuditLogDbConnection=server=mysql;database=saintogod_ids;user=saint;password=qxmjO90_sB4f~Z#-x@K4nmkG'
-      - 'ConnectionStrings__DataProtectionDbConnection=server=mysql;database=saintogod_ids;user=saint;password=qxmjO90_sB4f~Z#-x@K4nmkG'
-      - DockerConfiguration__UpdateCaCertificate=true
       - ASPNETCORE_ENVIRONMENT=Development
     volumes:
-      - './shared/serilog.json:/app/serilog.json'
-      - './shared/cacerts.crt:/usr/local/share/ca-certificates/cacerts.crt'
+      - './shared/serilog.json:/usr/share/Saintogod/serilog.json'
     networks:
       - saintogod
+    depends_on:
+      - ids.sts
 
   ids.sts:
     image: 'saintogod/ids-sts'
@@ -73,25 +42,11 @@ services:
       context: .
       dockerfile: src/STS.Identity/Dockerfile
     container_name: ids-sts
-    hostname: sts.saintogod.local
+    hostname: ids-sts
     environment:
-      - VIRTUAL_HOST=sts.saintogod.local
-      - 'ConnectionStrings__ConfigurationDbConnection=server=mysql;database=saintogod_ids;user=saint;password=qxmjO90_sB4f~Z#-x@K4nmkG'
-      - 'ConnectionStrings__PersistedGrantDbConnection=server=mysql;database=saintogod_ids;user=saint;password=qxmjO90_sB4f~Z#-x@K4nmkG'
-      - 'ConnectionStrings__IdentityDbConnection=server=mysql;database=saintogod_ids;user=saint;password=qxmjO90_sB4f~Z#-x@K4nmkG'
-      - 'ConnectionStrings__DataProtectionDbConnection=server=mysql;database=saintogod_ids;user=saint;password=qxmjO90_sB4f~Z#-x@K4nmkG'
-      - 'AdminConfiguration__IdentityAdminBaseUrl=https://admin.saintogod.local'
-      - 'IdentityServerOptions__IssuerUri=https://sts.saintogod.local'
-      - IdentityServerOptions__KeyManagement__Enabled=true
-      - IdentityServerOptions__Events__RaiseErrorEvents=true
-      - IdentityServerOptions__Events__RaiseInformationEvents=true
-      - IdentityServerOptions__Events__RaiseFailureEvents=true
-      - IdentityServerOptions__Events__RaiseSuccessEvents=true
-      - DockerConfiguration__UpdateCaCertificate=true
       - ASPNETCORE_ENVIRONMENT=Development
     volumes:
-      - './shared/serilog.json:/app/serilog.json'
-      - './shared/cacerts.crt:/usr/local/share/ca-certificates/cacerts.crt'
+      - './shared/serilog.json:/usr/share/Saintogod/serilog.json'
     networks:
       - saintogod
 
