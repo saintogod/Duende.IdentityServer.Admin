@@ -1,9 +1,12 @@
 ﻿// Copyright (c) Jan Škoruba. All Rights Reserved.
 // Licensed under the Apache License, Version 2.0.
 
-using System.Threading.Tasks;
+using System.Net;
+using System.Net.Mime;
+
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+
 using Skoruba.Duende.IdentityServer.Admin.Api.Configuration.Constants;
 using Skoruba.Duende.IdentityServer.Admin.Api.Dtos.ApiScopes;
 using Skoruba.Duende.IdentityServer.Admin.Api.ExceptionHandling;
@@ -17,7 +20,7 @@ namespace Skoruba.Duende.IdentityServer.Admin.Api.Controllers;
 [Route("api/[controller]")]
 [ApiController]
 [TypeFilter(typeof(ControllerExceptionFilterAttribute))]
-[Produces("application/json", "application/problem+json")]
+[Produces(MediaTypeNames.Application.Json, "application/problem+json")]
 [Authorize(Policy = AuthorizationConsts.AdministrationPolicy)]
 public class ApiScopesController : ControllerBase
 {
@@ -58,8 +61,8 @@ public class ApiScopesController : ControllerBase
     }
 
     [HttpPost]
-    [ProducesResponseType(201)]
-    [ProducesResponseType(400)]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> PostScope([FromBody] ApiScopeApiDto apiScopeApi)
     {
         var apiScope = apiScopeApi.ToApiScopeApiModel<ApiScopeDto>();
@@ -72,12 +75,12 @@ public class ApiScopesController : ControllerBase
         var id = await _apiScopeService.AddApiScopeAsync(apiScope);
         apiScope.Id = id;
 
-        return CreatedAtAction(nameof(GetScope), new { scopeId = id }, apiScope);
+        return CreatedAtAction(nameof(GetScope), new { id }, apiScope);
     }
 
     [HttpPost("{id}/Properties")]
-    [ProducesResponseType(201)]
-    [ProducesResponseType(400)]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> PostProperty(int id, [FromBody] ApiScopePropertyApiDto apiScopePropertyApi)
     {
         var apiResourcePropertiesDto = apiScopePropertyApi.ToApiScopeApiModel<ApiScopePropertiesDto>();

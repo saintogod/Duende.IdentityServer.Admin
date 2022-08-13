@@ -1,9 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
+  <PropertyGroup>
+    <RootNamespace>$(BaseNamespace).$(MSBuildProjectName)</RootNamespace>
+  </PropertyGroup>
+  
   <ItemGroup>
     <PackageReference Include="HtmlAgilityPack" Version="1.11.43" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="6.0.7" />
-    <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="6.0.7" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="6.0.8" />
+    <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="6.0.8" />
   </ItemGroup>
 
   <ItemGroup>
@@ -12,6 +16,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\STS.Identity\STS.Identity.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Update="Microsoft.NET.Test.Sdk" Version="17.3.0" />
   </ItemGroup>
 
 </Project>

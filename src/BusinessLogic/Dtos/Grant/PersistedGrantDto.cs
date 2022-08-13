@@ -3,17 +3,17 @@
 
 namespace Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Dtos.Grant;
 
-public class PersistedGrantDto
+public sealed record PersistedGrantDto
 {
-    public string Key { get; set; }
-    public string Type { get; set; }
-    public string SubjectId { get; set; }
-    public string SubjectName { get; set; }
-    public string ClientId { get; set; }
-    public DateTime CreationTime { get; set; }
-    public DateTime? Expiration { get; set; }
-    public string Data { get; set; }
-    public DateTime? ConsumedTime { get; set; }
-    public string SessionId { get; set; }
-    public string Description { get; set; }
+    public string Key { get; init; }
+    public string Type { get; init; }
+    public string SubjectId { get; init; }
+    public string SubjectName { get; init; }
+    public string ClientId { get; init; }
+    public DateTime CreationTime { get; init; }
+    public DateTime? Expiration { get; init; }
+    public string Data { get; init; }
+    public DateTime? ConsumedTime { get; init; }
+    public string SessionId { get; init; }
+    public string Description { get; init; }
 }

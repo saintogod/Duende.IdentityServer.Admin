@@ -1,13 +1,14 @@
 ﻿using FluentAssertions;
+
 using Skoruba.Duende.IdentityServer.Admin.Api.Dtos.ApiResources;
 using Skoruba.Duende.IdentityServer.Admin.Api.Mappers;
 using Skoruba.Duende.IdentityServer.Admin.Api.UnitTests.Mocks;
 using Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Dtos.Configuration;
 using Skoruba.Duende.IdentityServer.Admin.UnitTests.Mocks;
+
 using Xunit;
 
 namespace Skoruba.Duende.IdentityServer.Admin.Api.UnitTests.Mappers;
-
 public class ApiResourceMappers
 {
     [Fact]

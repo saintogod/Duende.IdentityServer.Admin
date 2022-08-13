@@ -306,15 +306,8 @@ public static class StartupHelpers
     /// <returns></returns>
     private static LoginConfiguration GetLoginConfiguration(IConfiguration configuration)
     {
-        var loginConfiguration = configuration.GetSection(nameof(LoginConfiguration)).Get<LoginConfiguration>();
-
         // Cannot load configuration - use default configuration values
-        if (loginConfiguration == null)
-        {
-            return new LoginConfiguration();
-        }
-
-        return loginConfiguration;
+        return configuration.GetSection(nameof(LoginConfiguration)).Get<LoginConfiguration>() ?? new();
     }
 
     /// <summary>
@@ -324,15 +317,8 @@ public static class StartupHelpers
     /// <returns></returns>
     private static RegisterConfiguration GetRegistrationConfiguration(IConfiguration configuration)
     {
-        var registerConfiguration = configuration.GetSection(nameof(RegisterConfiguration)).Get<RegisterConfiguration>();
-
         // Cannot load configuration - use default configuration values
-        if (registerConfiguration == null)
-        {
-            return new RegisterConfiguration();
-        }
-
-        return registerConfiguration;
+        return configuration.GetSection(nameof(RegisterConfiguration)).Get<RegisterConfiguration>() ?? new();
     }
 
     /// <summary>

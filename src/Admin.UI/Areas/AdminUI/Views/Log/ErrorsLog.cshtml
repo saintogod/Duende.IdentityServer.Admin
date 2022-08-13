@@ -61,7 +61,7 @@
 
 <div class="row">
     <div class="col-12">
-        @await Html.PartialAsync("Common/Search", new Search { Action = "ErrorsLog", Controller = "Log" })
+        @await Html.PartialAsync("Common/Search", new Search("ErrorsLog", "Log"))
     </div>
 </div>
 

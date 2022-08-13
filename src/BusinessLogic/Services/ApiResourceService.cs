@@ -17,11 +17,12 @@ namespace Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Services;
 
 public class ApiResourceService : IApiResourceService
 {
+    private const string SharedSecret = nameof(SharedSecret);
+
     protected readonly IApiResourceRepository ApiResourceRepository;
     protected readonly IApiResourceServiceResources ApiResourceServiceResources;
     protected readonly IClientService ClientService;
     protected readonly IAuditEventLogger AuditEventLogger;
-    private const string SharedSecret = "SharedSecret";
 
     public ApiResourceService(IApiResourceRepository apiResourceRepository,
         IApiResourceServiceResources apiResourceServiceResources,
@@ -75,8 +76,7 @@ public class ApiResourceService : IApiResourceService
 
     public virtual async Task<int> AddApiResourcePropertyAsync(ApiResourcePropertiesDto apiResourceProperties)
     {
-        var canInsert = await CanInsertApiResourcePropertyAsync(apiResourceProperties);
-        if (!canInsert)
+        if (!await CanInsertApiResourcePropertyAsync(apiResourceProperties))
         {
             await BuildApiResourcePropertiesViewModelAsync(apiResourceProperties);
             throw new UserFriendlyViewException(string.Format(ApiResourceServiceResources.ApiResourcePropertyExistsValue().Description, apiResourceProperties.Key), ApiResourceServiceResources.ApiResourcePropertyExistsKey().Description, apiResourceProperties);
@@ -144,8 +144,7 @@ public class ApiResourceService : IApiResourceService
 
     public virtual async Task<int> AddApiResourceAsync(ApiResourceDto apiResource)
     {
-        var canInsert = await CanInsertApiResourceAsync(apiResource);
-        if (!canInsert)
+        if (!await CanInsertApiResourceAsync(apiResource))
         {
             throw new UserFriendlyViewException(string.Format(ApiResourceServiceResources.ApiResourceExistsValue().Description, apiResource.Name), ApiResourceServiceResources.ApiResourceExistsKey().Description, apiResource);
         }
@@ -161,8 +160,7 @@ public class ApiResourceService : IApiResourceService
 
     public virtual async Task<int> UpdateApiResourceAsync(ApiResourceDto apiResource)
     {
-        var canInsert = await CanInsertApiResourceAsync(apiResource);
-        if (!canInsert)
+        if (!await CanInsertApiResourceAsync(apiResource))
         {
             throw new UserFriendlyViewException(string.Format(ApiResourceServiceResources.ApiResourceExistsValue().Description, apiResource.Name), ApiResourceServiceResources.ApiResourceExistsKey().Description, apiResource);
         }

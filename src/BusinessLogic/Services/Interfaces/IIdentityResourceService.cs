@@ -21,8 +21,7 @@ public interface IIdentityResourceService
 
     IdentityResourceDto BuildIdentityResourceViewModel(IdentityResourceDto identityResource);
 
-    Task<IdentityResourcePropertiesDto> GetIdentityResourcePropertiesAsync(int identityResourceId, int page = 1,
-        int pageSize = 10);
+    Task<IdentityResourcePropertiesDto> GetIdentityResourcePropertiesAsync(int identityResourceId, int page = 1, int pageSize = 10);
 
     Task<IdentityResourcePropertiesDto> GetIdentityResourcePropertyAsync(int identityResourcePropertyId);
 

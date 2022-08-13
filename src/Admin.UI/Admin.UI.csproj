@@ -4,6 +4,7 @@
     <RootNamespace>$(BaseNamespace).$(MSBuildProjectName)</RootNamespace>
     <AssemblyName>$(RootNamespace)</AssemblyName>
     <Description>The package with UI for the administration of the Duende IdentityServer</Description>
+    
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
     <StaticWebAssetBasePath Condition="$(StaticWebAssetBasePath) == ''">/</StaticWebAssetBasePath>
   </PropertyGroup>
@@ -34,5 +35,5 @@
     <ProjectReference Include="..\EntityFramework.Configuration\EntityFramework.Configuration.csproj" />
     <ProjectReference Include="..\Shared.Configuration\Shared.Configuration.csproj" />
   </ItemGroup>
-
+  
 </Project>

@@ -51,6 +51,7 @@ public class AccountController<TUser, TKey> : Controller
     private readonly RegisterConfiguration _registerConfiguration;
     private readonly IdentityOptions _identityOptions;
     private readonly ILogger<AccountController<TUser, TKey>> _logger;
+    private readonly IIdentityProviderStore _identityProviderStore;
 
     public AccountController(
         UserResolver<TUser> userResolver,
@@ -65,7 +66,8 @@ public class AccountController<TUser, TKey> : Controller
         LoginConfiguration loginConfiguration,
         RegisterConfiguration registerConfiguration,
         IdentityOptions identityOptions,
-        ILogger<AccountController<TUser, TKey>> logger)
+        ILogger<AccountController<TUser, TKey>> logger,
+        IIdentityProviderStore identityProviderStore)
     {
         _userResolver = userResolver;
         _userManager = userManager;
@@ -80,6 +82,7 @@ public class AccountController<TUser, TKey> : Controller
         _registerConfiguration = registerConfiguration;
         _identityOptions = identityOptions;
         _logger = logger;
+        _identityProviderStore = identityProviderStore;
     }
 
     /// <summary>
@@ -294,7 +297,7 @@ public class AccountController<TUser, TKey> : Controller
                     catch (Exception ex)
                     {
                         // in case of multiple users with the same email this method would throw and reveal that the email is registered
-                        _logger.LogError("Error retrieving user by email ({0}) for forgot password functionality: {1}", model.Email, ex.Message);
+                        _logger.LogError("Error retrieving user by email ({Email}) for forgot password functionality: {ExceptionMessage}", model.Email, ex.Message);
                         user = null;
                     }
                     break;
@@ -305,7 +308,7 @@ public class AccountController<TUser, TKey> : Controller
                     }
                     catch (Exception ex)
                     {
-                        _logger.LogError("Error retrieving user by userName ({0}) for forgot password functionality: {1}", model.Username, ex.Message);
+                        _logger.LogError("Error retrieving user by userName ({Username}) for forgot password functionality: {ExceptionMessage}", model.Username, ex.Message);
                         user = null;
                     }
                     break;
@@ -436,7 +439,7 @@ public class AccountController<TUser, TKey> : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> ExternalLoginConfirmation(ExternalLoginConfirmationViewModel model, string returnUrl = null)
     {
-        returnUrl = returnUrl ?? Url.Content("~/");
+        returnUrl ??= Url.Content("~/");
 
         // Get the information about the user from the external login provider
         var info = await _signInManager.GetExternalLoginInfoAsync();
@@ -728,6 +731,15 @@ public class AccountController<TUser, TKey> : Controller
                 AuthenticationScheme = x.Name
             }).ToList();
 
+        var dynamicSchemes = (await _identityProviderStore.GetAllSchemeNamesAsync())
+                .Where(x => x.Enabled)
+                .Select(x => new ExternalProvider
+                {
+                    AuthenticationScheme = x.Scheme,
+                    DisplayName = x.DisplayName
+                });
+
+        providers.AddRange(dynamicSchemes);
         var allowLocal = true;
         if (context?.Client.ClientId != null)
         {
@@ -807,13 +819,10 @@ public class AccountController<TUser, TKey> : Controller
                 var providerSupportsSignout = await HttpContext.RequestServices.GetRequiredService<IAuthenticationHandlerProvider>().GetHandlerAsync(HttpContext, idp) is IAuthenticationSignOutHandler;
                 if (providerSupportsSignout)
                 {
-                    if (vm.LogoutId == null)
-                    {
-                        // if there's no current logout context, we need to create one
-                        // this captures necessary info from the current logged in user
-                        // before we signout and redirect away to the external IdP for signout
-                        vm.LogoutId = await _interaction.CreateLogoutContextAsync();
-                    }
+                    // if there's no current logout context, we need to create one
+                    // this captures necessary info from the current logged in user
+                    // before we signout and redirect away to the external IdP for signout
+                    vm.LogoutId ??= await _interaction.CreateLogoutContextAsync();
 
                     vm.ExternalAuthenticationScheme = idp;
                 }

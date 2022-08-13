@@ -506,9 +506,9 @@ public class ConfigurationController : BaseController
             return View(apiResource);
         }
 
-        ComboBoxHelpers.PopulateValuesToList(apiResource.UserClaimsItems, apiResource.UserClaims);
-        ComboBoxHelpers.PopulateValuesToList(apiResource.ScopesItems, apiResource.Scopes);
-        ComboBoxHelpers.PopulateValuesToList(apiResource.AllowedAccessTokenSigningAlgorithmsItems, apiResource.AllowedAccessTokenSigningAlgorithms);
+        apiResource.UserClaims.PopulateValuesToList(apiResource.UserClaimsItems);
+        apiResource.Scopes.PopulateValuesToList(apiResource.ScopesItems);
+        apiResource.AllowedAccessTokenSigningAlgorithms.PopulateValuesToList(apiResource.AllowedAccessTokenSigningAlgorithmsItems);
 
         int apiResourceId;
 

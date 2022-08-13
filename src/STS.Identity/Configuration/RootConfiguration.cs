@@ -6,8 +6,9 @@ using Skoruba.Duende.IdentityServer.STS.Identity.Configuration.Interfaces;
 
 namespace Skoruba.Duende.IdentityServer.STS.Identity.Configuration;
 
-public class RootConfiguration : IRootConfiguration
+public sealed record RootConfiguration : IRootConfiguration
 {
-    public AdminConfiguration AdminConfiguration { get; } = new AdminConfiguration();
-    public RegisterConfiguration RegisterConfiguration { get; } = new RegisterConfiguration();
+    public AdminConfiguration AdminConfiguration { get; } = new ();
+
+    public RegisterConfiguration RegisterConfiguration { get; } = new ();
 }

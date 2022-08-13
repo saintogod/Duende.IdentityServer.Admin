@@ -180,7 +180,7 @@ public class IdentityResourceService : IIdentityResourceService
 
     public virtual IdentityResourceDto BuildIdentityResourceViewModel(IdentityResourceDto identityResource)
     {
-        ComboBoxHelpers.PopulateValuesToList(identityResource.UserClaimsItems, identityResource.UserClaims);
+        identityResource.UserClaims.PopulateValuesToList(identityResource.UserClaimsItems);
 
         return identityResource;
     }

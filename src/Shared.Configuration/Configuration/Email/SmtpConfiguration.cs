@@ -3,12 +3,12 @@
 
 namespace Skoruba.Duende.IdentityServer.Shared.Configuration.Configuration.Email;
 
-public class SmtpConfiguration
+public sealed record SmtpConfiguration
 {
-    public string From { get; set; }
-    public string Host { get; set; }
-    public string Login { get; set; }
-    public string Password { get; set; }
-    public int Port { get; set; } = 587; // default smtp port
-    public bool UseSSL { get; set; } = true;
+    public string From { get; init; }
+    public string Host { get; init; }
+    public string Login { get; init; }
+    public string Password { get; init; }
+    public int Port { get; init; } = 587; // default smtp port
+    public bool UseSSL { get; init; } = true;
 }

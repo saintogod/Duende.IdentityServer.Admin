@@ -12,7 +12,7 @@ public static class AuthenticationHelpers
     {
         if (options.SameSite == SameSiteMode.None)
         {
-            var userAgent = httpContext.Request.Headers["User-Agent"].ToString();
+            var userAgent = httpContext.Request.Headers.UserAgent.ToString();
             if (!httpContext.Request.IsHttps || DisallowsSameSiteNone(userAgent))
             {
                 // For .NET Core < 3.1 set SameSite = (SameSiteMode)(-1)
@@ -21,7 +21,7 @@ public static class AuthenticationHelpers
         }
     }
 
-    public static bool DisallowsSameSiteNone(string userAgent)
+    private static bool DisallowsSameSiteNone(string userAgent)
     {
         // Cover all iOS based browsers here. This includes:
         // - Safari on iOS 12 for iPhone, iPod Touch, iPad

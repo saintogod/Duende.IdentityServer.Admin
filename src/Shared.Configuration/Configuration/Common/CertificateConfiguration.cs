@@ -3,30 +3,30 @@
 
 namespace Skoruba.Duende.IdentityServer.Shared.Configuration.Configuration.Common;
 
-public class CertificateConfiguration
+public sealed record CertificateConfiguration
 {
-    public bool UseTemporarySigningKeyForDevelopment { get; set; }
+    public bool UseTemporarySigningKeyForDevelopment { get; init; }
 
-    public string CertificateStoreLocation { get; set; }
-    public bool CertificateValidOnly { get; set; }
+    public string CertificateStoreLocation { get; init; }
+    public bool CertificateValidOnly { get; init; }
 
-    public bool UseSigningCertificateThumbprint { get; set; }
+    public bool UseSigningCertificateThumbprint { get; init; }
 
-    public string SigningCertificateThumbprint { get; set; }
+    public string SigningCertificateThumbprint { get; init; }
 
-    public bool UseSigningCertificatePfxFile { get; set; }
+    public bool UseSigningCertificatePfxFile { get; init; }
 
-    public string SigningCertificatePfxFilePath { get; set; }
+    public string SigningCertificatePfxFilePath { get; init; }
 
-    public string SigningCertificatePfxFilePassword { get; set; }
+    public string SigningCertificatePfxFilePassword { get; init; }
 
-    public bool UseValidationCertificateThumbprint { get; set; }
+    public bool UseValidationCertificateThumbprint { get; init; }
 
-    public string ValidationCertificateThumbprint { get; set; }
+    public string ValidationCertificateThumbprint { get; init; }
 
-    public bool UseValidationCertificatePfxFile { get; set; }
+    public bool UseValidationCertificatePfxFile { get; init; }
 
-    public string ValidationCertificatePfxFilePath { get; set; }
+    public string ValidationCertificatePfxFilePath { get; init; }
 
-    public string ValidationCertificatePfxFilePassword { get; set; }
+    public string ValidationCertificatePfxFilePassword { get; init; }
 }

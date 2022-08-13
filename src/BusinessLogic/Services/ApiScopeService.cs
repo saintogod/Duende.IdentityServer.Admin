@@ -40,11 +40,9 @@ public class ApiScopeService : IApiScopeService
         return apiScopesDto;
     }
 
-    public virtual async Task<ICollection<string>> GetApiScopesNameAsync(string scope, int limit = 0)
+    public virtual Task<ICollection<string>> GetApiScopesNameAsync(string scope, int limit = 0)
     {
-        var scopes = await ApiScopeRepository.GetApiScopesNameAsync(scope, limit);
-
-        return scopes;
+        return ApiScopeRepository.GetApiScopesNameAsync(scope, limit);
     }
 
     public virtual async Task<ApiScopePropertiesDto> GetApiScopePropertiesAsync(int apiScopeId, int page = 1, int pageSize = 10)
@@ -94,15 +92,14 @@ public class ApiScopeService : IApiScopeService
 
     public virtual ApiScopeDto BuildApiScopeViewModel(ApiScopeDto apiScope)
     {
-        ComboBoxHelpers.PopulateValuesToList(apiScope.UserClaimsItems, apiScope.UserClaims);
+        apiScope.UserClaims.PopulateValuesToList(apiScope.UserClaimsItems);
 
         return apiScope;
     }
 
     public virtual async Task<int> UpdateApiScopeAsync(ApiScopeDto apiScope)
     {
-        var canInsert = await CanInsertApiScopeAsync(apiScope);
-        if (!canInsert)
+        if (!await CanInsertApiScopeAsync(apiScope))
         {
             throw new UserFriendlyViewException(string.Format(ApiScopeServiceResources.ApiScopeExistsValue().Description, apiScope.Name), ApiScopeServiceResources.ApiScopeExistsKey().Description, apiScope);
         }
@@ -159,8 +156,7 @@ public class ApiScopeService : IApiScopeService
 
     public virtual async Task<int> AddApiScopePropertyAsync(ApiScopePropertiesDto apiScopeProperties)
     {
-        var canInsert = await CanInsertApiScopePropertyAsync(apiScopeProperties);
-        if (!canInsert)
+        if (!await CanInsertApiScopePropertyAsync(apiScopeProperties))
         {
             await BuildApiScopePropertiesViewModelAsync(apiScopeProperties);
             throw new UserFriendlyViewException(string.Format(ApiScopeServiceResources.ApiScopePropertyExistsValue().Description, apiScopeProperties.Key), ApiScopeServiceResources.ApiScopePropertyExistsKey().Description, apiScopeProperties);

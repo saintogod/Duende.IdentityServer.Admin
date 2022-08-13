@@ -3,10 +3,10 @@
 
 namespace Skoruba.Duende.IdentityServer.Shared.Configuration.Configuration.Email;
 
-public class SendGridConfiguration
+public sealed record SendGridConfiguration
 {
-    public string ApiKey { get; set; }
-    public string SourceEmail { get; set; }
-    public string SourceName { get; set; }
-    public bool EnableClickTracking { get; set; } = false;
+    public string ApiKey { get; init; }
+    public string SourceEmail { get; init; }
+    public string SourceName { get; init; }
+    public bool EnableClickTracking { get; init; } = false;
 }

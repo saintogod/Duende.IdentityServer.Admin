@@ -9,7 +9,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.DataProtection.EntityFrameworkCore" Version="$(DotnetCoreVer)" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="$(DotnetCoreVer)" />
-    <PackageReference Include="Sendgrid" Version="9.28.0" />
+    <PackageReference Include="Sendgrid" Version="9.28.1" />
   </ItemGroup>
 
 </Project>

@@ -12,23 +12,23 @@ namespace Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Services;
 public class AuditLogService<TAuditLog> : IAuditLogService
     where TAuditLog : AuditLog
 {
-    protected readonly IAuditLogRepository<TAuditLog> AuditLogRepository;
+    protected readonly IAuditLogRepository<TAuditLog> auditLogRepository;
 
     public AuditLogService(IAuditLogRepository<TAuditLog> auditLogRepository)
     {
-        AuditLogRepository = auditLogRepository;
+        this.auditLogRepository = auditLogRepository;
     }
 
     public async Task<AuditLogsDto> GetAsync(AuditLogFilterDto filters)
     {
-        var pagedList = await AuditLogRepository.GetAsync(filters.Event, filters.Source, filters.Category, filters.Created, filters.SubjectIdentifier, filters.SubjectName, filters.Page, filters.PageSize);
+        var pagedList = await auditLogRepository.GetAsync(filters.Event, filters.Source, filters.Category, filters.Created, filters.SubjectIdentifier, filters.SubjectName, filters.Page, filters.PageSize);
         var auditLogsDto = pagedList.ToModel();
 
         return auditLogsDto;
     }
 
-    public virtual async Task DeleteLogsOlderThanAsync(DateTime deleteOlderThan)
+    public virtual Task DeleteLogsOlderThanAsync(DateTime deleteOlderThan)
     {
-        await AuditLogRepository.DeleteLogsOlderThanAsync(deleteOlderThan);
+        return auditLogRepository.DeleteLogsOlderThanAsync(deleteOlderThan);
     }
 }

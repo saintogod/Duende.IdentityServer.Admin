@@ -3,18 +3,13 @@
 
 namespace Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Dtos.Grant;
 
-public class PersistedGrantsDto
+public sealed record PersistedGrantsDto
 {
-    public PersistedGrantsDto()
-    {
-        PersistedGrants = new List<PersistedGrantDto>();
-    }
+    public string SubjectId { get; init; }
 
-    public string SubjectId { get; set; }
+    public int TotalCount { get; init; }
 
-    public int TotalCount { get; set; }
+    public int PageSize { get; init; }
 
-    public int PageSize { get; set; }
-
-    public List<PersistedGrantDto> PersistedGrants { get; set; }
+    public List<PersistedGrantDto> PersistedGrants { get; init; } = new();
 }

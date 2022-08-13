@@ -3,17 +3,17 @@
 
 namespace Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Shared.Dtos.Common;
 
-public class Pager
+public sealed record Pager
 {
-    public int TotalCount { get; set; }
+    public int TotalCount { get; init; }
 
-    public int PageSize { get; set; }
+    public int PageSize { get; init; }
 
-    public string Action { get; set; }
+    public string Action { get; init; }
 
-    public string Search { get; set; }
+    public string Search { get; init; }
 
-    public bool EnableSearch { get; set; } = false;
+    public bool EnableSearch { get; init; } = false;
 
-    public int MaxPages { get; set; } = 10;
+    public int MaxPages { get; init; } = 10;
 }

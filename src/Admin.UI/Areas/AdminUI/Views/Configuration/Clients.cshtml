@@ -19,7 +19,7 @@
 	</div>
 
 	<div class="col-12">
-		@await Html.PartialAsync("Common/Search", new Search() { Action = "Clients", Controller = "Configuration" })
+		@await Html.PartialAsync("Common/Search", new Search("Clients", "Configuration"))
 	</div>
 </div>
 <div class="row">

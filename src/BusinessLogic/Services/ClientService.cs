@@ -89,13 +89,13 @@ public class ClientService : IClientService
 
     private static void PopulateClientRelations(ClientDto client)
     {
-        ComboBoxHelpers.PopulateValuesToList(client.AllowedScopesItems, client.AllowedScopes);
-        ComboBoxHelpers.PopulateValuesToList(client.PostLogoutRedirectUrisItems, client.PostLogoutRedirectUris);
-        ComboBoxHelpers.PopulateValuesToList(client.IdentityProviderRestrictionsItems, client.IdentityProviderRestrictions);
-        ComboBoxHelpers.PopulateValuesToList(client.RedirectUrisItems, client.RedirectUris);
-        ComboBoxHelpers.PopulateValuesToList(client.AllowedCorsOriginsItems, client.AllowedCorsOrigins);
-        ComboBoxHelpers.PopulateValuesToList(client.AllowedGrantTypesItems, client.AllowedGrantTypes);
-        ComboBoxHelpers.PopulateValuesToList(client.AllowedIdentityTokenSigningAlgorithmsItems, client.AllowedIdentityTokenSigningAlgorithms);
+        client.AllowedScopes.PopulateValuesToList(client.AllowedScopesItems);
+        client.PostLogoutRedirectUris.PopulateValuesToList(client.PostLogoutRedirectUrisItems);
+        client.IdentityProviderRestrictions.PopulateValuesToList(client.IdentityProviderRestrictionsItems);
+        client.RedirectUris.PopulateValuesToList(client.RedirectUrisItems);
+        client.AllowedCorsOrigins.PopulateValuesToList(client.AllowedCorsOriginsItems);
+        client.AllowedGrantTypes.PopulateValuesToList(client.AllowedGrantTypesItems);
+        client.AllowedIdentityTokenSigningAlgorithms.PopulateValuesToList(client.AllowedIdentityTokenSigningAlgorithmsItems);
     }
 
     public virtual ClientCloneDto BuildClientCloneViewModel(int id, ClientDto clientDto)

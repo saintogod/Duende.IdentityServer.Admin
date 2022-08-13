@@ -1,8 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
+  <PropertyGroup>
+    <RootNamespace>$(BaseNamespace).$(MSBuildProjectName)</RootNamespace>
+  </PropertyGroup>
+  
   <ItemGroup>
     <PackageReference Include="Bogus" Version="34.0.2" />
-    <PackageReference Include="Moq" Version="4.18.1" />
+    <PackageReference Include="Moq" Version="4.18.2" />
   </ItemGroup>
 
   <ItemGroup>
@@ -11,6 +15,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Admin\Admin.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Update="Microsoft.NET.Test.Sdk" Version="17.3.0" />
   </ItemGroup>
 
 </Project>

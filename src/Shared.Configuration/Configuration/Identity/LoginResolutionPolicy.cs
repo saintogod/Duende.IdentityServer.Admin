@@ -3,8 +3,12 @@
 
 namespace Skoruba.Duende.IdentityServer.Shared.Configuration.Configuration.Identity;
 
-// From where should the login be sourced
-// by default it's sourced from Username
+// 
+// 
+/// <summary>
+/// From where should the login be sourced.
+/// <para>by default it's sourced from Username</para>
+/// </summary>
 public enum LoginResolutionPolicy
 {
     Username = 0,

@@ -16,6 +16,12 @@
           "path": "Log/skoruba_admin.log",
           "rollingInterval": "Day"
         }
+      },
+      {
+        "Name": "Seq",
+        "Args": {
+          "serverUri": "http://seq:5341"
+        }
       }
     ]
   }
