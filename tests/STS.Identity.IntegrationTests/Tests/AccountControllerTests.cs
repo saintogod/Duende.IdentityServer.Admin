@@ -1,16 +1,16 @@
 ﻿// Copyright (c) Jan Škoruba. All Rights Reserved.
 // Licensed under the Apache License, Version 2.0.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Threading.Tasks;
+
 using FluentAssertions;
+
 using HtmlAgilityPack;
+
 using Skoruba.Duende.IdentityServer.STS.Identity.IntegrationTests.Common;
 using Skoruba.Duende.IdentityServer.STS.Identity.IntegrationTests.Mocks;
 using Skoruba.Duende.IdentityServer.STS.Identity.IntegrationTests.Tests.Base;
+
 using Xunit;
 
 namespace Skoruba.Duende.IdentityServer.STS.Identity.IntegrationTests.Tests;

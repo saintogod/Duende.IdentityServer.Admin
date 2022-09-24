@@ -1,22 +1,17 @@
-﻿// Copyright (c) Jan Škoruba. All Rights Reserved.
-// Licensed under the Apache License, Version 2.0.
-
-using Microsoft.AspNetCore.DataProtection;
+﻿using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 
 using SendGrid;
 
-using Skoruba.Duende.IdentityServer.Shared.Configuration.Configuration.Common;
 using Skoruba.Duende.IdentityServer.Shared.Configuration.Configuration.Email;
 using Skoruba.Duende.IdentityServer.Shared.Configuration.Email;
 
-namespace Skoruba.Duende.IdentityServer.Shared.Configuration.Helpers;
+namespace Microsoft.Extensions.DependencyInjection;
 
-public static class StartupHelpers
+public static class EmailSenderExtensions
 {
     /// <summary>
     /// Add email senders - configuration of sendgrid, smtp senders

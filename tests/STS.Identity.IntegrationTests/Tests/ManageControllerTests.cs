@@ -2,11 +2,13 @@
 // Licensed under the Apache License, Version 2.0.
 
 using System.Net;
-using System.Threading.Tasks;
+
 using FluentAssertions;
+
 using Skoruba.Duende.IdentityServer.STS.Identity.IntegrationTests.Common;
 using Skoruba.Duende.IdentityServer.STS.Identity.IntegrationTests.Mocks;
 using Skoruba.Duende.IdentityServer.STS.Identity.IntegrationTests.Tests.Base;
+
 using Xunit;
 
 namespace Skoruba.Duende.IdentityServer.STS.Identity.IntegrationTests.Tests;

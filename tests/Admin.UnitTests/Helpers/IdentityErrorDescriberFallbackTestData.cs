@@ -2,7 +2,7 @@
 // Licensed under the Apache License, Version 2.0.
 
 using System.Collections;
-using System.Collections.Generic;
+
 using Skoruba.Duende.IdentityServer.Admin.UI.Helpers.Identity;
 
 namespace Skoruba.Duende.IdentityServer.Admin.UnitTests.Helpers;

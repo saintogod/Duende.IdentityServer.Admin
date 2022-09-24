@@ -10,28 +10,28 @@ using Microsoft.AspNetCore.Mvc.Controllers;
 
 namespace Skoruba.Duende.IdentityServer.STS.Identity.Configuration.ApplicationParts;
 
-public class GenericTypeControllerFeatureProvider<TUser, TKey> : IApplicationFeatureProvider<ControllerFeature>
+internal sealed class GenericTypeControllerFeatureProvider<TUser, TKey> : IApplicationFeatureProvider<ControllerFeature>
     where TUser : IdentityUser<TKey>
     where TKey : IEquatable<TKey>
 {
     public void PopulateFeature(IEnumerable<ApplicationPart> parts, ControllerFeature feature)
     {
-        var currentAssembly = typeof(GenericTypeControllerFeatureProvider<TUser, TKey>).Assembly;
-        var controllerTypes = currentAssembly.GetExportedTypes()
-                                             .Where(t => typeof(ControllerBase).IsAssignableFrom(t) && t.IsGenericTypeDefinition)
-                                             .Select(t => t.GetTypeInfo());
-
         var type = GetType();
+
+        var controllerTypes = type.Assembly.GetExportedTypes()
+            .Where(t => typeof(ControllerBase).IsAssignableFrom(t) && t.IsGenericTypeDefinition)
+            .Select(t => t.GetTypeInfo());
+
         var genericType = type.GetGenericTypeDefinition().GetTypeInfo();
         var parameters = genericType.GenericTypeParameters
-                                    .Select((p, i) => new { p.Name, Index = i })
-                                    .ToDictionary(a => a.Name, a => type.GenericTypeArguments[a.Index]);
+            .Select((p, i) => new { p.Name, Index = i })
+            .ToDictionary(a => a.Name, a => type.GenericTypeArguments[a.Index]);
 
         foreach (var controllerType in controllerTypes)
         {
             var typeArguments = controllerType.GenericTypeParameters
-                                              .Select(p => parameters[p.Name])
-                                              .ToArray();
+                .Select(p => parameters[p.Name])
+                .ToArray();
 
             feature.Controllers.Add(controllerType.MakeGenericType(typeArguments).GetTypeInfo());
         }

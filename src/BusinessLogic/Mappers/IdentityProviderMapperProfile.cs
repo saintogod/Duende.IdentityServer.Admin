@@ -5,7 +5,7 @@ using AutoMapper;
 using Duende.IdentityServer.EntityFramework.Entities;
 
 using Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Dtos.IdentityProvider;
-using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Extensions.Common;
+using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Extensions;
 
 namespace Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Mappers;
 public class IdentityProviderMapperProfile : Profile

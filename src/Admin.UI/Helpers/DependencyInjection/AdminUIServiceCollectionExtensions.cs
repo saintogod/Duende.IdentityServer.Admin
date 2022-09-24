@@ -12,8 +12,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Skoruba.AuditLogging.EntityFramework.DbContexts;
 using Skoruba.AuditLogging.EntityFramework.Entities;
 using Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Identity.Dtos.Identity;
-using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Interfaces;
-using Skoruba.Duende.IdentityServer.Shared.Configuration.Helpers;
+using Skoruba.Duende.IdentityServer.Admin.EntityFramework;
 
 using static Skoruba.Duende.IdentityServer.Admin.UI.Helpers.StartupHelpers;
 
@@ -24,9 +23,6 @@ public static class AdminUIServiceCollectionExtensions
     /// <summary>
     /// Adds the Skoruba Duende IdentityServer Admin UI with the default entity model.
     /// </summary>
-    /// <param name="services"></param>
-    /// <param name="optionsAction"></param>
-    /// <returns></returns>
     public static IServiceCollection AddIdentityServerAdminUI<TIdentityDbContext, TIdentityServerDbContext, TPersistedGrantDbContext, TLogDbContext, TAuditLogDbContext, TAuditLog, TDataProtectionDbContext>(this IServiceCollection services, Action<IdentityServerAdminUIOptions> optionsAction)
         where TIdentityDbContext : IdentityDbContext<IdentityUser<string>, IdentityRole, string, IdentityUserClaim<string>, IdentityUserRole<string>, IdentityUserLogin<string>, IdentityRoleClaim<string>, IdentityUserToken<string>>
         where TIdentityServerDbContext : DbContext, IAdminConfigurationDbContext

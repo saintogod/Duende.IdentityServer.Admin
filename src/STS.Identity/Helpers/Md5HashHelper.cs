@@ -14,8 +14,6 @@ public static class Md5HashHelper
     /// <summary>
     /// Computes a Md5-hash of the submitted string and returns the corresponding hash
     /// </summary>
-    /// <param name="input"></param>
-    /// <returns></returns>
     public static string GetHash(string input)
     {
         using var md5 = MD5.Create();

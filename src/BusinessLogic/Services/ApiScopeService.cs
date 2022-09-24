@@ -11,12 +11,12 @@ using Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Mappers;
 using Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Resources;
 using Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Services.Interfaces;
 using Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Shared.ExceptionHandling;
-using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Extensions.Common;
-using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Repositories.Interfaces;
+using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Extensions;
+using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Repositories;
 
 namespace Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Services;
 
-public class ApiScopeService : IApiScopeService
+internal class ApiScopeService : IApiScopeService
 {
     protected readonly IApiScopeRepository ApiScopeRepository;
     protected readonly IApiScopeServiceResources ApiScopeServiceResources;

@@ -1,11 +1,13 @@
 ﻿// Copyright (c) Jan Škoruba. All Rights Reserved.
 // Licensed under the Apache License, Version 2.0.
 
-using System.Linq;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Localization;
+
 using Moq;
+
 using Skoruba.Duende.IdentityServer.Admin.UI.Helpers.Identity;
+
 using Xunit;
 
 namespace Skoruba.Duende.IdentityServer.Admin.UnitTests.Helpers;

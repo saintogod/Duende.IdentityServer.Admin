@@ -6,7 +6,7 @@ using Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Dtos.Log;
 using Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Events.Log;
 using Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Mappers;
 using Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Services.Interfaces;
-using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Repositories.Interfaces;
+using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Repositories;
 
 namespace Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Services;
 

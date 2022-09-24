@@ -4,15 +4,14 @@
 using Skoruba.AuditLogging.EntityFramework.Entities;
 using Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Dtos.Log;
 using Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Mappers;
-using Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Services.Interfaces;
-using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Repositories.Interfaces;
+using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Repositories;
 
 namespace Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Services;
 
-public class AuditLogService<TAuditLog> : IAuditLogService
+internal sealed class AuditLogService<TAuditLog> : IAuditLogService
     where TAuditLog : AuditLog
 {
-    protected readonly IAuditLogRepository<TAuditLog> auditLogRepository;
+    private readonly IAuditLogRepository<TAuditLog> auditLogRepository;
 
     public AuditLogService(IAuditLogRepository<TAuditLog> auditLogRepository)
     {
@@ -27,7 +26,7 @@ public class AuditLogService<TAuditLog> : IAuditLogService
         return auditLogsDto;
     }
 
-    public virtual Task DeleteLogsOlderThanAsync(DateTime deleteOlderThan)
+    public Task DeleteLogsOlderThanAsync(DateTime deleteOlderThan)
     {
         return auditLogRepository.DeleteLogsOlderThanAsync(deleteOlderThan);
     }

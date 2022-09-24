@@ -1,5 +1,5 @@
 ﻿@using Skoruba.Duende.IdentityServer.Shared.Configuration.Helpers
-@using Skoruba.Duende.IdentityServer.STS.Identity.Configuration.Interfaces
+@using Skoruba.Duende.IdentityServer.STS.Identity.Configuration
 @inject IRootConfiguration RootConfiguration
 
 @if (!string.IsNullOrEmpty(Context.Request.Cookies[ThemeHelpers.CookieThemeKey]) && Context.Request.Cookies[ThemeHelpers.CookieThemeKey] != ThemeHelpers.DefaultTheme)

@@ -14,7 +14,7 @@ using Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Identity.Services;
 using Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Identity.Services.Interfaces;
 using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Identity.Repositories;
 using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Identity.Repositories.Interfaces;
-using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Interfaces;
+using Skoruba.Duende.IdentityServer.Admin.EntityFramework;
 
 namespace Microsoft.Extensions.DependencyInjection;
 

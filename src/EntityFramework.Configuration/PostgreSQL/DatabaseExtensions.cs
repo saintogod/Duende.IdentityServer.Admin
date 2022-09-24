@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using Skoruba.AuditLogging.EntityFramework.DbContexts;
 using Skoruba.AuditLogging.EntityFramework.Entities;
 using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Configuration.Configuration;
-using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Interfaces;
+using Skoruba.Duende.IdentityServer.Admin.EntityFramework;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
@@ -30,7 +30,7 @@ public static partial class DatabaseExtensions
     /// <param name="services"></param>
     /// <param name="connectionStrings"></param>
     /// <param name="databaseMigrations"></param>
-    public static void RegisterNpgSqlDbContexts<TIdentityDbContext, TConfigurationDbContext,
+    public static IServiceCollection RegisterNpgSqlDbContexts<TIdentityDbContext, TConfigurationDbContext,
         TPersistedGrantDbContext, TLogDbContext, TAuditLoggingDbContext, TDataProtectionDbContext, TAuditLog>(this IServiceCollection services,
         ConnectionStringsConfiguration connectionStrings,
         DatabaseMigrationsConfiguration databaseMigrations)
@@ -70,6 +70,7 @@ public static partial class DatabaseExtensions
         // DataProtectionKey DB from existing connection
         if (!string.IsNullOrEmpty(connectionStrings.DataProtectionDbConnection))
             services.AddDbContext<TDataProtectionDbContext>(options => options.UseNpgsql(connectionStrings.DataProtectionDbConnection, sql => sql.MigrationsAssembly(databaseMigrations.DataProtectionDbMigrationsAssembly ?? migrationsAssembly)));
+        return services;
     }
 
     /// <summary>
@@ -85,7 +86,7 @@ public static partial class DatabaseExtensions
     /// <param name="configurationConnectionString"></param>
     /// <param name="persistedGrantConnectionString"></param>
     /// <param name="dataProtectionConnectionString"></param>
-    public static void RegisterNpgSqlDbContexts<TIdentityDbContext, TConfigurationDbContext,
+    public static IServiceCollection RegisterNpgSqlDbContexts<TIdentityDbContext, TConfigurationDbContext,
         TPersistedGrantDbContext, TDataProtectionDbContext>(this IServiceCollection services,
         string identityConnectionString, string configurationConnectionString,
         string persistedGrantConnectionString, string dataProtectionConnectionString)
@@ -109,5 +110,6 @@ public static partial class DatabaseExtensions
 
         // DataProtectionKey DB from existing connection
         services.AddDbContext<TDataProtectionDbContext>(options => options.UseNpgsql(dataProtectionConnectionString, sql => sql.MigrationsAssembly(migrationsAssembly)));
+        return services;
     }
 }

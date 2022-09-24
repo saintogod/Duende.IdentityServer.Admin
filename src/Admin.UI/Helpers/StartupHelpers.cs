@@ -31,13 +31,10 @@ using Skoruba.AuditLogging.EntityFramework.Extensions;
 using Skoruba.AuditLogging.EntityFramework.Repositories;
 using Skoruba.AuditLogging.EntityFramework.Services;
 using Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Identity.Dtos.Identity;
-using Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Services;
-using Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Services.Interfaces;
 using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Configuration.Configuration;
 using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Helpers;
-using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Interfaces;
+using Skoruba.Duende.IdentityServer.Admin.EntityFramework;
 using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Repositories;
-using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Repositories.Interfaces;
 using Skoruba.Duende.IdentityServer.Admin.UI.Configuration;
 using Skoruba.Duende.IdentityServer.Admin.UI.Configuration.ApplicationParts;
 using Skoruba.Duende.IdentityServer.Admin.UI.Configuration.Constants;
@@ -94,7 +91,7 @@ public static class StartupHelpers
 
         // repository and service for admin
         services.AddTransient<IAuditLogRepository<TAuditLog>, AuditLogRepository<TAuditLoggingDbContext, TAuditLog>>();
-        services.AddTransient<IAuditLogService, AuditLogService<TAuditLog>>();
+        services.AddAuditLog<TAuditLog>();
 
         return services;
     }
@@ -130,9 +127,6 @@ public static class StartupHelpers
     {
         switch (databaseProvider.ProviderType)
         {
-            case DatabaseProviderType.SqlServer:
-                services.RegisterSqlServerDbContexts<TIdentityDbContext, TConfigurationDbContext, TPersistedGrantDbContext, TLogDbContext, TAuditLoggingDbContext, TDataProtectionDbContext, TAuditLog>(connectionStrings, databaseMigrations);
-                break;
             case DatabaseProviderType.PostgreSQL:
                 services.RegisterNpgSqlDbContexts<TIdentityDbContext, TConfigurationDbContext, TPersistedGrantDbContext, TLogDbContext, TAuditLoggingDbContext, TDataProtectionDbContext, TAuditLog>(connectionStrings, databaseMigrations);
                 break;
@@ -189,7 +183,6 @@ public static class StartupHelpers
     /// <summary>
     /// Add middleware for localization
     /// </summary>
-    /// <param name="app"></param>
     public static void ConfigureLocalization(this IApplicationBuilder app)
     {
         var options = app.ApplicationServices.GetService<IOptions<RequestLocalizationOptions>>();
@@ -199,7 +192,6 @@ public static class StartupHelpers
     /// <summary>
     /// Add authorization policies
     /// </summary>
-    /// <param name="services"></param>
     public static void AddAuthorizationPolicies(this IServiceCollection services, AdminConfiguration adminConfiguration,
         Action<AuthorizationOptions> authorizationAction)
     {
@@ -215,7 +207,6 @@ public static class StartupHelpers
     /// <summary>
     /// Add exception filter for controller
     /// </summary>
-    /// <param name="services"></param>
     public static void AddMvcExceptionFilters(this IServiceCollection services)
     {
         //Exception handling
@@ -225,7 +216,6 @@ public static class StartupHelpers
     /// <summary>
     /// Register services for MVC and localization including available languages
     /// </summary>
-    /// <param name="services"></param>
     public static void AddMvcWithLocalization<TUserDto, TRoleDto, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken,
         TUsersDto, TRolesDto, TUserRolesDto, TUserClaimsDto,
         TUserProviderDto, TUserProvidersDto, TUserChangePasswordDto, TRoleClaimsDto, TUserClaimDto, TRoleClaimDto>
@@ -426,7 +416,7 @@ public static class StartupHelpers
         return Task.CompletedTask;
     }
 
-    public static void AddIdSHealthChecks<TConfigurationDbContext, TPersistedGrantDbContext, TIdentityDbContext,
+    public static IHealthChecksBuilder AddIdSHealthChecks<TConfigurationDbContext, TPersistedGrantDbContext, TIdentityDbContext,
         TLogDbContext, TAuditLoggingDbContext, TDataProtectionDbContext, TAuditLog>
         (this IHealthChecksBuilder healthChecksBuilder, AdminConfiguration adminConfiguration,
         ConnectionStringsConfiguration connectionStringsConfiguration, DatabaseProviderConfiguration databaseProviderConfiguration)
@@ -458,67 +448,44 @@ public static class StartupHelpers
 
         var serviceProvider = healthChecksBuilder.Services.BuildServiceProvider();
         var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
-        using (var scope = scopeFactory.CreateScope())
-        {
-            var configurationTableName = DbContextHelpers.GetEntityTable<TConfigurationDbContext>(scope.ServiceProvider);
-            var persistedGrantTableName = DbContextHelpers.GetEntityTable<TPersistedGrantDbContext>(scope.ServiceProvider);
-            var identityTableName = DbContextHelpers.GetEntityTable<TIdentityDbContext>(scope.ServiceProvider);
-            var logTableName = DbContextHelpers.GetEntityTable<TLogDbContext>(scope.ServiceProvider);
-            var auditLogTableName = DbContextHelpers.GetEntityTable<TAuditLoggingDbContext>(scope.ServiceProvider);
-            var dataProtectionTableName = DbContextHelpers.GetEntityTable<TDataProtectionDbContext>(scope.ServiceProvider);
 
-            switch (databaseProviderConfiguration.ProviderType)
-            {
-                case DatabaseProviderType.SqlServer:
-                    healthChecksBuilder
-                        .AddSqlServer(configurationDbConnectionString, name: "ConfigurationDb",
-                            healthQuery: $"SELECT TOP 1 * FROM dbo.[{configurationTableName}]")
-                        .AddSqlServer(persistedGrantsDbConnectionString, name: "PersistentGrantsDb",
-                            healthQuery: $"SELECT TOP 1 * FROM dbo.[{persistedGrantTableName}]")
-                        .AddSqlServer(identityDbConnectionString, name: "IdentityDb",
-                            healthQuery: $"SELECT TOP 1 * FROM dbo.[{identityTableName}]")
-                        .AddSqlServer(logDbConnectionString, name: "LogDb",
-                            healthQuery: $"SELECT TOP 1 * FROM dbo.[{logTableName}]")
-                        .AddSqlServer(auditLogDbConnectionString, name: "AuditLogDb",
-                            healthQuery: $"SELECT TOP 1 * FROM dbo.[{auditLogTableName}]")
-                        .AddSqlServer(dataProtectionDbConnectionString, name: "DataProtectionDb",
-                            healthQuery: $"SELECT TOP 1 * FROM dbo.[{dataProtectionTableName}]");
-                    break;
-                case DatabaseProviderType.PostgreSQL:
-                    healthChecksBuilder
-                        .AddNpgSql(configurationDbConnectionString, name: "ConfigurationDb",
-                            healthQuery: $"SELECT * FROM \"{configurationTableName}\" LIMIT 1")
-                        .AddNpgSql(persistedGrantsDbConnectionString, name: "PersistentGrantsDb",
-                            healthQuery: $"SELECT * FROM \"{persistedGrantTableName}\" LIMIT 1")
-                        .AddNpgSql(identityDbConnectionString, name: "IdentityDb",
-                            healthQuery: $"SELECT * FROM \"{identityTableName}\" LIMIT 1")
-                        .AddNpgSql(logDbConnectionString, name: "LogDb",
-                            healthQuery: $"SELECT * FROM \"{logTableName}\" LIMIT 1")
-                        .AddNpgSql(auditLogDbConnectionString, name: "AuditLogDb",
-                            healthQuery: $"SELECT * FROM \"{auditLogTableName}\"  LIMIT 1")
-                        .AddNpgSql(dataProtectionDbConnectionString, name: "DataProtectionDb",
-                            healthQuery: $"SELECT * FROM \"{dataProtectionTableName}\"  LIMIT 1");
-                    break;
-                case DatabaseProviderType.MySql:
-                    healthChecksBuilder
-                        .AddMySql(configurationDbConnectionString, name: "ConfigurationDb")
-                        .AddMySql(persistedGrantsDbConnectionString, name: "PersistentGrantsDb")
-                        .AddMySql(identityDbConnectionString, name: "IdentityDb")
-                        .AddMySql(logDbConnectionString, name: "LogDb")
-                        .AddMySql(auditLogDbConnectionString, name: "AuditLogDb")
-                        .AddMySql(dataProtectionDbConnectionString, name: "DataProtectionDb");
-                    break;
-                default:
-                    throw new NotImplementedException($"Health checks not defined for database provider {databaseProviderConfiguration.ProviderType}");
-            }
-        }
+        using var scope = scopeFactory.CreateScope();
+        var configurationTableName = DbContextHelpers.GetEntityTable<TConfigurationDbContext>(scope.ServiceProvider);
+        var persistedGrantTableName = DbContextHelpers.GetEntityTable<TPersistedGrantDbContext>(scope.ServiceProvider);
+        var identityTableName = DbContextHelpers.GetEntityTable<TIdentityDbContext>(scope.ServiceProvider);
+        var logTableName = DbContextHelpers.GetEntityTable<TLogDbContext>(scope.ServiceProvider);
+        var auditLogTableName = DbContextHelpers.GetEntityTable<TAuditLoggingDbContext>(scope.ServiceProvider);
+        var dataProtectionTableName = DbContextHelpers.GetEntityTable<TDataProtectionDbContext>(scope.ServiceProvider);
+
+        return databaseProviderConfiguration.ProviderType switch
+        {
+            DatabaseProviderType.PostgreSQL => healthChecksBuilder
+                                .AddNpgSql(configurationDbConnectionString, name: "ConfigurationDb",
+                                    healthQuery: $"SELECT * FROM \"{configurationTableName}\" LIMIT 1")
+                                .AddNpgSql(persistedGrantsDbConnectionString, name: "PersistentGrantsDb",
+                                    healthQuery: $"SELECT * FROM \"{persistedGrantTableName}\" LIMIT 1")
+                                .AddNpgSql(identityDbConnectionString, name: "IdentityDb",
+                                    healthQuery: $"SELECT * FROM \"{identityTableName}\" LIMIT 1")
+                                .AddNpgSql(logDbConnectionString, name: "LogDb",
+                                    healthQuery: $"SELECT * FROM \"{logTableName}\" LIMIT 1")
+                                .AddNpgSql(auditLogDbConnectionString, name: "AuditLogDb",
+                                    healthQuery: $"SELECT * FROM \"{auditLogTableName}\"  LIMIT 1")
+                                .AddNpgSql(dataProtectionDbConnectionString, name: "DataProtectionDb",
+                                    healthQuery: $"SELECT * FROM \"{dataProtectionTableName}\"  LIMIT 1"),
+            DatabaseProviderType.MySql => healthChecksBuilder
+                                .AddMySql(configurationDbConnectionString, name: "ConfigurationDb")
+                                .AddMySql(persistedGrantsDbConnectionString, name: "PersistentGrantsDb")
+                                .AddMySql(identityDbConnectionString, name: "IdentityDb")
+                                .AddMySql(logDbConnectionString, name: "LogDb")
+                                .AddMySql(auditLogDbConnectionString, name: "AuditLogDb")
+                                .AddMySql(dataProtectionDbConnectionString, name: "DataProtectionDb"),
+            _ => throw new NotImplementedException($"Health checks not defined for database provider {databaseProviderConfiguration.ProviderType}"),
+        };
     }
 
     /// <summary>
     /// Using of Forwarded Headers, Hsts, XXssProtection and Csp
     /// </summary>
-    /// <param name="app"></param>
-    /// <param name="configuration"></param>
     public static void UseSecurityHeaders(this IApplicationBuilder app, List<string> cspTrustedDomains)
     {
         var forwardingOptions = new ForwardedHeadersOptions()

@@ -18,13 +18,11 @@ public sealed class UserResolver<TUser> where TUser : class
         policy = configuration.ResolutionPolicy;
     }
 
-    public async Task<TUser> GetUserAsync(string login)
-    {
-        return policy switch
+    public Task<TUser> GetUserAsync(string login)
+        => policy switch
         {
-            LoginResolutionPolicy.Username => await userManager.FindByNameAsync(login),
-            LoginResolutionPolicy.Email => await userManager.FindByEmailAsync(login),
-            _ => null,
+            LoginResolutionPolicy.Username => userManager.FindByNameAsync(login),
+            LoginResolutionPolicy.Email => userManager.FindByEmailAsync(login),
+            _ => Task.FromResult<TUser>(null),
         };
-    }
 }

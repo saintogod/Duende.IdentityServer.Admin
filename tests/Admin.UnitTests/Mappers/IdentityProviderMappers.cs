@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-
-using FluentAssertions;
+﻿using FluentAssertions;
 
 using Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Dtos.IdentityProvider;
 using Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Mappers;

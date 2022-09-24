@@ -10,14 +10,12 @@
     <PackageReference Include="AspNetCore.HealthChecks.MySql" Version="$(DotnetCoreVer)" />
     <PackageReference Include="AspNetCore.HealthChecks.NpgSql" Version="$(DotnetCoreVer)" />
     <PackageReference Include="AspNetCore.HealthChecks.OpenIdConnectServer" Version="$(DotnetCoreVer)" />
-    <PackageReference Include="AspNetCore.HealthChecks.SqlServer" Version="$(DotnetCoreVer)" />
     <PackageReference Include="AspNetCore.HealthChecks.UI" Version="$(DotnetCoreVer)" />
     <PackageReference Include="AspNetCore.HealthChecks.UI.Client" Version="$(DotnetCoreVer)" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="$(DotnetCoreVer)" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="$(DotnetCoreVer)" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="$(DotnetCoreVer)" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="$(DotnetCoreVer)" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="$(DotnetCoreVer)" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="$(DotnetCoreVer)">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -25,15 +23,14 @@
     <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks" Version="$(DotnetCoreVer)" />
     <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" Version="$(DotnetCoreVer)" />
     <PackageReference Include="AutoMapper" Version="11.0.1" />
-    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.16.1" />
-    <PackageReference Include="Serilog" Version="2.11.0" />
+    <PackageReference Include="Serilog" Version="2.12.0" />
     <PackageReference Include="Serilog.Enrichers.Environment" Version="2.2.0" />
     <PackageReference Include="Serilog.Enrichers.Thread" Version="3.1.0" />
     <PackageReference Include="Serilog.Extensions.Hosting" Version="5.0.1" />
-    <PackageReference Include="Serilog.Settings.Configuration" Version="3.3.0" />
-    <PackageReference Include="Serilog.Sinks.Console" Version="4.0.1" />
+    <PackageReference Include="Serilog.Settings.Configuration" Version="3.4.0" />
+    <PackageReference Include="Serilog.Sinks.Console" Version="4.1.0" />
     <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
-    <PackageReference Include="Serilog.Sinks.Seq" Version="5.1.1" />
+    <PackageReference Include="Serilog.Sinks.Seq" Version="5.2.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
     <PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="6.4.0" />
   </ItemGroup>
@@ -43,7 +40,6 @@
     <ProjectReference Include="..\BusinessLogic\BusinessLogic.csproj" />
     <ProjectReference Include="..\EntityFramework.MySql\EntityFramework.MySql.csproj" />
     <ProjectReference Include="..\EntityFramework.PostgreSQL\EntityFramework.PostgreSQL.csproj" />
-    <ProjectReference Include="..\EntityFramework.SqlServer\EntityFramework.SqlServer.csproj" />
     <ProjectReference Include="..\Shared.Configuration\Shared.Configuration.csproj" />
     <ProjectReference Include="..\Shared\Shared.csproj" />
   </ItemGroup>

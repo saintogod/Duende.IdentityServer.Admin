@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Identity;
 
 using Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Identity.Dtos.Identity;
 using Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Shared.ExceptionHandling;
-using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Extensions.Common;
+using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Extensions;
 
 namespace Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Identity.Mappers;
 

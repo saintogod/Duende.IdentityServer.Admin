@@ -1,8 +1,8 @@
 ﻿// Copyright (c) Jan Škoruba. All Rights Reserved.
 // Licensed under the Apache License, Version 2.0.
 
-using System.Net.Http;
 using Microsoft.AspNetCore.TestHost;
+
 using Xunit;
 
 namespace Skoruba.Duende.IdentityServer.STS.Identity.IntegrationTests.Tests.Base;

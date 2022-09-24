@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using System.Text.Encodings.Web;
+using System.Text.Json;
 
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
@@ -7,8 +8,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
-
-using Newtonsoft.Json;
 
 using Skoruba.Duende.IdentityServer.STS.Identity.Helpers;
 using Skoruba.Duende.IdentityServer.STS.Identity.Helpers.Localization;
@@ -21,37 +20,37 @@ public class ManageController<TUser, TKey> : Controller
     where TUser : IdentityUser<TKey>, new()
     where TKey : IEquatable<TKey>
 {
-    private readonly UserManager<TUser> _userManager;
-    private readonly SignInManager<TUser> _signInManager;
-    private readonly IEmailSender _emailSender;
-    private readonly ILogger<ManageController<TUser, TKey>> _logger;
-    private readonly IGenericControllerLocalizer<ManageController<TUser, TKey>> _localizer;
-    private readonly UrlEncoder _urlEncoder;
-
     private const string RecoveryCodesKey = nameof(RecoveryCodesKey);
     private const string AuthenticatorUriFormat = "otpauth://totp/{0}:{1}?secret={2}&issuer={0}&digits=6";
+
+    private readonly UserManager<TUser> userManager;
+    private readonly SignInManager<TUser> signInManager;
+    private readonly IEmailSender emailSender;
+    private readonly ILogger<ManageController<TUser, TKey>> logger;
+    private readonly IGenericControllerLocalizer<ManageController<TUser, TKey>> localizer;
+    private readonly UrlEncoder urlEncoder;
 
     [TempData]
     public string StatusMessage { get; set; }
 
     public ManageController(UserManager<TUser> userManager, SignInManager<TUser> signInManager, IEmailSender emailSender, ILogger<ManageController<TUser, TKey>> logger, IGenericControllerLocalizer<ManageController<TUser, TKey>> localizer, UrlEncoder urlEncoder)
     {
-        _userManager = userManager;
-        _signInManager = signInManager;
-        _emailSender = emailSender;
-        _logger = logger;
-        _localizer = localizer;
-        _urlEncoder = urlEncoder;
+        this.userManager = userManager;
+        this.signInManager = signInManager;
+        this.emailSender = emailSender;
+        this.logger = logger;
+        this.localizer = localizer;
+        this.urlEncoder = urlEncoder;
     }
 
     [HttpGet]
     public async Task<IActionResult> Index()
     {
-        var user = await _userManager.GetUserAsync(User);
+        var user = await userManager.GetUserAsync(User);
 
         if (user == null)
         {
-            return NotFound(_localizer["UserNotFound", _userManager.GetUserId(User)]);
+            return NotFound(localizer["UserNotFound", userManager.GetUserId(User)]);
         }
 
         var model = await BuildManageIndexViewModelAsync(user);
@@ -68,35 +67,35 @@ public class ManageController<TUser, TKey> : Controller
             return View(model);
         }
 
-        var user = await _userManager.GetUserAsync(User);
+        var user = await userManager.GetUserAsync(User);
         if (user == null)
         {
-            return NotFound(_localizer["UserNotFound", _userManager.GetUserId(User)]);
+            return NotFound(localizer["UserNotFound", userManager.GetUserId(User)]);
         }
 
         var email = user.Email;
         if (model.Email != email)
         {
-            var setEmailResult = await _userManager.SetEmailAsync(user, model.Email);
+            var setEmailResult = await userManager.SetEmailAsync(user, model.Email);
             if (!setEmailResult.Succeeded)
             {
-                throw new ApplicationException(_localizer["ErrorSettingEmail", user.Id]);
+                throw new ApplicationException(localizer["ErrorSettingEmail", user.Id]);
             }
         }
 
         var phoneNumber = user.PhoneNumber;
         if (model.PhoneNumber != phoneNumber)
         {
-            var setPhoneResult = await _userManager.SetPhoneNumberAsync(user, model.PhoneNumber);
+            var setPhoneResult = await userManager.SetPhoneNumberAsync(user, model.PhoneNumber);
             if (!setPhoneResult.Succeeded)
             {
-                throw new ApplicationException(_localizer["ErrorSettingPhone", user.Id]);
+                throw new ApplicationException(localizer["ErrorSettingPhone", user.Id]);
             }
         }
 
         await UpdateUserClaimsAsync(model, user);
 
-        StatusMessage = _localizer["ProfileUpdated"];
+        StatusMessage = localizer["ProfileUpdated"];
 
         return RedirectToAction(nameof(Index));
     }
@@ -110,21 +109,21 @@ public class ManageController<TUser, TKey> : Controller
             return View(model);
         }
 
-        var user = await _userManager.GetUserAsync(User);
+        var user = await userManager.GetUserAsync(User);
         if (user == null)
         {
-            return NotFound(_localizer["UserNotFound", _userManager.GetUserId(User)]);
+            return NotFound(localizer["UserNotFound", userManager.GetUserId(User)]);
         }
 
-        var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+        var code = await userManager.GenerateEmailConfirmationTokenAsync(user);
 
         code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
 
         var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code }, HttpContext.Request.Scheme);
 
-        await _emailSender.SendEmailAsync(model.Email, _localizer["ConfirmEmailTitle"], _localizer["ConfirmEmailBody", HtmlEncoder.Default.Encode(callbackUrl)]);
+        await emailSender.SendEmailAsync(model.Email, localizer["ConfirmEmailTitle"], localizer["ConfirmEmailBody", HtmlEncoder.Default.Encode(callbackUrl)]);
 
-        StatusMessage = _localizer["VerificationSent"];
+        StatusMessage = localizer["VerificationSent"];
 
         return RedirectToAction(nameof(Index));
     }
@@ -132,13 +131,13 @@ public class ManageController<TUser, TKey> : Controller
     [HttpGet]
     public async Task<IActionResult> ChangePassword()
     {
-        var user = await _userManager.GetUserAsync(User);
+        var user = await userManager.GetUserAsync(User);
         if (user == null)
         {
-            return NotFound(_localizer["UserNotFound", _userManager.GetUserId(User)]);
+            return NotFound(localizer["UserNotFound", userManager.GetUserId(User)]);
         }
 
-        var hasPassword = await _userManager.HasPasswordAsync(user);
+        var hasPassword = await userManager.HasPasswordAsync(user);
         if (!hasPassword)
         {
             return RedirectToAction(nameof(SetPassword));
@@ -157,23 +156,23 @@ public class ManageController<TUser, TKey> : Controller
             return View(model);
         }
 
-        var user = await _userManager.GetUserAsync(User);
+        var user = await userManager.GetUserAsync(User);
         if (user == null)
         {
-            return NotFound(_localizer["UserNotFound", _userManager.GetUserId(User)]);
+            return NotFound(localizer["UserNotFound", userManager.GetUserId(User)]);
         }
 
-        var changePasswordResult = await _userManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
+        var changePasswordResult = await userManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
         if (!changePasswordResult.Succeeded)
         {
             AddErrors(changePasswordResult);
             return View(model);
         }
 
-        await _signInManager.RefreshSignInAsync(user);
-        _logger.LogInformation(_localizer["PasswordChangedLog", user.UserName]);
+        await signInManager.RefreshSignInAsync(user);
+        logger.LogInformation(localizer["PasswordChangedLog", user.UserName]);
 
-        StatusMessage = _localizer["PasswordChanged"];
+        StatusMessage = localizer["PasswordChanged"];
 
         return RedirectToAction(nameof(ChangePassword));
     }
@@ -181,13 +180,13 @@ public class ManageController<TUser, TKey> : Controller
     [HttpGet]
     public async Task<IActionResult> SetPassword()
     {
-        var user = await _userManager.GetUserAsync(User);
+        var user = await userManager.GetUserAsync(User);
         if (user == null)
         {
-            return NotFound(_localizer["UserNotFound", _userManager.GetUserId(User)]);
+            return NotFound(localizer["UserNotFound", userManager.GetUserId(User)]);
         }
 
-        var hasPassword = await _userManager.HasPasswordAsync(user);
+        var hasPassword = await userManager.HasPasswordAsync(user);
 
         if (hasPassword)
         {
@@ -207,21 +206,21 @@ public class ManageController<TUser, TKey> : Controller
             return View(model);
         }
 
-        var user = await _userManager.GetUserAsync(User);
+        var user = await userManager.GetUserAsync(User);
         if (user == null)
         {
-            return NotFound(_localizer["UserNotFound", _userManager.GetUserId(User)]);
+            return NotFound(localizer["UserNotFound", userManager.GetUserId(User)]);
         }
 
-        var addPasswordResult = await _userManager.AddPasswordAsync(user, model.NewPassword);
+        var addPasswordResult = await userManager.AddPasswordAsync(user, model.NewPassword);
         if (!addPasswordResult.Succeeded)
         {
             AddErrors(addPasswordResult);
             return View(model);
         }
 
-        await _signInManager.RefreshSignInAsync(user);
-        StatusMessage = _localizer["PasswordSet"];
+        await signInManager.RefreshSignInAsync(user);
+        StatusMessage = localizer["PasswordSet"];
 
         return RedirectToAction(nameof(SetPassword));
     }
@@ -229,10 +228,10 @@ public class ManageController<TUser, TKey> : Controller
     [HttpGet]
     public async Task<IActionResult> PersonalData()
     {
-        var user = await _userManager.GetUserAsync(User);
+        var user = await userManager.GetUserAsync(User);
         if (user == null)
         {
-            return NotFound(_localizer["UserNotFound", _userManager.GetUserId(User)]);
+            return NotFound(localizer["UserNotFound", userManager.GetUserId(User)]);
         }
 
         return View();
@@ -242,33 +241,33 @@ public class ManageController<TUser, TKey> : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DownloadPersonalData()
     {
-        var user = await _userManager.GetUserAsync(User);
+        var user = await userManager.GetUserAsync(User);
         if (user == null)
         {
-            return NotFound(_localizer["UserNotFound", _userManager.GetUserId(User)]);
+            return NotFound(localizer["UserNotFound", userManager.GetUserId(User)]);
         }
 
-        _logger.LogInformation(_localizer["AskForPersonalDataLog"], _userManager.GetUserId(User));
+        logger.LogInformation(localizer["AskForPersonalDataLog"], userManager.GetUserId(User));
 
         var personalDataProps = typeof(TUser).GetProperties().Where(prop => Attribute.IsDefined(prop, typeof(PersonalDataAttribute)));
         var personalData = personalDataProps.ToDictionary(p => p.Name, p => p.GetValue(user)?.ToString() ?? "null");
 
         Response.Headers.Add("Content-Disposition", "attachment; filename=PersonalData.json");
-        return new FileContentResult(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(personalData)), "text/json");
+        return new FileContentResult(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(personalData)), "text/json");
     }
 
     [HttpGet]
     public async Task<IActionResult> DeletePersonalData()
     {
-        var user = await _userManager.GetUserAsync(User);
+        var user = await userManager.GetUserAsync(User);
         if (user == null)
         {
-            return NotFound(_localizer["UserNotFound", _userManager.GetUserId(User)]);
+            return NotFound(localizer["UserNotFound", userManager.GetUserId(User)]);
         }
 
         var deletePersonalDataViewModel = new DeletePersonalDataViewModel
         {
-            RequirePassword = await _userManager.HasPasswordAsync(user)
+            RequirePassword = await userManager.HasPasswordAsync(user)
         };
 
         return View(deletePersonalDataViewModel);
@@ -278,32 +277,32 @@ public class ManageController<TUser, TKey> : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeletePersonalData(DeletePersonalDataViewModel deletePersonalDataViewModel)
     {
-        var user = await _userManager.GetUserAsync(User);
+        var user = await userManager.GetUserAsync(User);
         if (user == null)
         {
-            return NotFound(_localizer["UserNotFound", _userManager.GetUserId(User)]);
+            return NotFound(localizer["UserNotFound", userManager.GetUserId(User)]);
         }
 
-        deletePersonalDataViewModel.RequirePassword = await _userManager.HasPasswordAsync(user);
+        deletePersonalDataViewModel.RequirePassword = await userManager.HasPasswordAsync(user);
         if (deletePersonalDataViewModel.RequirePassword)
         {
-            if (!await _userManager.CheckPasswordAsync(user, deletePersonalDataViewModel.Password))
+            if (!await userManager.CheckPasswordAsync(user, deletePersonalDataViewModel.Password))
             {
-                ModelState.AddModelError(string.Empty, _localizer["PasswordNotCorrect"]);
+                ModelState.AddModelError(string.Empty, localizer["PasswordNotCorrect"]);
                 return View(deletePersonalDataViewModel);
             }
         }
 
-        var result = await _userManager.DeleteAsync(user);
-        var userId = await _userManager.GetUserIdAsync(user);
+        var result = await userManager.DeleteAsync(user);
+        var userId = await userManager.GetUserIdAsync(user);
         if (!result.Succeeded)
         {
-            throw new InvalidOperationException(_localizer["ErrorDeletingUser", user.Id]);
+            throw new InvalidOperationException(localizer["ErrorDeletingUser", user.Id]);
         }
 
-        await _signInManager.SignOutAsync();
+        await signInManager.SignOutAsync();
 
-        _logger.LogInformation(_localizer["DeletePersonalData"], userId);
+        logger.LogInformation(localizer["DeletePersonalData"], userId);
 
         return Redirect("~/");
     }
@@ -312,20 +311,20 @@ public class ManageController<TUser, TKey> : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> RemoveLogin(RemoveLoginViewModel model)
     {
-        var user = await _userManager.GetUserAsync(User);
+        var user = await userManager.GetUserAsync(User);
         if (user == null)
         {
-            return NotFound(_localizer["UserNotFound", _userManager.GetUserId(User)]);
+            return NotFound(localizer["UserNotFound", userManager.GetUserId(User)]);
         }
 
-        var result = await _userManager.RemoveLoginAsync(user, model.LoginProvider, model.ProviderKey);
+        var result = await userManager.RemoveLoginAsync(user, model.LoginProvider, model.ProviderKey);
         if (!result.Succeeded)
         {
-            throw new ApplicationException(_localizer["ErrorRemovingExternalLogin", user.Id]);
+            throw new ApplicationException(localizer["ErrorRemovingExternalLogin", user.Id]);
         }
 
-        await _signInManager.RefreshSignInAsync(user);
-        StatusMessage = _localizer["ExternalLoginRemoved"];
+        await signInManager.RefreshSignInAsync(user);
+        StatusMessage = localizer["ExternalLoginRemoved"];
 
         return RedirectToAction(nameof(ExternalLogins));
     }
@@ -333,19 +332,19 @@ public class ManageController<TUser, TKey> : Controller
     [HttpGet]
     public async Task<IActionResult> LinkLoginCallback()
     {
-        var user = await _userManager.GetUserAsync(User);
+        var user = await userManager.GetUserAsync(User);
         if (user == null)
         {
-            return NotFound(_localizer["UserNotFound", _userManager.GetUserId(User)]);
+            return NotFound(localizer["UserNotFound", userManager.GetUserId(User)]);
         }
 
-        var info = await _signInManager.GetExternalLoginInfoAsync(user.Id.ToString());
+        var info = await signInManager.GetExternalLoginInfoAsync(user.Id.ToString());
         if (info == null)
         {
-            throw new ApplicationException(_localizer["ErrorLoadingExternalLogin", user.Id]);
+            throw new ApplicationException(localizer["ErrorLoadingExternalLogin", user.Id]);
         }
 
-        var result = await _userManager.AddLoginAsync(user, info);
+        var result = await userManager.AddLoginAsync(user, info);
         if (!result.Succeeded)
         {
             AddErrors(result);
@@ -354,7 +353,7 @@ public class ManageController<TUser, TKey> : Controller
 
         // Clear the existing external cookie to ensure a clean login process
         await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
-        StatusMessage = _localizer["ExternalLoginAdded"];
+        StatusMessage = localizer["ExternalLoginAdded"];
 
         return RedirectToAction(nameof(ExternalLogins));
     }
@@ -362,22 +361,22 @@ public class ManageController<TUser, TKey> : Controller
     [HttpGet]
     public async Task<IActionResult> ExternalLogins()
     {
-        var user = await _userManager.GetUserAsync(User);
+        var user = await userManager.GetUserAsync(User);
         if (user == null)
         {
-            return NotFound(_localizer["UserNotFound", _userManager.GetUserId(User)]);
+            return NotFound(localizer["UserNotFound", userManager.GetUserId(User)]);
         }
 
         var model = new ExternalLoginsViewModel
         {
-            CurrentLogins = await _userManager.GetLoginsAsync(user)
+            CurrentLogins = await userManager.GetLoginsAsync(user)
         };
 
-        model.OtherLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync())
+        model.OtherLogins = (await signInManager.GetExternalAuthenticationSchemesAsync())
             .Where(auth => model.CurrentLogins.All(ul => auth.Name != ul.LoginProvider))
             .ToList();
 
-        model.ShowRemoveButton = await _userManager.HasPasswordAsync(user) || model.CurrentLogins.Count > 1;
+        model.ShowRemoveButton = await userManager.HasPasswordAsync(user) || model.CurrentLogins.Count > 1;
         model.StatusMessage = StatusMessage;
 
         return View(model);
@@ -392,7 +391,7 @@ public class ManageController<TUser, TKey> : Controller
 
         // Request a redirect to the external login provider to link a login for the current user
         var redirectUrl = Url.Action(nameof(LinkLoginCallback));
-        var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl, _userManager.GetUserId(User));
+        var properties = signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl, userManager.GetUserId(User));
 
         return new ChallengeResult(provider, properties);
     }
@@ -401,21 +400,21 @@ public class ManageController<TUser, TKey> : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> GenerateRecoveryCodes()
     {
-        var user = await _userManager.GetUserAsync(User);
+        var user = await userManager.GetUserAsync(User);
         if (user == null)
         {
-            return NotFound(_localizer["UserNotFound", _userManager.GetUserId(User)]);
+            return NotFound(localizer["UserNotFound", userManager.GetUserId(User)]);
         }
 
         if (!user.TwoFactorEnabled)
         {
-            AddError(_localizer["ErrorGenerateCodesWithout2FA"]);
+            AddError(localizer["ErrorGenerateCodesWithout2FA"]);
             return View();
         }
 
-        var recoveryCodes = await _userManager.GenerateNewTwoFactorRecoveryCodesAsync(user, 10);
+        var recoveryCodes = await userManager.GenerateNewTwoFactorRecoveryCodesAsync(user, 10);
 
-        _logger.LogInformation(_localizer["UserGenerated2FACodes", user.Id]);
+        logger.LogInformation(localizer["UserGenerated2FACodes", user.Id]);
 
         var model = new ShowRecoveryCodesViewModel { RecoveryCodes = recoveryCodes.ToArray() };
 
@@ -439,18 +438,18 @@ public class ManageController<TUser, TKey> : Controller
     [HttpGet]
     public async Task<IActionResult> TwoFactorAuthentication()
     {
-        var user = await _userManager.GetUserAsync(User);
+        var user = await userManager.GetUserAsync(User);
         if (user == null)
         {
-            return NotFound(_localizer["UserNotFound", _userManager.GetUserId(User)]);
+            return NotFound(localizer["UserNotFound", userManager.GetUserId(User)]);
         }
 
         var model = new TwoFactorAuthenticationViewModel
         {
-            HasAuthenticator = await _userManager.GetAuthenticatorKeyAsync(user) != null,
+            HasAuthenticator = await userManager.GetAuthenticatorKeyAsync(user) != null,
             Is2faEnabled = user.TwoFactorEnabled,
-            RecoveryCodesLeft = await _userManager.CountRecoveryCodesAsync(user),
-            IsMachineRemembered = await _signInManager.IsTwoFactorClientRememberedAsync(user)
+            RecoveryCodesLeft = await userManager.CountRecoveryCodesAsync(user),
+            IsMachineRemembered = await signInManager.IsTwoFactorClientRememberedAsync(user)
         };
 
         return View(model);
@@ -459,15 +458,15 @@ public class ManageController<TUser, TKey> : Controller
     [HttpPost]
     public async Task<IActionResult> ForgetTwoFactorClient()
     {
-        var user = await _userManager.GetUserAsync(User);
+        var user = await userManager.GetUserAsync(User);
         if (user == null)
         {
-            return NotFound(_localizer["UserNotFound", _userManager.GetUserId(User)]);
+            return NotFound(localizer["UserNotFound", userManager.GetUserId(User)]);
         }
 
-        await _signInManager.ForgetTwoFactorClientAsync();
+        await signInManager.ForgetTwoFactorClientAsync();
 
-        StatusMessage = _localizer["SuccessForgetBrowser2FA"];
+        StatusMessage = localizer["SuccessForgetBrowser2FA"];
 
         return RedirectToAction(nameof(TwoFactorAuthentication));
     }
@@ -475,15 +474,15 @@ public class ManageController<TUser, TKey> : Controller
     [HttpGet]
     public async Task<IActionResult> Disable2faWarning()
     {
-        var user = await _userManager.GetUserAsync(User);
+        var user = await userManager.GetUserAsync(User);
         if (user == null)
         {
-            return NotFound(_localizer["UserNotFound", _userManager.GetUserId(User)]);
+            return NotFound(localizer["UserNotFound", userManager.GetUserId(User)]);
         }
 
         if (!user.TwoFactorEnabled)
         {
-            throw new ApplicationException(_localizer["ErrorDisable2FA", user.Id]);
+            throw new ApplicationException(localizer["ErrorDisable2FA", user.Id]);
         }
 
         return View(nameof(Disable2fa));
@@ -493,19 +492,19 @@ public class ManageController<TUser, TKey> : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Disable2fa()
     {
-        var user = await _userManager.GetUserAsync(User);
+        var user = await userManager.GetUserAsync(User);
         if (user == null)
         {
-            return NotFound(_localizer["UserNotFound", _userManager.GetUserId(User)]);
+            return NotFound(localizer["UserNotFound", userManager.GetUserId(User)]);
         }
 
-        var disable2faResult = await _userManager.SetTwoFactorEnabledAsync(user, false);
+        var disable2faResult = await userManager.SetTwoFactorEnabledAsync(user, false);
         if (!disable2faResult.Succeeded)
         {
-            throw new ApplicationException(_localizer["ErrorDisable2FA", user.Id]);
+            throw new ApplicationException(localizer["ErrorDisable2FA", user.Id]);
         }
 
-        _logger.LogInformation(_localizer["SuccessDisabled2FA", user.Id]);
+        logger.LogInformation(localizer["SuccessDisabled2FA", user.Id]);
 
         return RedirectToAction(nameof(TwoFactorAuthentication));
     }
@@ -514,15 +513,15 @@ public class ManageController<TUser, TKey> : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> ResetAuthenticator()
     {
-        var user = await _userManager.GetUserAsync(User);
+        var user = await userManager.GetUserAsync(User);
         if (user == null)
         {
-            return NotFound(_localizer["UserNotFound", _userManager.GetUserId(User)]);
+            return NotFound(localizer["UserNotFound", userManager.GetUserId(User)]);
         }
 
-        await _userManager.SetTwoFactorEnabledAsync(user, false);
-        await _userManager.ResetAuthenticatorKeyAsync(user);
-        _logger.LogInformation(_localizer["SuccessResetAuthenticationKey", user.Id]);
+        await userManager.SetTwoFactorEnabledAsync(user, false);
+        await userManager.ResetAuthenticatorKeyAsync(user);
+        logger.LogInformation(localizer["SuccessResetAuthenticationKey", user.Id]);
 
         return RedirectToAction(nameof(EnableAuthenticator));
     }
@@ -536,10 +535,10 @@ public class ManageController<TUser, TKey> : Controller
     [HttpGet]
     public async Task<IActionResult> EnableAuthenticator()
     {
-        var user = await _userManager.GetUserAsync(User);
+        var user = await userManager.GetUserAsync(User);
         if (user == null)
         {
-            return NotFound(_localizer["UserNotFound", _userManager.GetUserId(User)]);
+            return NotFound(localizer["UserNotFound", userManager.GetUserId(User)]);
         }
 
         var model = new EnableAuthenticatorViewModel();
@@ -552,10 +551,10 @@ public class ManageController<TUser, TKey> : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> EnableAuthenticator(EnableAuthenticatorViewModel model)
     {
-        var user = await _userManager.GetUserAsync(User);
+        var user = await userManager.GetUserAsync(User);
         if (user == null)
         {
-            return NotFound(_localizer["UserNotFound", _userManager.GetUserId(User)]);
+            return NotFound(localizer["UserNotFound", userManager.GetUserId(User)]);
         }
 
         if (!ModelState.IsValid)
@@ -566,26 +565,26 @@ public class ManageController<TUser, TKey> : Controller
 
         var verificationCode = model.Code.Replace(" ", string.Empty).Replace("-", string.Empty);
 
-        var is2faTokenValid = await _userManager.VerifyTwoFactorTokenAsync(
-            user, _userManager.Options.Tokens.AuthenticatorTokenProvider, verificationCode);
+        var is2faTokenValid = await userManager.VerifyTwoFactorTokenAsync(
+            user, userManager.Options.Tokens.AuthenticatorTokenProvider, verificationCode);
 
         if (!is2faTokenValid)
         {
-            ModelState.AddModelError(_localizer["ErrorCode"], _localizer["InvalidVerificationCode"]);
+            ModelState.AddModelError(localizer["ErrorCode"], localizer["InvalidVerificationCode"]);
             await LoadSharedKeyAndQrCodeUriAsync(user, model);
             return View(model);
         }
 
-        await _userManager.SetTwoFactorEnabledAsync(user, true);
-        var userId = await _userManager.GetUserIdAsync(user);
+        await userManager.SetTwoFactorEnabledAsync(user, true);
+        var userId = await userManager.GetUserIdAsync(user);
 
-        _logger.LogInformation(_localizer["SuccessUserEnabled2FA"], userId);
+        logger.LogInformation(localizer["SuccessUserEnabled2FA"], userId);
 
-        StatusMessage = _localizer["AuthenticatorVerified"];
+        StatusMessage = localizer["AuthenticatorVerified"];
 
-        if (await _userManager.CountRecoveryCodesAsync(user) == 0)
+        if (await userManager.CountRecoveryCodesAsync(user) == 0)
         {
-            var recoveryCodes = await _userManager.GenerateNewTwoFactorRecoveryCodesAsync(user, 10);
+            var recoveryCodes = await userManager.GenerateNewTwoFactorRecoveryCodesAsync(user, 10);
             TempData[RecoveryCodesKey] = recoveryCodes.ToArray();
 
             return RedirectToAction(nameof(ShowRecoveryCodes));
@@ -597,15 +596,15 @@ public class ManageController<TUser, TKey> : Controller
     [HttpGet]
     public async Task<IActionResult> GenerateRecoveryCodesWarning()
     {
-        var user = await _userManager.GetUserAsync(User);
+        var user = await userManager.GetUserAsync(User);
         if (user == null)
         {
-            return NotFound(_localizer["UserNotFound", _userManager.GetUserId(User)]);
+            return NotFound(localizer["UserNotFound", userManager.GetUserId(User)]);
         }
 
         if (!user.TwoFactorEnabled)
         {
-            throw new ApplicationException(_localizer["Error2FANotEnabled", user.Id]);
+            throw new ApplicationException(localizer["Error2FANotEnabled", user.Id]);
         }
 
         return View(nameof(GenerateRecoveryCodes));
@@ -613,11 +612,11 @@ public class ManageController<TUser, TKey> : Controller
 
     private async Task LoadSharedKeyAndQrCodeUriAsync(TUser user, EnableAuthenticatorViewModel model)
     {
-        var unformattedKey = await _userManager.GetAuthenticatorKeyAsync(user);
+        var unformattedKey = await userManager.GetAuthenticatorKeyAsync(user);
         if (string.IsNullOrEmpty(unformattedKey))
         {
-            await _userManager.ResetAuthenticatorKeyAsync(user);
-            unformattedKey = await _userManager.GetAuthenticatorKeyAsync(user);
+            await userManager.ResetAuthenticatorKeyAsync(user);
+            unformattedKey = await userManager.GetAuthenticatorKeyAsync(user);
         }
 
         model.SharedKey = FormatKey(unformattedKey);
@@ -626,7 +625,7 @@ public class ManageController<TUser, TKey> : Controller
 
     private async Task<IndexViewModel> BuildManageIndexViewModelAsync(TUser user)
     {
-        var claims = await _userManager.GetClaimsAsync(user);
+        var claims = await userManager.GetClaimsAsync(user);
         var profile = OpenIdClaimHelpers.ExtractProfileInfo(claims);
 
         var model = new IndexViewModel
@@ -650,7 +649,7 @@ public class ManageController<TUser, TKey> : Controller
 
     private async Task UpdateUserClaimsAsync(IndexViewModel model, TUser user)
     {
-        var claims = await _userManager.GetClaimsAsync(user);
+        var claims = await userManager.GetClaimsAsync(user);
         var oldProfile = OpenIdClaimHelpers.ExtractProfileInfo(claims);
         var newProfile = new OpenIdProfile
         {
@@ -668,29 +667,29 @@ public class ManageController<TUser, TKey> : Controller
         var claimsToAdd = OpenIdClaimHelpers.ExtractClaimsToAdd(oldProfile, newProfile);
         var claimsToReplace = OpenIdClaimHelpers.ExtractClaimsToReplace(claims, newProfile);
 
-        await _userManager.RemoveClaimsAsync(user, claimsToRemove);
-        await _userManager.AddClaimsAsync(user, claimsToAdd);
+        await userManager.RemoveClaimsAsync(user, claimsToRemove);
+        await userManager.AddClaimsAsync(user, claimsToAdd);
 
         foreach (var pair in claimsToReplace)
         {
-            await _userManager.ReplaceClaimAsync(user, pair.Item1, pair.Item2);
+            await userManager.ReplaceClaimAsync(user, pair.Item1, pair.Item2);
         }
     }
 
-    private string FormatKey(string unformattedKey)
+    private static string FormatKey(string unformattedKey)
     {
         var result = new StringBuilder();
         var currentPosition = 0;
 
         while (currentPosition + 4 < unformattedKey.Length)
         {
-            result.Append(unformattedKey.Substring(currentPosition, 4)).Append(" ");
+            result.Append(unformattedKey.AsSpan(currentPosition, 4)).Append(' ');
             currentPosition += 4;
         }
 
         if (currentPosition < unformattedKey.Length)
         {
-            result.Append(unformattedKey.Substring(currentPosition));
+            result.Append(unformattedKey.AsSpan(currentPosition));
         }
 
         return result.ToString().ToLowerInvariant();
@@ -700,8 +699,8 @@ public class ManageController<TUser, TKey> : Controller
     {
         return string.Format(
             AuthenticatorUriFormat,
-            _urlEncoder.Encode("Skoruba.Duende.IdentityServer.STS.Identity"),
-            _urlEncoder.Encode(email),
+            urlEncoder.Encode("Skoruba.Duende.IdentityServer.STS.Identity"),
+            urlEncoder.Encode(email),
             unformattedKey);
     }
 

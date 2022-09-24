@@ -7,15 +7,10 @@ namespace Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Dtos.Log;
 
 public class LogsDto
 {
-    public LogsDto()
-    {
-        Logs = new List<LogDto>();
-    }
-
     [Required]
     public DateTime? DeleteOlderThan { get; set; }
 
-    public List<LogDto> Logs { get; set; }
+    public LogDto[] Logs { get; set; } = Array.Empty<LogDto>();
 
     public int TotalCount { get; set; }
 

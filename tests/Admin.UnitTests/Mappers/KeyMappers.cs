@@ -1,7 +1,8 @@
-﻿using System;
-using FluentAssertions;
+﻿using FluentAssertions;
+
 using Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Mappers;
 using Skoruba.Duende.IdentityServer.Admin.UnitTests.Mocks;
+
 using Xunit;
 
 namespace Skoruba.Duende.IdentityServer.Admin.UnitTests.Mappers;

@@ -6,15 +6,11 @@ using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 
 using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Entities;
-using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Extensions.Common;
-using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Extensions.Enums;
-using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Extensions.Extensions;
-using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Interfaces;
-using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Repositories.Interfaces;
+using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Extensions;
 
 namespace Skoruba.Duende.IdentityServer.Admin.EntityFramework.Repositories;
 
-public class LogRepository<TDbContext> : ILogRepository
+internal class LogRepository<TDbContext> : ILogRepository
     where TDbContext : DbContext, IAdminLogDbContext
 {
     protected readonly TDbContext DbContext;

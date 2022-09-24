@@ -7,17 +7,13 @@ using Duende.IdentityServer.EntityFramework.Entities;
 
 using Microsoft.EntityFrameworkCore;
 
-using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Extensions.Common;
-using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Extensions.Enums;
-using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Extensions.Extensions;
-using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Interfaces;
-using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Repositories.Interfaces;
+using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Extensions;
 
 using ApiResource = Duende.IdentityServer.EntityFramework.Entities.ApiResource;
 
 namespace Skoruba.Duende.IdentityServer.Admin.EntityFramework.Repositories;
 
-public class ApiResourceRepository<TDbContext> : IApiResourceRepository
+internal class ApiResourceRepository<TDbContext> : IApiResourceRepository
     where TDbContext : DbContext, IAdminConfigurationDbContext
 {
     protected readonly TDbContext DbContext;

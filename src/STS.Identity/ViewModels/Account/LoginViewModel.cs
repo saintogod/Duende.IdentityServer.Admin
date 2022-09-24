@@ -4,9 +4,6 @@
 // Original file: https://github.com/DuendeSoftware/IdentityServer.Quickstart.UI
 // Modified by Jan Škoruba
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Skoruba.Duende.IdentityServer.Shared.Configuration.Configuration.Identity;
 
 namespace Skoruba.Duende.IdentityServer.STS.Identity.ViewModels.Account;

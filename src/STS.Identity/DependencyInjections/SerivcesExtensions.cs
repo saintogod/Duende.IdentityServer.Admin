@@ -8,7 +8,6 @@ using Duende.IdentityServer.EntityFramework.Storage;
 
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
-using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc.Razor;
@@ -19,18 +18,18 @@ using Microsoft.Identity.Web;
 
 using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Configuration.Configuration;
 using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Helpers;
-using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Interfaces;
+using Skoruba.Duende.IdentityServer.Admin.EntityFramework;
 using Skoruba.Duende.IdentityServer.Shared.Configuration.Authentication;
 using Skoruba.Duende.IdentityServer.Shared.Configuration.Configuration.Identity;
 using Skoruba.Duende.IdentityServer.STS.Identity.Configuration;
 using Skoruba.Duende.IdentityServer.STS.Identity.Configuration.ApplicationParts;
 using Skoruba.Duende.IdentityServer.STS.Identity.Configuration.Constants;
-using Skoruba.Duende.IdentityServer.STS.Identity.Configuration.Interfaces;
+using Skoruba.Duende.IdentityServer.STS.Identity.Helpers;
 using Skoruba.Duende.IdentityServer.STS.Identity.Helpers.Localization;
 
-namespace Skoruba.Duende.IdentityServer.STS.Identity.Helpers;
+namespace Microsoft.Extensions.DependencyInjection;
 
-public static class StartupHelpers
+internal static class SerivcesExtensions
 {
     /// <summary>
     /// Register services for MVC and localization including available languages
@@ -86,96 +85,6 @@ public static class StartupHelpers
     }
 
     /// <summary>
-    /// Using of Forwarded Headers and Referrer Policy
-    /// </summary>
-    /// <param name="app"></param>
-    /// <param name="configuration"></param>
-    public static void UseSecurityHeaders(this IApplicationBuilder app, IConfiguration configuration)
-    {
-        var forwardingOptions = new ForwardedHeadersOptions()
-        {
-            ForwardedHeaders = ForwardedHeaders.All
-        };
-
-        forwardingOptions.KnownNetworks.Clear();
-        forwardingOptions.KnownProxies.Clear();
-
-        app.UseForwardedHeaders(forwardingOptions);
-
-        app.UseReferrerPolicy(options => options.NoReferrer());
-
-        // CSP Configuration to be able to use external resources
-        var cspTrustedDomains = new List<string>();
-        configuration.GetSection(ConfigurationConsts.CspTrustedDomainsKey).Bind(cspTrustedDomains);
-        if (cspTrustedDomains.Any())
-        {
-            app.UseCsp(csp =>
-            {
-                var imagesSources = new List<string> { "data:" };
-                imagesSources.AddRange(cspTrustedDomains);
-
-                csp.ImageSources(options =>
-                {
-                    options.SelfSrc = true;
-                    options.CustomSources = imagesSources;
-                    options.Enabled = true;
-                });
-                csp.FontSources(options =>
-                {
-                    options.SelfSrc = true;
-                    options.CustomSources = cspTrustedDomains;
-                    options.Enabled = true;
-                });
-                csp.ScriptSources(options =>
-                {
-                    options.SelfSrc = true;
-                    options.CustomSources = cspTrustedDomains;
-                    options.Enabled = true;
-                    options.UnsafeInlineSrc = true;
-                });
-                csp.StyleSources(options =>
-                {
-                    options.SelfSrc = true;
-                    options.CustomSources = cspTrustedDomains;
-                    options.Enabled = true;
-                    options.UnsafeInlineSrc = true;
-                });
-                csp.Sandbox(options =>
-                {
-                    options.AllowForms()
-                        .AllowSameOrigin()
-                        .AllowScripts();
-                });
-                csp.FrameAncestors(option =>
-                {
-                    option.NoneSrc = true;
-                    option.Enabled = true;
-                });
-
-                csp.BaseUris(options =>
-                {
-                    options.SelfSrc = true;
-                    options.Enabled = true;
-                });
-
-                csp.ObjectSources(options =>
-                {
-                    options.NoneSrc = true;
-                    options.Enabled = true;
-                });
-
-                csp.DefaultSources(options =>
-                {
-                    options.Enabled = true;
-                    options.SelfSrc = true;
-                    options.CustomSources = cspTrustedDomains;
-                });
-            });
-        }
-
-    }
-
-    /// <summary>
     /// Register DbContexts for IdentityServer ConfigurationStore, PersistedGrants, Identity and DataProtection
     /// Configure the connection strings in AppSettings.json
     /// </summary>
@@ -200,9 +109,6 @@ public static class StartupHelpers
 
         switch (databaseProvider.ProviderType)
         {
-            case DatabaseProviderType.SqlServer:
-                services.RegisterSqlServerDbContexts<TIdentityDbContext, TConfigurationDbContext, TPersistedGrantDbContext, TDataProtectionDbContext>(identityConnectionString, configurationConnectionString, persistedGrantsConnectionString, dataProtectionConnectionString);
-                break;
             case DatabaseProviderType.PostgreSQL:
                 services.RegisterNpgSqlDbContexts<TIdentityDbContext, TConfigurationDbContext, TPersistedGrantDbContext, TDataProtectionDbContext>(identityConnectionString, configurationConnectionString, persistedGrantsConnectionString, dataProtectionConnectionString);
                 break;
@@ -288,15 +194,8 @@ public static class StartupHelpers
                 AuthenticationHelpers.CheckSameSite(cookieContext.Context, cookieContext.CookieOptions);
         });
 
-        services.Configure<IISOptions>(iis =>
-        {
-            iis.AuthenticationDisplayName = "Windows";
-            iis.AutomaticAuthentication = false;
-        });
-
-        var authenticationBuilder = services.AddAuthentication();
-
-        AddExternalProviders(authenticationBuilder, configuration);
+        services.AddAuthentication()
+            .AddExternalProviders(configuration);
     }
 
     /// <summary>
@@ -313,8 +212,6 @@ public static class StartupHelpers
     /// <summary>
     /// Get configuration for registration
     /// </summary>
-    /// <param name="configuration"></param>
-    /// <returns></returns>
     private static RegisterConfiguration GetRegistrationConfiguration(IConfiguration configuration)
     {
         // Cannot load configuration - use default configuration values
@@ -324,11 +221,6 @@ public static class StartupHelpers
     /// <summary>
     /// Add configuration for Duende IdentityServer
     /// </summary>
-    /// <typeparam name="TUserIdentity"></typeparam>
-    /// <typeparam name="TConfigurationDbContext"></typeparam>
-    /// <typeparam name="TPersistedGrantDbContext"></typeparam>
-    /// <param name="services"></param>
-    /// <param name="configuration"></param>
     public static IIdentityServerBuilder AddIdentityServer<TConfigurationDbContext, TPersistedGrantDbContext, TUserIdentity>(
         this IServiceCollection services,
         IConfiguration configuration)
@@ -361,8 +253,7 @@ public static class StartupHelpers
     /// </summary>
     /// <param name="authenticationBuilder"></param>
     /// <param name="configuration"></param>
-    private static void AddExternalProviders(AuthenticationBuilder authenticationBuilder,
-        IConfiguration configuration)
+    private static AuthenticationBuilder AddExternalProviders(this AuthenticationBuilder authenticationBuilder, IConfiguration configuration)
     {
         var externalProviderConfiguration = configuration.GetSection(nameof(ExternalProvidersConfiguration)).Get<ExternalProvidersConfiguration>();
 
@@ -389,6 +280,7 @@ public static class StartupHelpers
                   options.CallbackPath = externalProviderConfiguration.AzureAdCallbackPath;
               }, cookieScheme: null);
         }
+        return authenticationBuilder;
     }
 
     /// <summary>
@@ -416,7 +308,7 @@ public static class StartupHelpers
         });
     }
 
-    public static void AddIdSHealthChecks<TConfigurationDbContext, TPersistedGrantDbContext, TIdentityDbContext, TDataProtectionDbContext>(this IServiceCollection services, IConfiguration configuration)
+    public static IHealthChecksBuilder AddIdSHealthChecks<TConfigurationDbContext, TPersistedGrantDbContext, TIdentityDbContext, TDataProtectionDbContext>(this IServiceCollection services, IConfiguration configuration)
         where TConfigurationDbContext : DbContext, IAdminConfigurationDbContext
         where TPersistedGrantDbContext : DbContext, IAdminPersistedGrantDbContext
         where TIdentityDbContext : DbContext
@@ -442,40 +334,23 @@ public static class StartupHelpers
         var dataProtectionTableName = DbContextHelpers.GetEntityTable<TDataProtectionDbContext>(scope.ServiceProvider);
 
         var databaseProvider = configuration.GetSection(nameof(DatabaseProviderConfiguration)).Get<DatabaseProviderConfiguration>();
-        switch (databaseProvider.ProviderType)
+        return databaseProvider.ProviderType switch
         {
-            case DatabaseProviderType.SqlServer:
-                healthChecksBuilder
-                    .AddSqlServer(configurationDbConnectionString, name: "ConfigurationDb",
-                        healthQuery: $"SELECT TOP 1 * FROM dbo.[{configurationTableName}]")
-                    .AddSqlServer(persistedGrantsDbConnectionString, name: "PersistentGrantsDb",
-                        healthQuery: $"SELECT TOP 1 * FROM dbo.[{persistedGrantTableName}]")
-                    .AddSqlServer(identityDbConnectionString, name: "IdentityDb",
-                        healthQuery: $"SELECT TOP 1 * FROM dbo.[{identityTableName}]")
-                    .AddSqlServer(dataProtectionDbConnectionString, name: "DataProtectionDb",
-                        healthQuery: $"SELECT TOP 1 * FROM dbo.[{dataProtectionTableName}]");
-
-                break;
-            case DatabaseProviderType.PostgreSQL:
-                healthChecksBuilder
-                    .AddNpgSql(configurationDbConnectionString, name: "ConfigurationDb",
-                        healthQuery: $"SELECT * FROM \"{configurationTableName}\" LIMIT 1")
-                    .AddNpgSql(persistedGrantsDbConnectionString, name: "PersistentGrantsDb",
-                        healthQuery: $"SELECT * FROM \"{persistedGrantTableName}\" LIMIT 1")
-                    .AddNpgSql(identityDbConnectionString, name: "IdentityDb",
-                        healthQuery: $"SELECT * FROM \"{identityTableName}\" LIMIT 1")
-                    .AddNpgSql(dataProtectionDbConnectionString, name: "DataProtectionDb",
-                        healthQuery: $"SELECT * FROM \"{dataProtectionTableName}\"  LIMIT 1");
-                break;
-            case DatabaseProviderType.MySql:
-                healthChecksBuilder
-                    .AddMySql(configurationDbConnectionString, name: "ConfigurationDb")
-                    .AddMySql(persistedGrantsDbConnectionString, name: "PersistentGrantsDb")
-                    .AddMySql(identityDbConnectionString, name: "IdentityDb")
-                    .AddMySql(dataProtectionDbConnectionString, name: "DataProtectionDb");
-                break;
-            default:
-                throw new NotImplementedException($"Health checks not defined for database provider {databaseProvider.ProviderType}");
-        }
+            DatabaseProviderType.PostgreSQL => healthChecksBuilder
+                                .AddNpgSql(configurationDbConnectionString, name: "ConfigurationDb",
+                                    healthQuery: $"SELECT * FROM \"{configurationTableName}\" LIMIT 1")
+                                .AddNpgSql(persistedGrantsDbConnectionString, name: "PersistentGrantsDb",
+                                    healthQuery: $"SELECT * FROM \"{persistedGrantTableName}\" LIMIT 1")
+                                .AddNpgSql(identityDbConnectionString, name: "IdentityDb",
+                                    healthQuery: $"SELECT * FROM \"{identityTableName}\" LIMIT 1")
+                                .AddNpgSql(dataProtectionDbConnectionString, name: "DataProtectionDb",
+                                    healthQuery: $"SELECT * FROM \"{dataProtectionTableName}\"  LIMIT 1"),
+            DatabaseProviderType.MySql => healthChecksBuilder
+                                .AddMySql(configurationDbConnectionString, name: "ConfigurationDb")
+                                .AddMySql(persistedGrantsDbConnectionString, name: "PersistentGrantsDb")
+                                .AddMySql(identityDbConnectionString, name: "IdentityDb")
+                                .AddMySql(dataProtectionDbConnectionString, name: "DataProtectionDb"),
+            _ => throw new NotImplementedException($"Health checks not defined for database provider {databaseProvider.ProviderType}"),
+        };
     }
 }

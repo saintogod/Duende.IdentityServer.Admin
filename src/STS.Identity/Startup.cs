@@ -1,26 +1,19 @@
 using HealthChecks.UI.Client;
 
-using Microsoft.AspNetCore.Diagnostics.HealthChecks;
-
 using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Shared.DbContexts;
 using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Shared.Entities.Identity;
-using Skoruba.Duende.IdentityServer.Shared.Configuration.Helpers;
 using Skoruba.Duende.IdentityServer.STS.Identity.Configuration;
 using Skoruba.Duende.IdentityServer.STS.Identity.Configuration.Constants;
-using Skoruba.Duende.IdentityServer.STS.Identity.Configuration.Interfaces;
-using Skoruba.Duende.IdentityServer.STS.Identity.Helpers;
 
 namespace Skoruba.Duende.IdentityServer.STS.Identity;
 
 public class Startup
 {
     public IConfiguration Configuration { get; }
-    public IWebHostEnvironment Environment { get; }
 
-    public Startup(IWebHostEnvironment environment, IConfiguration configuration)
+    public Startup(IConfiguration configuration)
     {
         Configuration = configuration;
-        Environment = environment;
     }
 
     public void ConfigureServices(IServiceCollection services)
@@ -37,10 +30,16 @@ public class Startup
         services.AddEmailSenders(Configuration);
 
         // Add services for authentication, including Identity model and external providers
-        RegisterAuthentication(services);
+        services.AddAuthenticationServices<AdminIdentityDbContext, UserIdentity, UserIdentityRole>(Configuration);
+        services.AddIdentityServer<IdentityServerConfigurationDbContext, IdentityServerPersistedGrantDbContext, UserIdentity>(Configuration);
 
         // Add HSTS options
-        RegisterHstsOptions(services);
+        services.AddHsts(options =>
+        {
+            options.Preload = true;
+            options.IncludeSubDomains = true;
+            options.MaxAge = TimeSpan.FromDays(365);
+        });
 
         // Add all dependencies for Asp.Net Core Identity in MVC - these dependencies are injected into generic Controllers
         // Including settings for MVC and Localization
@@ -48,7 +47,7 @@ public class Startup
         services.AddMvcWithLocalization<UserIdentity, string>(Configuration);
 
         // Add authorization policies for MVC
-        RegisterAuthorization(services);
+        services.AddAuthorizationPolicies(rootConfiguration);
 
         services.AddIdSHealthChecks<IdentityServerConfigurationDbContext, IdentityServerPersistedGrantDbContext, AdminIdentityDbContext, IdentityServerDataProtectionDbContext>(Configuration);
     }
@@ -68,9 +67,8 @@ public class Startup
 
         app.UsePathBase(Configuration.GetValue<string>("BasePath"));
 
-
         app.UseStaticFiles();
-        UseAuthentication(app);
+        app.UseIdentityServer();
 
         // Add custom security headers
         app.UseSecurityHeaders(Configuration);
@@ -82,43 +80,13 @@ public class Startup
         app.UseEndpoints(endpoint =>
         {
             endpoint.MapDefaultControllerRoute();
-            endpoint.MapHealthChecks("/health", new HealthCheckOptions
-            {
-                ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
-            });
+            endpoint.MapHealthChecks("/health", new() { ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse });
         });
     }
 
     public virtual void RegisterDbContexts(IServiceCollection services)
     {
         services.RegisterDbContexts<AdminIdentityDbContext, IdentityServerConfigurationDbContext, IdentityServerPersistedGrantDbContext, IdentityServerDataProtectionDbContext>(Configuration);
-    }
-
-    public virtual void RegisterAuthentication(IServiceCollection services)
-    {
-        services.AddAuthenticationServices<AdminIdentityDbContext, UserIdentity, UserIdentityRole>(Configuration);
-        services.AddIdentityServer<IdentityServerConfigurationDbContext, IdentityServerPersistedGrantDbContext, UserIdentity>(Configuration);
-    }
-
-    public virtual void RegisterAuthorization(IServiceCollection services)
-    {
-        var rootConfiguration = CreateRootConfiguration();
-        services.AddAuthorizationPolicies(rootConfiguration);
-    }
-
-    public virtual void UseAuthentication(IApplicationBuilder app)
-    {
-        app.UseIdentityServer();
-    }
-
-    public virtual void RegisterHstsOptions(IServiceCollection services)
-    {
-        services.AddHsts(options =>
-        {
-            options.Preload = true;
-            options.IncludeSubDomains = true;
-            options.MaxAge = TimeSpan.FromDays(365);
-        });
     }
 
     protected IRootConfiguration CreateRootConfiguration()

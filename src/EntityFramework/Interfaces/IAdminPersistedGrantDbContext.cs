@@ -3,7 +3,7 @@
 
 using Duende.IdentityServer.EntityFramework.Interfaces;
 
-namespace Skoruba.Duende.IdentityServer.Admin.EntityFramework.Interfaces;
+namespace Skoruba.Duende.IdentityServer.Admin.EntityFramework;
 
 public interface IAdminPersistedGrantDbContext : IPersistedGrantDbContext
 {

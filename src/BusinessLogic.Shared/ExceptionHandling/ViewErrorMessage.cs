@@ -3,7 +3,7 @@
 
 namespace Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Shared.ExceptionHandling;
 
-public class ViewErrorMessage
+public sealed record ViewErrorMessage
 {
     public string ErrorKey { get; set; }
 

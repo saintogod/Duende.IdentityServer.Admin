@@ -6,7 +6,7 @@ using Duende.IdentityServer.EntityFramework.Interfaces;
 
 using Microsoft.EntityFrameworkCore;
 
-namespace Skoruba.Duende.IdentityServer.Admin.EntityFramework.Interfaces;
+namespace Skoruba.Duende.IdentityServer.Admin.EntityFramework;
 
 public interface IAdminConfigurationDbContext : IConfigurationDbContext
 {

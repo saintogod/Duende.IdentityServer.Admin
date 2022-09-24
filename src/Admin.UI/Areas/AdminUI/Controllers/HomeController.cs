@@ -1,13 +1,13 @@
 ﻿// Copyright (c) Jan Škoruba. All Rights Reserved.
 // Licensed under the Apache License, Version 2.0.
 
-using System;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+
 using Skoruba.Duende.IdentityServer.Admin.UI.Configuration.Constants;
 using Skoruba.Duende.IdentityServer.Admin.UI.ExceptionHandling;
 using Skoruba.Duende.IdentityServer.Shared.Configuration.Helpers;

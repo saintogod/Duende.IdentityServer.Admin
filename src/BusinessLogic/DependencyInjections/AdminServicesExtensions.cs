@@ -3,12 +3,11 @@
 
 using Microsoft.EntityFrameworkCore;
 
+using Skoruba.AuditLogging.EntityFramework.Entities;
 using Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Resources;
 using Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Services;
 using Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Services.Interfaces;
-using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Interfaces;
-using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Repositories;
-using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Repositories.Interfaces;
+using Skoruba.Duende.IdentityServer.Admin.EntityFramework;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
@@ -27,14 +26,7 @@ public static class AdminServicesExtensions
         where TLogDbContext : DbContext, IAdminLogDbContext
     {
         //Repositories
-        services.AddTransient<IClientRepository, ClientRepository<TConfigurationDbContext>>();
-        services.AddTransient<IIdentityResourceRepository, IdentityResourceRepository<TConfigurationDbContext>>();
-        services.AddTransient<IApiResourceRepository, ApiResourceRepository<TConfigurationDbContext>>();
-        services.AddTransient<IApiScopeRepository, ApiScopeRepository<TConfigurationDbContext>>();
-        services.AddTransient<IPersistedGrantRepository, PersistedGrantRepository<TPersistedGrantDbContext>>();
-        services.AddTransient<IIdentityProviderRepository, IdentityProviderRepository<TConfigurationDbContext>>();
-        services.AddTransient<IKeyRepository, KeyRepository<TPersistedGrantDbContext>>();
-        services.AddTransient<ILogRepository, LogRepository<TLogDbContext>>();
+        services.AddAdminRepositories<TConfigurationDbContext, TPersistedGrantDbContext, TLogDbContext>();
 
         //Services
         services.AddTransient<IClientService, ClientService>();
@@ -55,6 +47,15 @@ public static class AdminServicesExtensions
         services.AddScoped<IIdentityProviderServiceResources, IdentityProviderServiceResources>();
         services.AddScoped<IKeyServiceResources, KeyServiceResources>();
 
+        return services;
+    }
+
+    /// <summary>
+    /// Requiring <see cref="IAuditLogRepository"/> be registered.
+    /// </summary>
+    public static IServiceCollection AddAuditLog<TAuditLog>(this IServiceCollection services) where TAuditLog : AuditLog
+    {
+        services.AddTransient<IAuditLogService, AuditLogService<TAuditLog>>();
         return services;
     }
 }

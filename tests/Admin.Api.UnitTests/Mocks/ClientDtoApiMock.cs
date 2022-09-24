@@ -1,10 +1,8 @@
 ﻿// Copyright (c) Jan Škoruba. All Rights Reserved.
 // Licensed under the Apache License, Version 2.0.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Bogus;
+
 using Skoruba.Duende.IdentityServer.Admin.Api.Dtos.Clients;
 using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Constants;
 

@@ -6,7 +6,7 @@ using AutoMapper;
 using Duende.IdentityServer.EntityFramework.Entities;
 
 using Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Dtos.Configuration;
-using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Extensions.Common;
+using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Extensions;
 
 namespace Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Mappers;
 
@@ -18,7 +18,7 @@ public static class ApiScopeMappers
             .CreateMapper();
     }
 
-    internal static IMapper Mapper { get; }
+    private static IMapper Mapper { get; }
 
     public static ApiScopesDto ToModel(this PagedList<ApiScope> scopes)
     {

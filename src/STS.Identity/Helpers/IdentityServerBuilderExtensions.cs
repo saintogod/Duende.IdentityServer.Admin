@@ -45,10 +45,14 @@ public static class IdentityServerBuilderExtensions
             {
                 storeLocation = StoreLocation.LocalMachine;
             }
-            else { storeLocation = StoreLocation.LocalMachine; validOnly = true; }
+            else
+            {
+                storeLocation = StoreLocation.LocalMachine;
+                validOnly = true;
+            }
 
             // Open Certificate
-            var certStore = new X509Store(StoreName.My, storeLocation);
+            using var certStore = new X509Store(StoreName.My, storeLocation);
             certStore.Open(OpenFlags.ReadOnly);
 
             var certCollection = certStore.Certificates.Find(X509FindType.FindByThumbprint, certificateConfiguration.SigningCertificateThumbprint, validOnly);
@@ -108,10 +112,12 @@ public static class IdentityServerBuilderExtensions
                 throw new Exception(validationCertificateThumbprintNotFound);
             }
 
-            var certStore = new X509Store(StoreName.My, StoreLocation.LocalMachine);
+            using var certStore = new X509Store(StoreName.My, StoreLocation.LocalMachine);
             certStore.Open(OpenFlags.ReadOnly);
 
-            var certCollection = certStore.Certificates.Find(X509FindType.FindByThumbprint, certificateConfiguration.ValidationCertificateThumbprint, false);
+            var certCollection = certStore.Certificates.Find(X509FindType.FindByThumbprint,
+                certificateConfiguration.ValidationCertificateThumbprint,
+                false);
             if (certCollection.Count == 0)
             {
                 throw new Exception(certificateNotFound);

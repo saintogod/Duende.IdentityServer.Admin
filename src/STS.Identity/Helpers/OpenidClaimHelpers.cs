@@ -2,11 +2,9 @@
 // Licensed under the Apache License, Version 2.0.
 
 using System.Security.Claims;
+using System.Text.Json.Nodes;
 
 using IdentityModel;
-
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 using Skoruba.Duende.IdentityServer.STS.Identity.Configuration.Constants;
 
@@ -16,7 +14,7 @@ public static class OpenIdClaimHelpers
 {
     public static Claim ExtractAddressClaim(OpenIdProfile profile)
     {
-        var addressJson = new JObject();
+        var addressJson = JsonNode.Parse("{}");
         if (!string.IsNullOrWhiteSpace(profile.StreetAddress))
         {
             addressJson[AddressClaimConstants.StreetAddress] = profile.StreetAddress;
@@ -42,8 +40,7 @@ public static class OpenIdClaimHelpers
             addressJson[AddressClaimConstants.Country] = profile.Country;
         }
 
-
-        return new Claim(JwtClaimTypes.Address, addressJson.Count != 0 ? addressJson.ToString() : string.Empty);
+        return new Claim(JwtClaimTypes.Address, addressJson.AsArray().Count > 0 ? addressJson.ToJsonString() : string.Empty);
     }
 
     /// <summary>
@@ -64,37 +61,30 @@ public static class OpenIdClaimHelpers
 
         if (address == null) return profile;
 
-        try
+        var addressJson = JsonNode.Parse(address);
+        if (addressJson[AddressClaimConstants.StreetAddress] is not null)
         {
-            var addressJson = JObject.Parse(address);
-            if (addressJson.ContainsKey(AddressClaimConstants.StreetAddress))
-            {
-                profile.StreetAddress = addressJson[AddressClaimConstants.StreetAddress].ToString();
-            }
-
-            if (addressJson.ContainsKey(AddressClaimConstants.Locality))
-            {
-                profile.Locality = addressJson[AddressClaimConstants.Locality].ToString();
-            }
-
-            if (addressJson.ContainsKey(AddressClaimConstants.Region))
-            {
-                profile.Region = addressJson[AddressClaimConstants.Region].ToString();
-            }
-
-            if (addressJson.ContainsKey(AddressClaimConstants.PostalCode))
-            {
-                profile.PostalCode = addressJson[AddressClaimConstants.PostalCode].ToString();
-            }
-
-            if (addressJson.ContainsKey(AddressClaimConstants.Country))
-            {
-                profile.Country = addressJson[AddressClaimConstants.Country].ToString();
-            }
+            profile.StreetAddress = addressJson[AddressClaimConstants.StreetAddress].ToString();
         }
-        catch (JsonReaderException)
-        {
 
+        if (addressJson[AddressClaimConstants.Locality] is not null)
+        {
+            profile.Locality = addressJson[AddressClaimConstants.Locality].ToString();
+        }
+
+        if (addressJson[AddressClaimConstants.Region] is not null)
+        {
+            profile.Region = addressJson[AddressClaimConstants.Region].ToString();
+        }
+
+        if (addressJson[AddressClaimConstants.PostalCode] is not null)
+        {
+            profile.PostalCode = addressJson[AddressClaimConstants.PostalCode].ToString();
+        }
+
+        if (addressJson[AddressClaimConstants.Country] is not null)
+        {
+            profile.Country = addressJson[AddressClaimConstants.Country].ToString();
         }
 
         return profile;
@@ -106,23 +96,21 @@ public static class OpenIdClaimHelpers
     /// <param name="oldProfile"></param>
     /// <param name="newProfile"></param>
     /// <returns></returns>
-    public static IList<Claim> ExtractClaimsToRemove(OpenIdProfile oldProfile, OpenIdProfile newProfile)
+    public static IEnumerable<Claim> ExtractClaimsToRemove(OpenIdProfile oldProfile, OpenIdProfile newProfile)
     {
-        var claimsToRemove = new List<Claim>();
-
         if (string.IsNullOrWhiteSpace(newProfile.FullName) && !string.IsNullOrWhiteSpace(oldProfile.FullName))
         {
-            claimsToRemove.Add(new Claim(JwtClaimTypes.Name, oldProfile.FullName));
+            yield return new Claim(JwtClaimTypes.Name, oldProfile.FullName);
         }
 
         if (string.IsNullOrWhiteSpace(newProfile.Website) && !string.IsNullOrWhiteSpace(oldProfile.Website))
         {
-            claimsToRemove.Add(new Claim(JwtClaimTypes.WebSite, oldProfile.Website));
+            yield return new Claim(JwtClaimTypes.WebSite, oldProfile.Website);
         }
 
         if (string.IsNullOrWhiteSpace(newProfile.Profile) && !string.IsNullOrWhiteSpace(oldProfile.Profile))
         {
-            claimsToRemove.Add(new Claim(JwtClaimTypes.Profile, oldProfile.Profile));
+            yield return new Claim(JwtClaimTypes.Profile, oldProfile.Profile);
         }
 
         var oldAddressClaim = ExtractAddressClaim(oldProfile);
@@ -130,10 +118,8 @@ public static class OpenIdClaimHelpers
 
         if (string.IsNullOrWhiteSpace(newAddressClaim.Value) && !string.IsNullOrWhiteSpace(oldAddressClaim.Value))
         {
-            claimsToRemove.Add(oldAddressClaim);
+            yield return oldAddressClaim;
         }
-
-        return claimsToRemove;
     }
 
     /// <summary>
@@ -142,23 +128,21 @@ public static class OpenIdClaimHelpers
     /// <param name="oldProfile"></param>
     /// <param name="newProfile"></param>
     /// <returns></returns>
-    public static IList<Claim> ExtractClaimsToAdd(OpenIdProfile oldProfile, OpenIdProfile newProfile)
+    public static IEnumerable<Claim> ExtractClaimsToAdd(OpenIdProfile oldProfile, OpenIdProfile newProfile)
     {
-        var claimsToAdd = new List<Claim>();
-
         if (!string.IsNullOrWhiteSpace(newProfile.FullName) && string.IsNullOrWhiteSpace(oldProfile.FullName))
         {
-            claimsToAdd.Add(new Claim(JwtClaimTypes.Name, newProfile.FullName));
+            yield return new Claim(JwtClaimTypes.Name, newProfile.FullName);
         }
 
         if (!string.IsNullOrWhiteSpace(newProfile.Website) && string.IsNullOrWhiteSpace(oldProfile.Website))
         {
-            claimsToAdd.Add(new Claim(JwtClaimTypes.WebSite, newProfile.Website));
+            yield return new Claim(JwtClaimTypes.WebSite, newProfile.Website);
         }
 
         if (!string.IsNullOrWhiteSpace(newProfile.Profile) && string.IsNullOrWhiteSpace(oldProfile.Profile))
         {
-            claimsToAdd.Add(new Claim(JwtClaimTypes.Profile, newProfile.Profile));
+            yield return new Claim(JwtClaimTypes.Profile, newProfile.Profile);
         }
 
         var oldAddressClaim = ExtractAddressClaim(oldProfile);
@@ -166,10 +150,8 @@ public static class OpenIdClaimHelpers
 
         if (!string.IsNullOrWhiteSpace(newAddressClaim.Value) && string.IsNullOrWhiteSpace(oldAddressClaim.Value))
         {
-            claimsToAdd.Add(newAddressClaim);
+            yield return newAddressClaim;
         }
-
-        return claimsToAdd;
     }
 
     /// <summary>
@@ -178,10 +160,9 @@ public static class OpenIdClaimHelpers
     /// <param name="oldClaims"></param>
     /// <param name="newProfile"></param>
     /// <returns></returns>
-    public static IList<Tuple<Claim, Claim>> ExtractClaimsToReplace(IList<Claim> oldClaims, OpenIdProfile newProfile)
+    public static IEnumerable<Tuple<Claim, Claim>> ExtractClaimsToReplace(IList<Claim> oldClaims, OpenIdProfile newProfile)
     {
         var oldProfile = ExtractProfileInfo(oldClaims);
-        var claimsToReplace = new List<Tuple<Claim, Claim>>();
 
         if (!string.IsNullOrWhiteSpace(newProfile.FullName) && !string.IsNullOrWhiteSpace(oldProfile.FullName))
         {
@@ -189,7 +170,7 @@ public static class OpenIdClaimHelpers
             {
                 var oldClaim = oldClaims.First(x => x.Type == JwtClaimTypes.Name);
                 var newClaim = new Claim(JwtClaimTypes.Name, newProfile.FullName);
-                claimsToReplace.Add(new Tuple<Claim, Claim>(oldClaim, newClaim));
+                yield return new Tuple<Claim, Claim>(oldClaim, newClaim);
             }
         }
 
@@ -199,7 +180,7 @@ public static class OpenIdClaimHelpers
             {
                 var oldClaim = oldClaims.First(x => x.Type == JwtClaimTypes.WebSite);
                 var newClaim = new Claim(JwtClaimTypes.WebSite, newProfile.Website);
-                claimsToReplace.Add(new Tuple<Claim, Claim>(oldClaim, newClaim));
+                yield return new Tuple<Claim, Claim>(oldClaim, newClaim);
             }
         }
 
@@ -209,7 +190,7 @@ public static class OpenIdClaimHelpers
             {
                 var oldClaim = oldClaims.First(x => x.Type == JwtClaimTypes.Profile);
                 var newClaim = new Claim(JwtClaimTypes.Profile, newProfile.Profile);
-                claimsToReplace.Add(new Tuple<Claim, Claim>(oldClaim, newClaim));
+                yield return new Tuple<Claim, Claim>(oldClaim, newClaim);
             }
         }
 
@@ -221,10 +202,8 @@ public static class OpenIdClaimHelpers
             if (newAddressClaim.Value != oldAddressClaim.Value)
             {
                 var oldClaim = oldClaims.First(x => x.Type == JwtClaimTypes.Address);
-                claimsToReplace.Add(new Tuple<Claim, Claim>(oldClaim, newAddressClaim));
+                yield return new Tuple<Claim, Claim>(oldClaim, newAddressClaim);
             }
         }
-
-        return claimsToReplace;
     }
 }

@@ -7,13 +7,13 @@ using Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Identity.Dtos.Identity;
 
 namespace Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Identity.Mappers.Configuration;
 
-public class MapperConfigurationBuilder : IMapperConfigurationBuilder
+internal sealed class MapperConfigurationBuilder : IMapperConfigurationBuilder
 {
-    public HashSet<Type> ProfileTypes { get; } = new HashSet<Type>();
+    public HashSet<Type> ProfileTypes { get; } = new ();
 
     public IMapperConfigurationBuilder AddProfilesType(HashSet<Type> profileTypes)
     {
-        if (profileTypes == null) return this;
+        if (profileTypes is null) return this;
 
         foreach (var profileType in profileTypes)
         {

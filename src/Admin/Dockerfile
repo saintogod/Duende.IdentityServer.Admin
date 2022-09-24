@@ -9,8 +9,6 @@ FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
 
 COPY src/Directory.Build.props ./
-COPY src/Admin.UI/Admin.UI.csproj Admin.UI/
-COPY src/Admin/Admin.csproj Admin/
 COPY src/BusinessLogic.Identity/BusinessLogic.Identity.csproj BusinessLogic.Identity/
 COPY src/BusinessLogic.Shared/BusinessLogic.Shared.csproj BusinessLogic.Shared/
 COPY src/BusinessLogic/BusinessLogic.csproj BusinessLogic/
@@ -20,10 +18,12 @@ COPY src/EntityFramework.Identity/EntityFramework.Identity.csproj EntityFramewor
 COPY src/EntityFramework.MySql/EntityFramework.MySql.csproj EntityFramework.MySql/
 COPY src/EntityFramework.PostgreSQL/EntityFramework.PostgreSQL.csproj EntityFramework.PostgreSQL/
 COPY src/EntityFramework.Shared/EntityFramework.Shared.csproj EntityFramework.Shared/
-COPY src/EntityFramework.SqlServer/EntityFramework.SqlServer.csproj EntityFramework.SqlServer/
 COPY src/EntityFramework/EntityFramework.csproj EntityFramework/
 COPY src/Shared.Configuration/Shared.Configuration.csproj Shared.Configuration/
 COPY src/Shared/Shared.csproj Shared/
+
+COPY src/Admin.UI/Admin.UI.csproj Admin.UI/
+COPY src/Admin/Admin.csproj Admin/
 
 RUN dotnet restore Admin/Admin.csproj
 

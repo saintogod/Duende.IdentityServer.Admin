@@ -2,10 +2,10 @@
 // Licensed under the Apache License, Version 2.0.
 
 using System.Diagnostics;
-using System.Linq;
-using Microsoft.AspNetCore.Http;
+
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+
 using Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Shared.ExceptionHandling;
 
 namespace Skoruba.Duende.IdentityServer.Admin.Api.ExceptionHandling;
@@ -16,8 +16,8 @@ public class ControllerExceptionFilterAttribute : ExceptionFilterAttribute
 
     public override void OnException(ExceptionContext context)
     {
-        if (!(context.Exception is UserFriendlyErrorPageException) &&
-            !(context.Exception is UserFriendlyViewException)) return;
+        if (context.Exception is not UserFriendlyErrorPageException &&
+            context.Exception is not UserFriendlyViewException) return;
 
         HandleUserFriendlyViewException(context);
         ProcessException(context);

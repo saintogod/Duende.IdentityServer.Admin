@@ -4,10 +4,12 @@
 // Original file: https://github.com/DuendeSoftware/IdentityServer.Quickstart.UI
 // Modified by Jan Škoruba
 
-using System.Collections.Generic;
 using System.Text;
+
 using IdentityModel;
+
 using Microsoft.AspNetCore.Authentication;
+
 using Newtonsoft.Json;
 
 namespace Skoruba.Duende.IdentityServer.STS.Identity.ViewModels.Diagnostics;

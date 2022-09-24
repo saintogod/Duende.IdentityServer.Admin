@@ -2,7 +2,8 @@
 // Licensed under the Apache License, Version 2.0.
 
 using Microsoft.AspNetCore.Mvc;
-using Skoruba.Duende.IdentityServer.STS.Identity.Configuration.Interfaces;
+
+using Skoruba.Duende.IdentityServer.STS.Identity.Configuration;
 
 namespace Skoruba.Duende.IdentityServer.STS.Identity.ViewComponents;
 
@@ -17,8 +18,6 @@ public class IdentityServerAdminLinkViewComponent : ViewComponent
 
     public IViewComponentResult Invoke()
     {
-        var identityAdminUrl = configuration.AdminConfiguration.IdentityAdminBaseUrl;
-
-        return View(model: identityAdminUrl);
+        return View(model: configuration.AdminConfiguration.IdentityAdminBaseUrl);
     }
 }

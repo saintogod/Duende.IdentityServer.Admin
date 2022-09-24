@@ -6,7 +6,7 @@ using AutoMapper;
 using Skoruba.AuditLogging.EntityFramework.Entities;
 using Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Dtos.Log;
 using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Entities;
-using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Extensions.Common;
+using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Extensions;
 
 namespace Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Mappers;
 
@@ -18,12 +18,12 @@ public class LogMapperProfile : Profile
             .ReverseMap();
 
         CreateMap<PagedList<Log>, LogsDto>(MemberList.Destination)
-            .ForMember(x => x.Logs, opt => opt.MapFrom(src => src.Data));
+            .ForMember(x => x.Logs, opt => opt.MapFrom(src => src.Data.ToArray()));
 
         CreateMap<AuditLog, AuditLogDto>(MemberList.Destination)
             .ReverseMap();
 
         CreateMap<PagedList<AuditLog>, AuditLogsDto>(MemberList.Destination)
-            .ForMember(x => x.Logs, opt => opt.MapFrom(src => src.Data));
+            .ForMember(x => x.Logs, opt => opt.MapFrom(src => src.Data.ToArray()));
     }
 }

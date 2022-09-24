@@ -1,10 +1,6 @@
 ﻿// Copyright (c) Jan Škoruba. All Rights Reserved.
 // Licensed under the Apache License, Version 2.0.
 
-using System;
-using System.Collections.Generic;
-using System.Net.Http;
-using System.Threading.Tasks;
 using Skoruba.Duende.IdentityServer.STS.Identity.IntegrationTests.Common;
 
 namespace Skoruba.Duende.IdentityServer.STS.Identity.IntegrationTests.Mocks;

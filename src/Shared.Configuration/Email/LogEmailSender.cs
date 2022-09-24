@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Skoruba.Duende.IdentityServer.Shared.Configuration.Email;
 
-public class LogEmailSender : IEmailSender
+internal sealed class LogEmailSender : IEmailSender
 {
     private readonly ILogger<LogEmailSender> _logger;
 

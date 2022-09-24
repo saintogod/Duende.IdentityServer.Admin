@@ -7,7 +7,7 @@ public class NotificationHelpers
 {
     public const string NotificationKey = "IdentityServerAdmin.Notification";
 
-    public class Alert
+    public sealed class Alert
     {
         public AlertType Type { get; set; }
         public string Message { get; set; }

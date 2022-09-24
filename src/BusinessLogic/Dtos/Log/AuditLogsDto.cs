@@ -5,17 +5,12 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Dtos.Log;
 
-public class AuditLogsDto
+public sealed record AuditLogsDto
 {
-    public AuditLogsDto()
-    {
-        Logs = new List<AuditLogDto>();
-    }
-
     [Required]
     public DateTime? DeleteOlderThan { get; set; }
 
-    public List<AuditLogDto> Logs { get; set; }
+    public AuditLogDto[] Logs { get; set; } = Array.Empty<AuditLogDto>();
 
     public int TotalCount { get; set; }
 

@@ -21,7 +21,6 @@
     <PackageReference Include="AspNetCore.HealthChecks.MySql" Version="$(DotnetCoreVer)" />
     <PackageReference Include="AspNetCore.HealthChecks.NpgSql" Version="$(DotnetCoreVer)" />
     <PackageReference Include="AspNetCore.HealthChecks.OpenIdConnectServer" Version="$(DotnetCoreVer)" />
-    <PackageReference Include="AspNetCore.HealthChecks.SqlServer" Version="$(DotnetCoreVer)" />
     <PackageReference Include="AspNetCore.HealthChecks.UI.Client" Version="$(DotnetCoreVer)" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="$(DotnetCoreVer)" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="$(DotnetCoreVer)" />

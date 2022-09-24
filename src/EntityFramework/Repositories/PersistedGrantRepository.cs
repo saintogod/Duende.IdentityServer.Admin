@@ -8,17 +8,12 @@ using Duende.IdentityServer.EntityFramework.Entities;
 using Microsoft.EntityFrameworkCore;
 
 using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Entities;
-using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Extensions.Common;
-using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Extensions.Enums;
-using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Extensions.Extensions;
-using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Interfaces;
-using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Repositories.Interfaces;
+using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Extensions;
 
 namespace Skoruba.Duende.IdentityServer.Admin.EntityFramework.Repositories;
 
-public class PersistedGrantRepository<TDbContext> : IPersistedGrantRepository
+internal class PersistedGrantRepository<TDbContext> : IPersistedGrantRepository
     where TDbContext : DbContext, IAdminPersistedGrantDbContext
-
 {
     protected readonly TDbContext DbContext;
 

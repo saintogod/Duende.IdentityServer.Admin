@@ -5,7 +5,7 @@ using IdentityModel;
 
 namespace Skoruba.Duende.IdentityServer.STS.Identity.Helpers;
 
-public class DelegationGrantValidator : IExtensionGrantValidator
+internal sealed class DelegationGrantValidator : IExtensionGrantValidator
 {
     private readonly ITokenValidator validator;
 
@@ -22,21 +22,21 @@ public class DelegationGrantValidator : IExtensionGrantValidator
 
         if (string.IsNullOrEmpty(userToken))
         {
-            context.Result = new GrantValidationResult(TokenRequestErrors.InvalidGrant);
+            context.Result = new (TokenRequestErrors.InvalidGrant);
             return;
         }
 
         var result = await validator.ValidateAccessTokenAsync(userToken);
         if (result.IsError)
         {
-            context.Result = new GrantValidationResult(TokenRequestErrors.InvalidGrant);
+            context.Result = new (TokenRequestErrors.InvalidGrant);
             return;
         }
 
         // get user's identity
         var sub = result.Claims.FirstOrDefault(c => c.Type == JwtClaimTypes.Subject).Value;
 
-        context.Result = new GrantValidationResult(sub, GrantType);
+        context.Result = new (sub, GrantType);
         return;
     }
 }

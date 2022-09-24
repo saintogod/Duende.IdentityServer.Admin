@@ -3,7 +3,7 @@
 
 using Skoruba.Duende.IdentityServer.Shared.Configuration.Configuration.Identity;
 
-namespace Skoruba.Duende.IdentityServer.STS.Identity.Configuration.Interfaces;
+namespace Skoruba.Duende.IdentityServer.STS.Identity.Configuration;
 
 public interface IRootConfiguration
 {

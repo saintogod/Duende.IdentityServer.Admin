@@ -4,14 +4,15 @@
 // Original file: https://github.com/DuendeSoftware/IdentityServer.Quickstart.UI
 // Modified by Jan Škoruba
 
-using System;
 using Duende.IdentityServer.Models;
+
 using Microsoft.AspNetCore.Mvc;
+
 using Skoruba.Duende.IdentityServer.STS.Identity.ViewModels.Account;
 
 namespace Skoruba.Duende.IdentityServer.STS.Identity.Helpers;
 
-public static class Extensions
+internal static class Extensions
 {
     /// <summary>
     /// Checks if the redirect URI is for a native client.

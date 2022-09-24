@@ -25,7 +25,7 @@ using Skoruba.Duende.IdentityServer.Admin.Api.Helpers.Localization;
 using Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Identity.Dtos.Identity;
 using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Configuration.Configuration;
 using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Helpers;
-using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Interfaces;
+using Skoruba.Duende.IdentityServer.Admin.EntityFramework;
 
 namespace Skoruba.Duende.IdentityServer.Admin.Api.Helpers;
 
@@ -151,9 +151,6 @@ public static class StartupHelpers
 
         switch (databaseProvider.ProviderType)
         {
-            case DatabaseProviderType.SqlServer:
-                services.RegisterSqlServerDbContexts<TIdentityDbContext, TConfigurationDbContext, TPersistedGrantDbContext, TLogDbContext, TAuditLoggingDbContext, TDataProtectionDbContext, TAuditLog>(connectionStrings, databaseMigrations);
-                break;
             case DatabaseProviderType.PostgreSQL:
                 services.RegisterNpgSqlDbContexts<TIdentityDbContext, TConfigurationDbContext, TPersistedGrantDbContext, TLogDbContext, TAuditLoggingDbContext, TDataProtectionDbContext, TAuditLog>(connectionStrings, databaseMigrations);
                 break;
@@ -278,60 +275,43 @@ public static class StartupHelpers
 
         var serviceProvider = services.BuildServiceProvider();
         var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
-        using (var scope = scopeFactory.CreateScope())
-        {
-            var configurationTableName = DbContextHelpers.GetEntityTable<TConfigurationDbContext>(scope.ServiceProvider);
-            var persistedGrantTableName = DbContextHelpers.GetEntityTable<TPersistedGrantDbContext>(scope.ServiceProvider);
-            var identityTableName = DbContextHelpers.GetEntityTable<TIdentityDbContext>(scope.ServiceProvider);
-            var logTableName = DbContextHelpers.GetEntityTable<TLogDbContext>(scope.ServiceProvider);
-            var auditLogTableName = DbContextHelpers.GetEntityTable<TAuditLoggingDbContext>(scope.ServiceProvider);
-            var dataProtectionTableName = DbContextHelpers.GetEntityTable<TDataProtectionDbContext>(scope.ServiceProvider);
+        using var scope = scopeFactory.CreateScope();
+        var configurationTableName = DbContextHelpers.GetEntityTable<TConfigurationDbContext>(scope.ServiceProvider);
+        var persistedGrantTableName = DbContextHelpers.GetEntityTable<TPersistedGrantDbContext>(scope.ServiceProvider);
+        var identityTableName = DbContextHelpers.GetEntityTable<TIdentityDbContext>(scope.ServiceProvider);
+        var logTableName = DbContextHelpers.GetEntityTable<TLogDbContext>(scope.ServiceProvider);
+        var auditLogTableName = DbContextHelpers.GetEntityTable<TAuditLoggingDbContext>(scope.ServiceProvider);
+        var dataProtectionTableName = DbContextHelpers.GetEntityTable<TDataProtectionDbContext>(scope.ServiceProvider);
 
-            var databaseProvider = configuration.GetSection(nameof(DatabaseProviderConfiguration)).Get<DatabaseProviderConfiguration>();
-            switch (databaseProvider.ProviderType)
-            {
-                case DatabaseProviderType.SqlServer:
-                    healthChecksBuilder
-                        .AddSqlServer(configurationDbConnectionString, name: "ConfigurationDb",
-                            healthQuery: $"SELECT TOP 1 * FROM dbo.[{configurationTableName}]")
-                        .AddSqlServer(persistedGrantsDbConnectionString, name: "PersistentGrantsDb",
-                            healthQuery: $"SELECT TOP 1 * FROM dbo.[{persistedGrantTableName}]")
-                        .AddSqlServer(identityDbConnectionString, name: "IdentityDb",
-                            healthQuery: $"SELECT TOP 1 * FROM dbo.[{identityTableName}]")
-                        .AddSqlServer(logDbConnectionString, name: "LogDb",
-                            healthQuery: $"SELECT TOP 1 * FROM dbo.[{logTableName}]")
-                        .AddSqlServer(auditLogDbConnectionString, name: "AuditLogDb",
-                            healthQuery: $"SELECT TOP 1 * FROM dbo.[{auditLogTableName}]")
-                        .AddSqlServer(dataProtectionDbConnectionString, name: "DataProtectionDb",
-                        healthQuery: $"SELECT TOP 1 * FROM dbo.[{dataProtectionTableName}]");
-                    break;
-                case DatabaseProviderType.PostgreSQL:
-                    healthChecksBuilder
-                        .AddNpgSql(configurationDbConnectionString, name: "ConfigurationDb",
-                            healthQuery: $"SELECT * FROM \"{configurationTableName}\" LIMIT 1")
-                        .AddNpgSql(persistedGrantsDbConnectionString, name: "PersistentGrantsDb",
-                            healthQuery: $"SELECT * FROM \"{persistedGrantTableName}\" LIMIT 1")
-                        .AddNpgSql(identityDbConnectionString, name: "IdentityDb",
-                            healthQuery: $"SELECT * FROM \"{identityTableName}\" LIMIT 1")
-                        .AddNpgSql(logDbConnectionString, name: "LogDb",
-                            healthQuery: $"SELECT * FROM \"{logTableName}\" LIMIT 1")
-                        .AddNpgSql(auditLogDbConnectionString, name: "AuditLogDb",
-                            healthQuery: $"SELECT * FROM \"{auditLogTableName}\"  LIMIT 1")
-                        .AddNpgSql(dataProtectionDbConnectionString, name: "DataProtectionDb",
-                            healthQuery: $"SELECT * FROM \"{dataProtectionTableName}\"  LIMIT 1");
-                    break;
-                case DatabaseProviderType.MySql:
-                    healthChecksBuilder
-                        .AddMySql(configurationDbConnectionString, name: "ConfigurationDb")
-                        .AddMySql(persistedGrantsDbConnectionString, name: "PersistentGrantsDb")
-                        .AddMySql(identityDbConnectionString, name: "IdentityDb")
-                        .AddMySql(logDbConnectionString, name: "LogDb")
-                        .AddMySql(auditLogDbConnectionString, name: "AuditLogDb")
-                        .AddMySql(dataProtectionDbConnectionString, name: "DataProtectionDb");
-                    break;
-                default:
-                    throw new NotImplementedException($"Health checks not defined for database provider {databaseProvider.ProviderType}");
-            }
+        var databaseProvider = configuration.GetSection(nameof(DatabaseProviderConfiguration)).Get<DatabaseProviderConfiguration>();
+        switch (databaseProvider.ProviderType)
+        {
+            case DatabaseProviderType.PostgreSQL:
+                healthChecksBuilder
+                    .AddNpgSql(configurationDbConnectionString, name: "ConfigurationDb",
+                        healthQuery: $"SELECT * FROM \"{configurationTableName}\" LIMIT 1")
+                    .AddNpgSql(persistedGrantsDbConnectionString, name: "PersistentGrantsDb",
+                        healthQuery: $"SELECT * FROM \"{persistedGrantTableName}\" LIMIT 1")
+                    .AddNpgSql(identityDbConnectionString, name: "IdentityDb",
+                        healthQuery: $"SELECT * FROM \"{identityTableName}\" LIMIT 1")
+                    .AddNpgSql(logDbConnectionString, name: "LogDb",
+                        healthQuery: $"SELECT * FROM \"{logTableName}\" LIMIT 1")
+                    .AddNpgSql(auditLogDbConnectionString, name: "AuditLogDb",
+                        healthQuery: $"SELECT * FROM \"{auditLogTableName}\"  LIMIT 1")
+                    .AddNpgSql(dataProtectionDbConnectionString, name: "DataProtectionDb",
+                        healthQuery: $"SELECT * FROM \"{dataProtectionTableName}\"  LIMIT 1");
+                break;
+            case DatabaseProviderType.MySql:
+                healthChecksBuilder
+                    .AddMySql(configurationDbConnectionString, name: "ConfigurationDb")
+                    .AddMySql(persistedGrantsDbConnectionString, name: "PersistentGrantsDb")
+                    .AddMySql(identityDbConnectionString, name: "IdentityDb")
+                    .AddMySql(logDbConnectionString, name: "LogDb")
+                    .AddMySql(auditLogDbConnectionString, name: "AuditLogDb")
+                    .AddMySql(dataProtectionDbConnectionString, name: "DataProtectionDb");
+                break;
+            default:
+                throw new NotImplementedException($"Health checks not defined for database provider {databaseProvider.ProviderType}");
         }
     }
 

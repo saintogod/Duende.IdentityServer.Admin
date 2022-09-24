@@ -1,11 +1,8 @@
 ﻿// Copyright (c) Jan Škoruba. All Rights Reserved.
 // Licensed under the Apache License, Version 2.0.
 
-using System;
-using System.Linq;
-using System.Net.Http;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
+
 using Microsoft.Net.Http.Headers;
 
 namespace Skoruba.Duende.IdentityServer.Admin.IntegrationTests.Common;

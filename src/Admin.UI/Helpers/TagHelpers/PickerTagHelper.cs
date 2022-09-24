@@ -1,11 +1,12 @@
 ﻿// Copyright (c) Jan Škoruba. All Rights Reserved.
 // Licensed under the Apache License, Version 2.0.
 
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Razor.TagHelpers;
+
 using Newtonsoft.Json;
 
 namespace Skoruba.Duende.IdentityServer.Admin.UI.Helpers.TagHelpers;

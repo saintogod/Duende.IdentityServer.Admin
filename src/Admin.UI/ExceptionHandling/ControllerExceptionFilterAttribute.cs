@@ -1,14 +1,14 @@
 ﻿// Copyright (c) Jan Škoruba. All Rights Reserved.
 // Licensed under the Apache License, Version 2.0.
 
-using System.Collections.Generic;
-using System.Linq;
+using System.Text.Json;
+
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Newtonsoft.Json;
+
 using Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Shared.ExceptionHandling;
 using Skoruba.Duende.IdentityServer.Admin.UI.Helpers;
 
@@ -28,8 +28,8 @@ public class ControllerExceptionFilterAttribute : ExceptionFilterAttribute
 
     public override void OnException(ExceptionContext context)
     {
-        if (!(context.Exception is UserFriendlyErrorPageException) &&
-            !(context.Exception is UserFriendlyViewException)) return;
+        if (context.Exception is not UserFriendlyErrorPageException &&
+            context.Exception is not UserFriendlyViewException) return;
 
         //Create toastr notification
         if (CreateNotification(context, out var tempData)) return;
@@ -41,7 +41,7 @@ public class ControllerExceptionFilterAttribute : ExceptionFilterAttribute
         ClearNotification(tempData);
     }
 
-    private void ClearNotification(ITempDataDictionary tempData)
+    private static void ClearNotification(ITempDataDictionary tempData)
     {
         tempData.Remove(NotificationHelpers.NotificationKey);
     }
@@ -56,7 +56,7 @@ public class ControllerExceptionFilterAttribute : ExceptionFilterAttribute
 
     private void ProcessException(ExceptionContext context, ITempDataDictionary tempData)
     {
-        if (!(context.ActionDescriptor is ControllerActionDescriptor controllerActionDescriptor)) return;
+        if (context.ActionDescriptor is not ControllerActionDescriptor controllerActionDescriptor) return;
 
         const string errorViewName = "Error";
 
@@ -82,24 +82,22 @@ public class ControllerExceptionFilterAttribute : ExceptionFilterAttribute
         context.Result = result;
     }
 
-    private void HandleUserFriendlyViewException(ExceptionContext context)
+    private static void HandleUserFriendlyViewException(ExceptionContext context)
     {
-        if (!(context.Exception is UserFriendlyViewException userFriendlyViewException)) return;
+        if (context.Exception is not UserFriendlyViewException userFriendlyViewException) return;
 
-        if (userFriendlyViewException.ErrorMessages != null && userFriendlyViewException.ErrorMessages.Any())
+        if (userFriendlyViewException.ErrorMessages?.Any() == true)
         {
             foreach (var message in userFriendlyViewException.ErrorMessages)
             {
                 context.ModelState.AddModelError(message.ErrorKey, message.ErrorMessage);
             }
+            return;
         }
-        else
-        {
-            context.ModelState.AddModelError(userFriendlyViewException.ErrorKey, context.Exception.Message);
-        }
+        context.ModelState.AddModelError(userFriendlyViewException.ErrorKey, context.Exception.Message);
     }
 
-    protected void CreateNotification(NotificationHelpers.AlertType type, ITempDataDictionary tempData, string message, string title = "")
+    protected static void CreateNotification(NotificationHelpers.AlertType type, ITempDataDictionary tempData, string message, string title = "")
     {
         var toast = new NotificationHelpers.Alert
         {
@@ -112,18 +110,13 @@ public class ControllerExceptionFilterAttribute : ExceptionFilterAttribute
 
         if (tempData.ContainsKey(NotificationHelpers.NotificationKey))
         {
-            alerts = JsonConvert.DeserializeObject<List<NotificationHelpers.Alert>>(tempData[NotificationHelpers.NotificationKey].ToString());
+            alerts = JsonSerializer.Deserialize<List<NotificationHelpers.Alert>>(tempData[NotificationHelpers.NotificationKey].ToString());
             tempData.Remove(NotificationHelpers.NotificationKey);
         }
 
         alerts.Add(toast);
 
-        var settings = new JsonSerializerSettings
-        {
-            TypeNameHandling = TypeNameHandling.All
-        };
-
-        var alertJson = JsonConvert.SerializeObject(alerts, settings);
+        var alertJson = JsonSerializer.Serialize(alerts);
 
         tempData.Add(NotificationHelpers.NotificationKey, alertJson);
     }

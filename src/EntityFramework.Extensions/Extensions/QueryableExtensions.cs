@@ -3,7 +3,7 @@
 
 using System.Linq.Expressions;
 
-namespace Skoruba.Duende.IdentityServer.Admin.EntityFramework.Extensions.Extensions;
+namespace Skoruba.Duende.IdentityServer.Admin.EntityFramework.Extensions;
 
 public static class QueryableExtensions
 {

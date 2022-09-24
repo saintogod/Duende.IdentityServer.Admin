@@ -3,7 +3,7 @@
 
 using Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Dtos.Log;
 
-namespace Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Services.Interfaces;
+namespace Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Services;
 
 public interface IAuditLogService
 {

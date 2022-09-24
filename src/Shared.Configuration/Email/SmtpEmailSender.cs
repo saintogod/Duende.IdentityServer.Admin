@@ -10,7 +10,7 @@ using Skoruba.Duende.IdentityServer.Shared.Configuration.Configuration.Email;
 
 namespace Skoruba.Duende.IdentityServer.Shared.Configuration.Email;
 
-public class SmtpEmailSender : IEmailSender
+internal sealed class SmtpEmailSender : IEmailSender
 {
     private readonly ILogger<SmtpEmailSender> _logger;
     private readonly SmtpConfiguration _configuration;

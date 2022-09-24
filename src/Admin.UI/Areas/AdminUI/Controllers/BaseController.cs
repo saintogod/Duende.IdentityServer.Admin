@@ -1,11 +1,12 @@
 ﻿// Copyright (c) Jan Škoruba. All Rights Reserved.
 // Licensed under the Apache License, Version 2.0.
 
-using System.Collections.Generic;
+using System.Text.Json;
+
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
+
 using Skoruba.Duende.IdentityServer.Admin.UI.Configuration.Constants;
 using Skoruba.Duende.IdentityServer.Admin.UI.Helpers;
 
@@ -39,18 +40,13 @@ public class BaseController : Controller
 
         if (TempData.ContainsKey(NotificationHelpers.NotificationKey))
         {
-            alerts = JsonConvert.DeserializeObject<List<NotificationHelpers.Alert>>(TempData[NotificationHelpers.NotificationKey].ToString());
+            alerts = JsonSerializer.Deserialize<List<NotificationHelpers.Alert>>(TempData[NotificationHelpers.NotificationKey].ToString());
             TempData.Remove(NotificationHelpers.NotificationKey);
         }
 
         alerts.Add(toast);
 
-        var settings = new JsonSerializerSettings
-        {
-            TypeNameHandling = TypeNameHandling.All
-        };
-
-        var alertJson = JsonConvert.SerializeObject(alerts, settings);
+        var alertJson = JsonSerializer.Serialize(alerts);
 
         TempData.Add(NotificationHelpers.NotificationKey, alertJson);
     }

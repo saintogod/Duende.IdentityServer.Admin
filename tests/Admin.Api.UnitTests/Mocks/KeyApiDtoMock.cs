@@ -1,5 +1,5 @@
-﻿using System;
-using Bogus;
+﻿using Bogus;
+
 using Skoruba.Duende.IdentityServer.Admin.Api.Dtos.Key;
 
 namespace Skoruba.Duende.IdentityServer.Admin.Api.UnitTests.Mocks;

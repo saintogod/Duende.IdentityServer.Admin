@@ -11,7 +11,6 @@ using Skoruba.Duende.IdentityServer.Admin.Helpers;
 using Skoruba.Duende.IdentityServer.Admin.Services;
 using Skoruba.Duende.IdentityServer.Admin.UI.Helpers.ApplicationBuilder;
 using Skoruba.Duende.IdentityServer.Admin.UI.Helpers.DependencyInjection;
-using Skoruba.Duende.IdentityServer.Shared.Configuration.Helpers;
 using Skoruba.Duende.IdentityServer.Shared.Dtos;
 using Skoruba.Duende.IdentityServer.Shared.Dtos.Identity;
 

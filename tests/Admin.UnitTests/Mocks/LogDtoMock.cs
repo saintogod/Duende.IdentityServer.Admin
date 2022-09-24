@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0.
 
 using Bogus;
+
 using Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Dtos.Log;
 
 namespace Skoruba.Duende.IdentityServer.Admin.UnitTests.Mocks;

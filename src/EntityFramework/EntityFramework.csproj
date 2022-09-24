@@ -1,18 +1,24 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-	<PropertyGroup>
+  <PropertyGroup>
     <RootNamespace>$(BaseNamespace).Admin.$(MSBuildProjectName)</RootNamespace>
     <AssemblyName>$(RootNamespace)</AssemblyName>
-		<Description>Entity Framework layer for the administration of the Duende IdentityServer</Description>
-	</PropertyGroup>
+    <Description>Entity Framework layer for the administration of the Duende IdentityServer</Description>
+  </PropertyGroup>
 
-	<ItemGroup>
-		<PackageReference Include="Duende.IdentityServer.EntityFramework" Version="$(DuendeVer)" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="$(DotnetCoreVer)" />
-		<PackageReference Include="Skoruba.AuditLogging.EntityFramework" Version="1.0.0" />
-	</ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Duende.IdentityServer.EntityFramework" Version="$(DuendeVer)" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="$(DotnetCoreVer)" />
+    <PackageReference Include="Skoruba.AuditLogging.EntityFramework" Version="1.0.0" />
+  </ItemGroup>
 
-	<ItemGroup>
-		<ProjectReference Include="..\EntityFramework.Extensions\EntityFramework.Extensions.csproj" />
-	</ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\EntityFramework.Extensions\EntityFramework.Extensions.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
+      <_Parameter1>Admin.UnitTests</_Parameter1>
+    </AssemblyAttribute>
+  </ItemGroup>
 </Project>

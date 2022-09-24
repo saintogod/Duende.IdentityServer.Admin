@@ -5,7 +5,7 @@ namespace Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Dtos.Configuration;
 
 public sealed record ApiScopePropertyDto
 {
-    public int Id { get; set; }
-    public string Key { get; set; }
-    public string Value { get; set; }
+    public int Id { get; init; }
+    public string Key { get; init; }
+    public string Value { get; init; }
 }

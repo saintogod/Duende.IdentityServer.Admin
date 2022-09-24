@@ -1,11 +1,10 @@
 ﻿// Copyright (c) Jan Škoruba. All Rights Reserved.
 // Licensed under the Apache License, Version 2.0.
 
-using System;
-using System.Net.Http;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
+
 using Skoruba.Duende.IdentityServer.Admin.Api.Configuration.Test;
 
 namespace Skoruba.Duende.IdentityServer.Admin.Api.IntegrationTests.Tests.Base;

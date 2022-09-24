@@ -4,9 +4,9 @@
 using Duende.IdentityServer.EntityFramework.Entities;
 
 using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Entities;
-using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Extensions.Common;
+using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Extensions;
 
-namespace Skoruba.Duende.IdentityServer.Admin.EntityFramework.Repositories.Interfaces;
+namespace Skoruba.Duende.IdentityServer.Admin.EntityFramework.Repositories;
 
 public interface IPersistedGrantRepository
 {

@@ -2,11 +2,8 @@
 // Licensed under the Apache License, Version 2.0.
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
+
 using Skoruba.Duende.IdentityServer.Admin.Api.Helpers;
 using Skoruba.Duende.IdentityServer.Admin.Api.Middlewares;
 using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Shared.DbContexts;

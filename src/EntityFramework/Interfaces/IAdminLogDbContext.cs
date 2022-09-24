@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Entities;
 
-namespace Skoruba.Duende.IdentityServer.Admin.EntityFramework.Interfaces;
+namespace Skoruba.Duende.IdentityServer.Admin.EntityFramework;
 
 public interface IAdminLogDbContext
 {

@@ -17,8 +17,6 @@
       isMenuVisible ? $(".menu-item").css("display", "") : $(".menu-item").show();
     });
   }
-
-
 };
 
 Menu.init();

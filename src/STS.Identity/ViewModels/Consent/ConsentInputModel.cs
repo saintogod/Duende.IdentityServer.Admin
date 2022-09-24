@@ -4,8 +4,6 @@
 // Original file: https://github.com/DuendeSoftware/IdentityServer.Quickstart.UI
 // Modified by Jan Škoruba
 
-using System.Collections.Generic;
-
 namespace Skoruba.Duende.IdentityServer.STS.Identity.ViewModels.Consent;
 
 public class ConsentInputModel
