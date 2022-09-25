@@ -16,7 +16,7 @@ try
     Host.CreateDefaultBuilder(args)
         .ConfigureAppConfiguration((hostContext, configApp) =>
         {
-            configApp.ResetProviders<Startup>(args, "identitydata.json", "identityserverdata.json");
+            configApp.ResetProviders<Startup>(args, "seed.json");
         })
         .ConfigureLogging((context, logging) =>
         {

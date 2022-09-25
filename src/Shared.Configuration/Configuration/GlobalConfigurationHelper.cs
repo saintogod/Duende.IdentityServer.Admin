@@ -13,7 +13,8 @@ public static class GlobalConfigurationHelper
         return configBuilder.Build();
     }
 
-    public static IConfigurationBuilder ResetProviders<TStartup>(this IConfigurationBuilder configBuilder, string[] args, params string[] additionalFiles) where TStartup : class
+    public static IConfigurationBuilder ResetProviders<TStartup>(this IConfigurationBuilder configBuilder, string[] args, params string[] additionalFiles)
+        where TStartup : class
     {
         configBuilder.Sources.Clear();
 
@@ -60,5 +61,15 @@ public static class GlobalConfigurationHelper
             configBuilder.AddJsonFile(Path.Combine(configFolder, additionalFile), optional: true, reloadOnChange: false);
 
         return configBuilder;
+    }
+
+    public static T GetNamedSection<T>(this IConfiguration configuration, string sectionName) where T: class, new()
+    {
+        return configuration.GetSection(sectionName).Get<T>() ?? new();
+    }
+
+    public static T GetNamedSection<T>(this IConfiguration configuration) where T : class, new()
+    {
+        return configuration.GetSection(typeof(T).Name).Get<T>() ?? new();
     }
 }

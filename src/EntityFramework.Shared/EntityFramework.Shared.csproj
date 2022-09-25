@@ -8,5 +8,6 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\EntityFramework.Configuration\EntityFramework.Configuration.csproj" />
+		<ProjectReference Include="..\Shared.Configuration\Shared.Configuration.csproj" />
 	</ItemGroup>
 </Project>

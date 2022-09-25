@@ -26,8 +26,6 @@ public static class DbMigrationHelpers
     /// Generate migrations before running this method, you can use these steps bellow:
     /// https://github.com/skoruba/Duende.IdentityServer.Admin#ef-core--data-access
     /// </summary>
-    /// <param name="host"></param>
-    /// <param name="applyDbMigrationWithDataSeedFromProgramArguments"></param>
     public static async Task<bool> ApplyDbMigrationsWithDataSeedAsync<TIdentityServerDbContext, TIdentityDbContext,
         TPersistedGrantDbContext, TLogDbContext, TAuditLogDbContext, TDataProtectionDbContext, TUser, TRole>(
         IServiceProvider sp, IConfiguration configuration)
@@ -43,24 +41,25 @@ public static class DbMigrationHelpers
         var migrationComplete = false;
 
         using var serviceScope = sp.CreateScope();
-        var services = serviceScope.ServiceProvider;
 
-        if (configuration.GetValue($"{nameof(DatabaseMigrationsConfiguration)}:{nameof(DatabaseMigrationsConfiguration.ApplyDatabaseMigrations)}", false))
+        var databaseMigrations = configuration.GetNamedSection<DatabaseMigrationsConfiguration>();
+
+        if (databaseMigrations.ApplyDatabaseMigrations)
         {
-            migrationComplete = await EnsureDatabasesMigratedAsync<TIdentityDbContext, TIdentityServerDbContext, TPersistedGrantDbContext, TLogDbContext, TAuditLogDbContext, TDataProtectionDbContext>(services);
+            migrationComplete = await EnsureDatabasesMigratedAsync<TIdentityDbContext, TIdentityServerDbContext, TPersistedGrantDbContext, TLogDbContext, TAuditLogDbContext, TDataProtectionDbContext>(serviceScope.ServiceProvider);
         }
 
-        if (configuration.GetValue($"{nameof(SeedConfiguration)}:{nameof(SeedConfiguration.ApplySeed)}", false))
+        var seedConfiguration = configuration.GetNamedSection<SeedConfiguration>();
+        if (seedConfiguration.ApplySeed)
         {
-            var seedComplete = await EnsureSeedDataAsync<TIdentityServerDbContext, TUser, TRole>(services);
+            var seedComplete = await EnsureSeedDataAsync<TIdentityServerDbContext, TUser, TRole>(serviceScope.ServiceProvider);
 
             return migrationComplete && seedComplete;
         }
         return migrationComplete;
-
     }
 
-    public static async Task<bool> EnsureDatabasesMigratedAsync<TIdentityDbContext, TConfigurationDbContext, TPersistedGrantDbContext, TLogDbContext, TAuditLogDbContext, TDataProtectionDbContext>(IServiceProvider services)
+    private static async Task<bool> EnsureDatabasesMigratedAsync<TIdentityDbContext, TConfigurationDbContext, TPersistedGrantDbContext, TLogDbContext, TAuditLogDbContext, TDataProtectionDbContext>(IServiceProvider serviceProvider)
         where TIdentityDbContext : DbContext
         where TPersistedGrantDbContext : DbContext
         where TConfigurationDbContext : DbContext
@@ -70,64 +69,59 @@ public static class DbMigrationHelpers
     {
         var pendingMigrationCount = 0;
 
-        using (var scope = services.GetRequiredService<IServiceScopeFactory>().CreateScope())
+        using (var context = serviceProvider.GetRequiredService<TPersistedGrantDbContext>())
         {
-            using (var context = scope.ServiceProvider.GetRequiredService<TPersistedGrantDbContext>())
-            {
-                await context.Database.MigrateAsync();
-                pendingMigrationCount += (await context.Database.GetPendingMigrationsAsync()).Count();
-            }
+            await context.Database.MigrateAsync();
+            pendingMigrationCount += (await context.Database.GetPendingMigrationsAsync()).Count();
+        }
 
-            using (var context = scope.ServiceProvider.GetRequiredService<TIdentityDbContext>())
-            {
-                await context.Database.MigrateAsync();
-                pendingMigrationCount += (await context.Database.GetPendingMigrationsAsync()).Count();
-            }
+        using (var context = serviceProvider.GetRequiredService<TIdentityDbContext>())
+        {
+            await context.Database.MigrateAsync();
+            pendingMigrationCount += (await context.Database.GetPendingMigrationsAsync()).Count();
+        }
 
-            using (var context = scope.ServiceProvider.GetRequiredService<TConfigurationDbContext>())
-            {
-                await context.Database.MigrateAsync();
-                pendingMigrationCount += (await context.Database.GetPendingMigrationsAsync()).Count();
-            }
+        using (var context = serviceProvider.GetRequiredService<TConfigurationDbContext>())
+        {
+            await context.Database.MigrateAsync();
+            pendingMigrationCount += (await context.Database.GetPendingMigrationsAsync()).Count();
+        }
 
-            using (var context = scope.ServiceProvider.GetRequiredService<TLogDbContext>())
-            {
-                await context.Database.MigrateAsync();
-                pendingMigrationCount += (await context.Database.GetPendingMigrationsAsync()).Count();
-            }
+        using (var context = serviceProvider.GetRequiredService<TLogDbContext>())
+        {
+            await context.Database.MigrateAsync();
+            pendingMigrationCount += (await context.Database.GetPendingMigrationsAsync()).Count();
+        }
 
-            using (var context = scope.ServiceProvider.GetRequiredService<TAuditLogDbContext>())
-            {
-                await context.Database.MigrateAsync();
-                pendingMigrationCount += (await context.Database.GetPendingMigrationsAsync()).Count();
-            }
+        using (var context = serviceProvider.GetRequiredService<TAuditLogDbContext>())
+        {
+            await context.Database.MigrateAsync();
+            pendingMigrationCount += (await context.Database.GetPendingMigrationsAsync()).Count();
+        }
 
-            using (var context = scope.ServiceProvider.GetRequiredService<TDataProtectionDbContext>())
-            {
-                await context.Database.MigrateAsync();
-                pendingMigrationCount += (await context.Database.GetPendingMigrationsAsync()).Count();
-            }
+        using (var context = serviceProvider.GetRequiredService<TDataProtectionDbContext>())
+        {
+            await context.Database.MigrateAsync();
+            pendingMigrationCount += (await context.Database.GetPendingMigrationsAsync()).Count();
         }
 
         return pendingMigrationCount == 0;
     }
 
-    public static async Task<bool> EnsureSeedDataAsync<TIdentityServerDbContext, TUser, TRole>(IServiceProvider serviceProvider)
-    where TIdentityServerDbContext : DbContext, IAdminConfigurationDbContext
-    where TUser : IdentityUser, new()
-    where TRole : IdentityRole, new()
+    private static async Task<bool> EnsureSeedDataAsync<TIdentityServerDbContext, TUser, TRole>(IServiceProvider serviceProvider)
+        where TIdentityServerDbContext : DbContext, IAdminConfigurationDbContext
+        where TUser : IdentityUser, new()
+        where TRole : IdentityRole, new()
     {
-        using (var scope = serviceProvider.GetRequiredService<IServiceScopeFactory>().CreateScope())
-        {
-            var context = scope.ServiceProvider.GetRequiredService<TIdentityServerDbContext>();
-            var userManager = scope.ServiceProvider.GetRequiredService<UserManager<TUser>>();
-            var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<TRole>>();
-            var idsDataConfiguration = scope.ServiceProvider.GetRequiredService<IdentityServerData>();
-            var idDataConfiguration = scope.ServiceProvider.GetRequiredService<IdentityData>();
+        var context = serviceProvider.GetRequiredService<TIdentityServerDbContext>();
+        var idsDataConfiguration = serviceProvider.GetRequiredService<IdentityServerData>();
 
-            await EnsureSeedIdentityServerData(context, idsDataConfiguration);
-            await EnsureSeedIdentityData(userManager, roleManager, idDataConfiguration);
-        }
+        var userManager = serviceProvider.GetRequiredService<UserManager<TUser>>();
+        var roleManager = serviceProvider.GetRequiredService<RoleManager<TRole>>();
+        var idDataConfiguration = serviceProvider.GetRequiredService<IdentityData>();
+
+        await EnsureSeedIdentityServerData(context, idsDataConfiguration);
+        await EnsureSeedIdentityData(userManager, roleManager, idDataConfiguration);
 
         return true;
     }

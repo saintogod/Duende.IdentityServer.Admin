@@ -16,8 +16,6 @@ public static class EmailSenderExtensions
     /// <summary>
     /// Add email senders - configuration of sendgrid, smtp senders
     /// </summary>
-    /// <param name="services"></param>
-    /// <param name="configuration"></param>
     public static void AddEmailSenders(this IServiceCollection services, IConfiguration configuration)
     {
         var smtpConfiguration = configuration.GetSection(nameof(SmtpConfiguration)).Get<SmtpConfiguration>();

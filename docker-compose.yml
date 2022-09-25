@@ -18,8 +18,7 @@ services:
     volumes:
       - './shared/serilog.json:/usr/share/st.ids/serilog.json'
       - './shared/deployment.json:/usr/share/st.ids/deployment.json'
-      - './shared/identitydata.json:/usr/share/st.ids/identitydata.json'
-      - './shared/identityserverdata.json:/usr/share/st.ids/identityserverdata.json'
+      - './shared/seed.json:/usr/share/st.ids/seed.json'
       - './shared/dev.crt:/etc/st.ids/dev.crt'
       - './shared/dev.key:/etc/st.ids/dev.key'
     networks:

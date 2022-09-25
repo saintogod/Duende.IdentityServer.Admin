@@ -37,7 +37,7 @@ public class Startup
 
     public void ConfigureServices(IServiceCollection services)
     {
-        var adminApiConfiguration = Configuration.GetSection(nameof(AdminApiConfiguration)).Get<AdminApiConfiguration>();
+        var adminApiConfiguration = Configuration.GetNamedSection<AdminApiConfiguration>();
         services.AddSingleton(adminApiConfiguration);
 
         // Add DbContexts

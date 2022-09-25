@@ -38,8 +38,7 @@ public static class StartupHelpers
     {
         services.AddHttpContextAccessor();
 
-        var auditLoggingConfiguration = configuration.GetSection(nameof(AuditLoggingConfiguration))
-            .Get<AuditLoggingConfiguration>();
+        var auditLoggingConfiguration = configuration.GetNamedSection<AuditLoggingConfiguration>();
         services.AddSingleton(auditLoggingConfiguration);
 
         services.AddAuditLogging(options => { options.Source = auditLoggingConfiguration.Source; })
@@ -80,7 +79,6 @@ public static class StartupHelpers
     /// <summary>
     /// Register services for MVC
     /// </summary>
-    /// <param name="services"></param>
     public static void AddMvcServices<TUserDto, TRoleDto,
         TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken,
         TUsersDto, TRolesDto, TUserRolesDto, TUserClaimsDto,
@@ -127,15 +125,7 @@ public static class StartupHelpers
     /// Register DbContexts for IdentityServer ConfigurationStore and PersistedGrants, Identity and Logging
     /// Configure the connection strings in AppSettings.json
     /// </summary>
-    /// <typeparam name="TConfigurationDbContext"></typeparam>
-    /// <typeparam name="TPersistedGrantDbContext"></typeparam>
-    /// <typeparam name="TLogDbContext"></typeparam>
-    /// <typeparam name="TIdentityDbContext"></typeparam>
-    /// <typeparam name="TAuditLoggingDbContext"></typeparam>
-    /// <typeparam name="TDataProtectionDbContext"></typeparam>
-    /// <param name="services"></param>
-    /// <param name="configuration"></param>
-    public static void AddDbContexts<TIdentityDbContext, TConfigurationDbContext, TPersistedGrantDbContext,
+    public static IServiceCollection AddDbContexts<TIdentityDbContext, TConfigurationDbContext, TPersistedGrantDbContext,
         TLogDbContext, TAuditLoggingDbContext, TDataProtectionDbContext, TAuditLog>(this IServiceCollection services, IConfiguration configuration)
         where TIdentityDbContext : DbContext
         where TPersistedGrantDbContext : DbContext, IAdminPersistedGrantDbContext
@@ -145,21 +135,16 @@ public static class StartupHelpers
         where TDataProtectionDbContext : DbContext, IDataProtectionKeyContext
         where TAuditLog : AuditLog
     {
-        var databaseProvider = configuration.GetSection(nameof(DatabaseProviderConfiguration)).Get<DatabaseProviderConfiguration>();
-        var databaseMigrations = configuration.GetSection(nameof(DatabaseMigrationsConfiguration)).Get<DatabaseMigrationsConfiguration>() ?? new DatabaseMigrationsConfiguration();
-        var connectionStrings = configuration.GetSection("ConnectionStrings").Get<ConnectionStringsConfiguration>();
+        var databaseProvider = configuration.GetNamedSection<DatabaseProviderConfiguration>();
+        var databaseMigrations = configuration.GetNamedSection<DatabaseMigrationsConfiguration>();
+        var connectionStrings = configuration.GetNamedSection<ConnectionStringsConfiguration>("ConnectionStrings");
 
-        switch (databaseProvider.ProviderType)
+        return databaseProvider.ProviderType switch
         {
-            case DatabaseProviderType.PostgreSQL:
-                services.RegisterNpgSqlDbContexts<TIdentityDbContext, TConfigurationDbContext, TPersistedGrantDbContext, TLogDbContext, TAuditLoggingDbContext, TDataProtectionDbContext, TAuditLog>(connectionStrings, databaseMigrations);
-                break;
-            case DatabaseProviderType.MySql:
-                services.RegisterMySqlDbContexts<TIdentityDbContext, TConfigurationDbContext, TPersistedGrantDbContext, TLogDbContext, TAuditLoggingDbContext, TDataProtectionDbContext, TAuditLog>(connectionStrings, databaseMigrations);
-                break;
-            default:
-                throw new ArgumentOutOfRangeException(nameof(databaseProvider.ProviderType), $@"The value needs to be one of {string.Join(", ", Enum.GetNames(typeof(DatabaseProviderType)))}.");
-        }
+            DatabaseProviderType.PostgreSQL => services.RegisterNpgSqlDbContexts<TIdentityDbContext, TConfigurationDbContext, TPersistedGrantDbContext, TLogDbContext, TAuditLoggingDbContext, TDataProtectionDbContext, TAuditLog>(connectionStrings, databaseMigrations),
+            DatabaseProviderType.MySql => services.RegisterMySqlDbContexts<TIdentityDbContext, TConfigurationDbContext, TPersistedGrantDbContext, TLogDbContext, TAuditLoggingDbContext, TDataProtectionDbContext, TAuditLog>(connectionStrings, databaseMigrations),
+            _ => throw new ArgumentOutOfRangeException(nameof(databaseProvider.ProviderType), $@"The value needs to be one of {string.Join(", ", Enum.GetNames(typeof(DatabaseProviderType)))}."),
+        };
     }
 
     /// <summary>
@@ -168,15 +153,13 @@ public static class StartupHelpers
     /// <typeparam name="TIdentityDbContext">DbContext for an access to Identity</typeparam>
     /// <typeparam name="TUser">Entity with User</typeparam>
     /// <typeparam name="TRole">Entity with Role</typeparam>
-    /// <param name="services"></param>
-    /// <param name="configuration"></param>
     public static void AddApiAuthentication<TIdentityDbContext, TUser, TRole>(this IServiceCollection services,
         IConfiguration configuration)
         where TIdentityDbContext : DbContext
         where TRole : class
         where TUser : class
     {
-        var adminApiConfiguration = configuration.GetSection(nameof(AdminApiConfiguration)).Get<AdminApiConfiguration>();
+        var adminApiConfiguration = configuration.GetNamedSection<AdminApiConfiguration>();
 
         services.AddIdentityCore<TUser>(options => configuration.GetSection(nameof(IdentityOptions)).Bind(options))
             .AddRoles<TRole>()
@@ -196,13 +179,6 @@ public static class StartupHelpers
     /// Register in memory DbContexts for IdentityServer ConfigurationStore and PersistedGrants, Identity and Logging
     /// For testing purpose only
     /// </summary>
-    /// <typeparam name="TConfigurationDbContext"></typeparam>
-    /// <typeparam name="TPersistedGrantDbContext"></typeparam>
-    /// <typeparam name="TLogDbContext"></typeparam>
-    /// <typeparam name="TIdentityDbContext"></typeparam>
-    /// <typeparam name="TAuditLoggingDbContext"></typeparam>
-    /// <typeparam name="TDataProtectionDbContext"></typeparam>
-    /// <param name="services"></param>
     public static void RegisterDbContextsStaging<TIdentityDbContext, TConfigurationDbContext, TPersistedGrantDbContext, TLogDbContext, TAuditLoggingDbContext, TDataProtectionDbContext>(this IServiceCollection services)
         where TIdentityDbContext : DbContext
         where TPersistedGrantDbContext : DbContext, IAdminPersistedGrantDbContext
@@ -283,7 +259,7 @@ public static class StartupHelpers
         var auditLogTableName = DbContextHelpers.GetEntityTable<TAuditLoggingDbContext>(scope.ServiceProvider);
         var dataProtectionTableName = DbContextHelpers.GetEntityTable<TDataProtectionDbContext>(scope.ServiceProvider);
 
-        var databaseProvider = configuration.GetSection(nameof(DatabaseProviderConfiguration)).Get<DatabaseProviderConfiguration>();
+        var databaseProvider = configuration.GetNamedSection<DatabaseProviderConfiguration>();
         switch (databaseProvider.ProviderType)
         {
             case DatabaseProviderType.PostgreSQL:

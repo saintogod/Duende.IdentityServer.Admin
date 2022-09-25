@@ -1,0 +1,167 @@
+﻿{
+  "IdentityData": {
+    "Roles": [
+      {
+        "Name": "SaintogodIdentityAdministrator"
+      }
+    ],
+    "Users": [
+      {
+        "Username": "admin",
+        "Password": "Pa$$word123",
+        "Email": "admin@skoruba.com",
+        "Roles": [
+          "SaintogodIdentityAdministrator"
+        ],
+        "Claims": [
+          {
+            "Type": "name",
+            "Value": "admin"
+          }
+        ]
+      }
+    ]
+  },
+
+  "IdentityServerData": {
+    "IdentityResources": [
+      {
+        "Name": "roles",
+        "Enabled": true,
+        "DisplayName": "Roles",
+        "UserClaims": [
+          "role"
+        ]
+      },
+      {
+        "Name": "openid",
+        "Enabled": true,
+        "Required": true,
+        "DisplayName": "Your user identifier",
+        "UserClaims": [
+          "sub"
+        ]
+      },
+      {
+        "Name": "profile",
+        "Enabled": true,
+        "DisplayName": "User profile",
+        "Description": "Your user profile information (first name, last name, etc.)",
+        "Emphasize": true,
+        "UserClaims": [
+          "name",
+          "family_name",
+          "given_name",
+          "middle_name",
+          "nickname",
+          "preferred_username",
+          "profile",
+          "picture",
+          "website",
+          "gender",
+          "birthdate",
+          "zoneinfo",
+          "locale",
+          "updated_at"
+        ]
+      },
+      {
+        "Name": "email",
+        "Enabled": true,
+        "DisplayName": "Your email address",
+        "Emphasize": true,
+        "UserClaims": [
+          "email",
+          "email_verified"
+        ]
+      },
+      {
+        "Name": "address",
+        "Enabled": true,
+        "DisplayName": "Your address",
+        "Emphasize": true,
+        "UserClaims": [
+          "address"
+        ]
+      },
+      {
+        "Name": "level",
+        "Enabled": true,
+        "DisplayName": "Level",
+        "Emphasize": true,
+        "UserClaims": [
+          "level"
+        ]
+      }
+    ],
+    "ApiScopes": [
+      {
+        "Name": "saintogod_identity_admin_api",
+        "DisplayName": "saintogod_identity_admin_api",
+        "Required": true,
+        "UserClaims": [
+          "role",
+          "name"
+        ]
+      }
+    ],
+    "ApiResources": [
+      {
+        "Name": "saintogod_identity_admin_api",
+        "Scopes": [
+          "saintogod_identity_admin_api"
+        ]
+      }
+    ],
+    "Clients": [
+      {
+        "ClientId": "saintogod_identity_admin",
+        "ClientName": "Saintogod Identity Admin Site",
+        "ClientUri": "https://admin.saintogod.local",
+        "AllowedGrantTypes": [
+          "authorization_code"
+        ],
+        "RequirePkce": true,
+        "ClientSecrets": [
+          {
+            "Value": "saintogod_admin_client_secret"
+          }
+        ],
+        "RedirectUris": [
+          "https://admin.saintogod.local/signin-oidc"
+        ],
+        "FrontChannelLogoutUri": "https://admin.saintogod.local/signout-oidc",
+        "PostLogoutRedirectUris": [
+          "https://admin.saintogod.local/signout-callback-oidc"
+        ],
+        "AllowedCorsOrigins": [
+          "https://admin.saintogod.local"
+        ],
+        "AllowedScopes": [
+          "openid",
+          "email",
+          "profile",
+          "roles"
+        ]
+      },
+      {
+        "ClientId": "saintogod_identity_admin_api_swaggerui",
+        "ClientName": "Saintogod Identity Admin API Swagger UI",
+        "AllowedGrantTypes": [
+          "authorization_code"
+        ],
+        "RequireClientSecret": false,
+        "RequirePkce": true,
+        "RedirectUris": [
+          "https://admin-api.saintogod.local/swagger/oauth2-redirect.html"
+        ],
+        "AllowedScopes": [
+          "saintogod_identity_admin_api"
+        ],
+        "AllowedCorsOrigins": [
+          "https://admin-api.saintogod.local"
+        ]
+      }
+    ]
+  }
+}

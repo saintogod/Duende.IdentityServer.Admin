@@ -19,9 +19,9 @@ public class AuthenticatedTestRequestMiddleware
 
     public async Task Invoke(HttpContext context)
     {
-        if (context.Request.Headers.Keys.Contains(TestAuthorizationHeader))
+        if (context.Request.Headers.TryGetValue(TestAuthorizationHeader, out var header))
         {
-            var token = context.Request.Headers[TestAuthorizationHeader].Single();
+            var token = header.Single();
             var jwt = new JwtSecurityToken(token);
             var claimsIdentity = new ClaimsIdentity(jwt.Claims, "Cookies");
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);

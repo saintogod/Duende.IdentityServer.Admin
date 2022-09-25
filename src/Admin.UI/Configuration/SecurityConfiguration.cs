@@ -12,7 +12,7 @@ public class SecurityConfiguration
     /// <summary>
     /// The trusted domains from which content can be downloaded.
     /// </summary>
-    public List<string> CspTrustedDomains { get; set; } = new List<string>();
+    public string[] CspTrustedDomains { get; set; } = Array.Empty<string>();
 
     /// <summary>
     /// Use the developer exception page instead of the Identity error handler.

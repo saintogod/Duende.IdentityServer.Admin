@@ -486,7 +486,7 @@ public static class StartupHelpers
     /// <summary>
     /// Using of Forwarded Headers, Hsts, XXssProtection and Csp
     /// </summary>
-    public static void UseSecurityHeaders(this IApplicationBuilder app, List<string> cspTrustedDomains)
+    public static void UseSecurityHeaders(this IApplicationBuilder app, IEnumerable<string> cspTrustedDomains)
     {
         var forwardingOptions = new ForwardedHeadersOptions()
         {
@@ -504,7 +504,7 @@ public static class StartupHelpers
         app.UseReferrerPolicy(options => options.NoReferrer());
 
         // CSP Configuration to be able to use external resources
-        if (cspTrustedDomains != null && cspTrustedDomains.Any())
+        if (cspTrustedDomains?.Any() == true)
         {
             app.UseCsp(csp =>
             {

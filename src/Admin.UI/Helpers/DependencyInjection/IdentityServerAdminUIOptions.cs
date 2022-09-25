@@ -16,37 +16,37 @@ public class IdentityServerAdminUIOptions
     /// <summary>
     /// The settings for test deployments.
     /// </summary>
-    public TestingConfiguration Testing { get; set; } = new TestingConfiguration();
+    public TestingConfiguration Testing { get; set; } = new();
 
     /// <summary>
     /// The database connection strings and settings.
     /// </summary>
-    public ConnectionStringsConfiguration ConnectionStrings { get; set; } = new ConnectionStringsConfiguration();
+    public ConnectionStringsConfiguration ConnectionStrings { get; set; } = new();
 
     /// <summary>
     /// The settings for the admin services.
     /// </summary>
-    public AdminConfiguration Admin { get; set; } = new AdminConfiguration();
+    public AdminConfiguration Admin { get; set; } = new();
 
     /// <summary>
     /// The settings for the database provider.
     /// </summary>
-    public DatabaseProviderConfiguration DatabaseProvider { get; set; } = new DatabaseProviderConfiguration();
+    public DatabaseProviderConfiguration DatabaseProvider { get; set; } = new();
 
     /// <summary>
     /// The settings for database migrations.
     /// </summary>
-    public DatabaseMigrationsConfiguration DatabaseMigrations { get; set; } = new DatabaseMigrationsConfiguration();
+    public DatabaseMigrationsConfiguration DatabaseMigrations { get; set; } = new();
 
     /// <summary>
     /// The settings for audit logging.
     /// </summary>
-    public AuditLoggingConfiguration AuditLogging { get; set; } = new AuditLoggingConfiguration();
+    public AuditLoggingConfiguration AuditLogging { get; set; } = new();
 
     /// <summary>
     /// The settings for globalization.
     /// </summary>
-    public CultureConfiguration Culture { get; set; } = new CultureConfiguration();
+    public CultureConfiguration Culture { get; set; } = new();
 
     /// <summary>
     /// An action to configure ASP.NET Core Identity.
@@ -56,22 +56,22 @@ public class IdentityServerAdminUIOptions
     /// <summary>
     /// Identity data to seed the databases.
     /// </summary>
-    public IdentityData IdentityData { get; set; } = new IdentityData();
+    public IdentityData IdentityData { get; set; } = new ();
 
     /// <summary>
     /// Identity server data to seed the databases.
     /// </summary>
-    public IdentityServerData IdentityServerData { get; set; } = new IdentityServerData();
+    public IdentityServerData IdentityServerData { get; set; } = new ();
 
     /// <summary>
     /// The settings for security features.
     /// </summary>
-    public SecurityConfiguration Security { get; set; } = new SecurityConfiguration();
+    public SecurityConfiguration Security { get; set; } = new ();
 
     /// <summary>
     /// The settings for the HTTP hosting environment.
     /// </summary>
-    public HttpConfiguration Http { get; set; } = new HttpConfiguration();
+    public HttpConfiguration Http { get; set; } = new ();
 
     /// <summary>
     /// Customizes the health checks builder used to add health checks.
