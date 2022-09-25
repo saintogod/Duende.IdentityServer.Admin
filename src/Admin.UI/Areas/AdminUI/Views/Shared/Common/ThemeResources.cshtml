@@ -2,11 +2,11 @@
 @using Skoruba.Duende.IdentityServer.Shared.Configuration.Helpers
 @inject AdminConfiguration AdminConfiguration
 
-@if (!string.IsNullOrEmpty(Context.Request.Cookies[ThemeHelpers.CookieThemeKey]) && Context.Request.Cookies[ThemeHelpers.CookieThemeKey] != ThemeHelpers.DefaultTheme)
+@if (Context.Request.Cookies.TryGetValue(ThemeHelpers.CookieThemeKey, out var themeKey) && themeKey != ThemeHelpers.DefaultTheme)
 {
-    <link href="@UrlHelper.Content(string.Concat("~/dist/css/themes/",Context.Request.Cookies[ThemeHelpers.CookieThemeKey],"/bootstrap.min.css"))" asp-append-version="true" rel="stylesheet" />
+  <link href="@UrlHelper.Content($"~/dist/css/themes/{themeKey}/bootstrap.min.css"))" asp-append-version="true" rel="stylesheet" />
 }
 else if (!string.IsNullOrEmpty(AdminConfiguration.Theme))
 {
-    <link href="@UrlHelper.Content(string.Concat("~/dist/css/themes/",AdminConfiguration.Theme,"/bootstrap.min.css"))" asp-append-version="true" rel="stylesheet" />
+  <link href="@UrlHelper.Content($"~/dist/css/themes/{AdminConfiguration.Theme}/bootstrap.min.css"))" asp-append-version="true" rel="stylesheet" />
 }

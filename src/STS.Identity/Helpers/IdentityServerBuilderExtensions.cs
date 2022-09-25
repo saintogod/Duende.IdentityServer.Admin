@@ -16,9 +16,6 @@ public static class IdentityServerBuilderExtensions
     /// <summary>
     /// Add custom signing certificate from certification store according thumbprint or from file
     /// </summary>
-    /// <param name="builder"></param>
-    /// <param name="configuration"></param>
-    /// <returns></returns>
     public static IIdentityServerBuilder AddCustomSigningCredential(this IIdentityServerBuilder builder, IConfiguration configuration)
     {
         var certificateConfiguration = configuration.GetSection(nameof(CertificateConfiguration)).Get<CertificateConfiguration>();
