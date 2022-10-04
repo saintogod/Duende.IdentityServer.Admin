@@ -22,8 +22,6 @@ using Skoruba.Duende.IdentityServer.Admin.EntityFramework;
 using Skoruba.Duende.IdentityServer.Shared.Configuration.Authentication;
 using Skoruba.Duende.IdentityServer.Shared.Configuration.Configuration.Identity;
 using Skoruba.Duende.IdentityServer.STS.Identity.Configuration;
-using Skoruba.Duende.IdentityServer.STS.Identity.Configuration.ApplicationParts;
-using Skoruba.Duende.IdentityServer.STS.Identity.Configuration.Constants;
 using Skoruba.Duende.IdentityServer.STS.Identity.Helpers;
 using Skoruba.Duende.IdentityServer.STS.Identity.Helpers.Localization;
 

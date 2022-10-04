@@ -9,7 +9,7 @@ using Skoruba.Duende.IdentityServer.Admin.Api.Middlewares;
 using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Shared.DbContexts;
 using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Shared.Entities.Identity;
 
-namespace Skoruba.Duende.IdentityServer.Admin.Api.Configuration.Test;
+namespace Skoruba.Duende.IdentityServer.Admin.Api.Configuration;
 
 public class StartupTest : Startup
 {

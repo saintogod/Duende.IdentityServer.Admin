@@ -20,8 +20,8 @@ internal static class Extensions
     /// <returns></returns>
     public static bool IsNativeClient(this AuthorizationRequest context)
     {
-        return !context.RedirectUri.StartsWith(Uri.UriSchemeHttps, StringComparison.Ordinal)
-               && !context.RedirectUri.StartsWith(Uri.UriSchemeHttp, StringComparison.Ordinal);
+        return !(context.RedirectUri.StartsWith(Uri.UriSchemeHttps, StringComparison.Ordinal)
+               || context.RedirectUri.StartsWith(Uri.UriSchemeHttp, StringComparison.Ordinal));
     }
 
     public static IActionResult LoadingPage(this Controller controller, string viewName, string redirectUri)

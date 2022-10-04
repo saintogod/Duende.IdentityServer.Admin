@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Controllers;
 
-namespace Skoruba.Duende.IdentityServer.STS.Identity.Configuration.ApplicationParts;
+namespace Skoruba.Duende.IdentityServer.STS.Identity.Configuration;
 
 internal sealed class GenericTypeControllerFeatureProvider<TUser, TKey> : IApplicationFeatureProvider<ControllerFeature>
     where TUser : IdentityUser<TKey>

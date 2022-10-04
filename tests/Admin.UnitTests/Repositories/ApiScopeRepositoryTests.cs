@@ -18,7 +18,7 @@ namespace Skoruba.Duende.IdentityServer.Admin.UnitTests.Repositories;
 
 public class ApiScopeRepositoryTests
 {
-    private IdentityServerConfigurationDbContext GetDbContext()
+    private static IdentityServerConfigurationDbContext GetDbContext()
     {
         var serviceCollection = new ServiceCollection();
 
@@ -33,7 +33,7 @@ public class ApiScopeRepositoryTests
         return context;
     }
 
-    private IApiScopeRepository GetApiScopeRepository(IdentityServerConfigurationDbContext context)
+    private static IApiScopeRepository GetApiScopeRepository(IdentityServerConfigurationDbContext context)
     {
         IApiScopeRepository apiScopeRepository = new ApiScopeRepository<IdentityServerConfigurationDbContext>(context);
 

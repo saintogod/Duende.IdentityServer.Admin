@@ -2,6 +2,7 @@
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <BaseNamespace>Skoruba.Duende.IdentityServer</BaseNamespace>
+    <LangVersion>preview</LangVersion>
     <ImplicitUsings>enable</ImplicitUsings>
     <DotnetCoreVer>6.0.*</DotnetCoreVer>
     <DuendeVer>6.1.*</DuendeVer>

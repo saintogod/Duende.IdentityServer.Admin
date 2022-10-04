@@ -25,7 +25,7 @@ namespace Skoruba.Duende.IdentityServer.Admin.UnitTests.Services;
 
 public class IdentityResourceServiceTests
 {
-    private IdentityServerConfigurationDbContext GetDbContext()
+    private static IdentityServerConfigurationDbContext GetDbContext()
     {
         var serviceCollection = new ServiceCollection();
 
@@ -40,21 +40,21 @@ public class IdentityResourceServiceTests
         return context;
     }
 
-    private IIdentityResourceRepository GetIdentityResourceRepository(IdentityServerConfigurationDbContext context)
+    private static IIdentityResourceRepository GetIdentityResourceRepository(IdentityServerConfigurationDbContext context)
     {
         IIdentityResourceRepository identityResourceRepository = new IdentityResourceRepository<IdentityServerConfigurationDbContext>(context);
 
         return identityResourceRepository;
     }
 
-    private IIdentityResourceService GetIdentityResourceService(IIdentityResourceRepository repository, IIdentityResourceServiceResources identityResourceServiceResources, IAuditEventLogger auditEventLogger)
+    private static IIdentityResourceService GetIdentityResourceService(IIdentityResourceRepository repository, IIdentityResourceServiceResources identityResourceServiceResources, IAuditEventLogger auditEventLogger)
     {
         IIdentityResourceService identityResourceService = new IdentityResourceService(repository, identityResourceServiceResources, auditEventLogger);
 
         return identityResourceService;
     }
 
-    private IIdentityResourceService GetIdentityResourceService(IdentityServerConfigurationDbContext context)
+    private static IIdentityResourceService GetIdentityResourceService(IdentityServerConfigurationDbContext context)
     {
         var identityResourceRepository = GetIdentityResourceRepository(context);
 

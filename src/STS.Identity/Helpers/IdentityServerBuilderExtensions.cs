@@ -95,9 +95,6 @@ public static class IdentityServerBuilderExtensions
     /// Add custom validation key for signing key rollover
     /// http://docs.identityserver.io/en/latest/topics/crypto.html#signing-key-rollover
     /// </summary>
-    /// <param name="builder"></param>
-    /// <param name="configuration"></param>
-    /// <returns></returns>
     public static IIdentityServerBuilder AddCustomValidationKey(this IIdentityServerBuilder builder, IConfiguration configuration)
     {
         var certificateConfiguration = configuration.GetSection(nameof(CertificateConfiguration)).Get<CertificateConfiguration>();

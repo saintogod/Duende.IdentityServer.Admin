@@ -25,7 +25,7 @@ namespace Skoruba.Duende.IdentityServer.Admin.UnitTests.Services;
 
 public class ClientServiceTests
 {
-    private IdentityServerConfigurationDbContext GetDbContext()
+    private static IdentityServerConfigurationDbContext GetDbContext()
     {
         var serviceCollection = new ServiceCollection();
 
@@ -40,21 +40,21 @@ public class ClientServiceTests
         return context;
     }
 
-    private IClientRepository GetClientRepository(IdentityServerConfigurationDbContext context)
+    private static IClientRepository GetClientRepository(IdentityServerConfigurationDbContext context)
     {
         IClientRepository clientRepository = new ClientRepository<IdentityServerConfigurationDbContext>(context);
 
         return clientRepository;
     }
 
-    private IClientService GetClientService(IClientRepository repository, IClientServiceResources resources, IAuditEventLogger auditEventLogger)
+    private static IClientService GetClientService(IClientRepository repository, IClientServiceResources resources, IAuditEventLogger auditEventLogger)
     {
         IClientService clientService = new ClientService(repository, resources, auditEventLogger);
 
         return clientService;
     }
 
-    private IClientService GetClientService(IdentityServerConfigurationDbContext context)
+    private static IClientService GetClientService(IdentityServerConfigurationDbContext context)
     {
         var clientRepository = GetClientRepository(context);
 

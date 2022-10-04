@@ -51,7 +51,7 @@ internal class ClientRepository<TDbContext> : IClientRepository
 
         Expression<Func<Client, bool>> searchCondition = x => x.ClientId.Contains(search) || x.ClientName.Contains(search);
         var clients = await DbContext.Clients.WhereIf(!string.IsNullOrEmpty(search), searchCondition).PageBy(x => x.Id, page, pageSize).ToListAsync();
-        pagedList.Data.AddRange(clients);
+        pagedList.Data = (clients);
         pagedList.TotalCount = await DbContext.Clients.WhereIf(!string.IsNullOrEmpty(search), searchCondition).CountAsync();
         pagedList.PageSize = pageSize;
 
@@ -98,13 +98,12 @@ internal class ClientRepository<TDbContext> : IClientRepository
 
     public virtual List<SelectItem> GetProtocolTypes()
     {
-        return ClientConsts.GetProtocolTypes();
+        return ClientConsts.GetProtocolTypes().ToList();
     }
 
     public virtual List<SelectItem> GetSecretTypes()
     {
-        var secrets = new List<SelectItem>();
-        secrets.AddRange(ClientConsts.GetSecretTypes().Select(x => new SelectItem(x, x)));
+        var secrets = ClientConsts.GetSecretTypes().Select(x => new SelectItem(x, x)).ToList();
 
         return secrets;
     }
@@ -145,7 +144,7 @@ internal class ClientRepository<TDbContext> : IClientRepository
 
     public virtual async Task<int> AddClientSecretAsync(int clientId, ClientSecret clientSecret)
     {
-        var client = await DbContext.Clients.Where(x => x.Id == clientId).SingleOrDefaultAsync();
+        var client = await DbContext.Clients.SingleOrDefaultAsync(x => x.Id == clientId);
         clientSecret.Client = client;
 
         await DbContext.ClientSecrets.AddAsync(clientSecret);
@@ -162,13 +161,12 @@ internal class ClientRepository<TDbContext> : IClientRepository
     {
         return DbContext.ClientProperties
             .Include(x => x.Client)
-            .Where(x => x.Id == clientPropertyId)
-            .SingleOrDefaultAsync();
+            .SingleOrDefaultAsync(x => x.Id == clientPropertyId);
     }
 
     public virtual async Task<int> AddClientClaimAsync(int clientId, ClientClaim clientClaim)
     {
-        var client = await DbContext.Clients.Where(x => x.Id == clientId).SingleOrDefaultAsync();
+        var client = await DbContext.Clients.SingleOrDefaultAsync(x => x.Id == clientId);
 
         clientClaim.Client = client;
         await DbContext.ClientClaims.AddAsync(clientClaim);
@@ -178,7 +176,7 @@ internal class ClientRepository<TDbContext> : IClientRepository
 
     public virtual async Task<int> AddClientPropertyAsync(int clientId, ClientProperty clientProperty)
     {
-        var client = await DbContext.Clients.Where(x => x.Id == clientId).SingleOrDefaultAsync();
+        var client = await DbContext.Clients.SingleOrDefaultAsync(x => x.Id == clientId);
 
         clientProperty.Client = client;
         await DbContext.ClientProperties.AddAsync(clientProperty);
@@ -197,19 +195,18 @@ internal class ClientRepository<TDbContext> : IClientRepository
 
     public virtual async Task<PagedList<ClientSecret>> GetClientSecretsAsync(int clientId, int page = 1, int pageSize = 10)
     {
-        var pagedList = new PagedList<ClientSecret>();
-
         var secrets = await DbContext.ClientSecrets
             .Where(x => x.Client.Id == clientId)
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
             .ToListAsync();
-
-        pagedList.Data.AddRange(secrets);
-        pagedList.TotalCount = await DbContext.ClientSecrets.Where(x => x.Client.Id == clientId).CountAsync();
-        pagedList.PageSize = pageSize;
-
-        return pagedList;
+        
+        return new PagedList<ClientSecret>
+        {
+            Data = (secrets),
+            TotalCount = await DbContext.ClientSecrets.CountAsync(x => x.Client.Id == clientId),
+            PageSize = pageSize
+        };
     }
 
     public virtual Task<ClientSecret> GetClientSecretAsync(int clientSecretId)
@@ -223,30 +220,29 @@ internal class ClientRepository<TDbContext> : IClientRepository
 
     public virtual async Task<PagedList<ClientClaim>> GetClientClaimsAsync(int clientId, int page = 1, int pageSize = 10)
     {
-        var pagedList = new PagedList<ClientClaim>();
 
         var claims = await DbContext.ClientClaims.Where(x => x.Client.Id == clientId).PageBy(x => x.Id, page, pageSize)
             .ToListAsync();
 
-        pagedList.Data.AddRange(claims);
-        pagedList.TotalCount = await DbContext.ClientClaims.Where(x => x.Client.Id == clientId).CountAsync();
-        pagedList.PageSize = pageSize;
-
-        return pagedList;
+        return new ()
+        {
+            Data = (claims),
+            TotalCount = await DbContext.ClientClaims.Where(x => x.Client.Id == clientId).CountAsync(),
+            PageSize = pageSize
+        };
     }
 
     public virtual async Task<PagedList<ClientProperty>> GetClientPropertiesAsync(int clientId, int page = 1, int pageSize = 10)
     {
-        var pagedList = new PagedList<ClientProperty>();
-
         var properties = await DbContext.ClientProperties.Where(x => x.Client.Id == clientId).PageBy(x => x.Id, page, pageSize)
             .ToListAsync();
-
-        pagedList.Data.AddRange(properties);
-        pagedList.TotalCount = await DbContext.ClientProperties.Where(x => x.Client.Id == clientId).CountAsync();
-        pagedList.PageSize = pageSize;
-
-        return pagedList;
+        
+        return new ()
+        {
+            Data = (properties),
+            TotalCount = await DbContext.ClientProperties.Where(x => x.Client.Id == clientId).CountAsync(),
+            PageSize = pageSize
+        };
     }
 
     public virtual Task<ClientClaim> GetClientClaimAsync(int clientClaimId)
@@ -260,7 +256,7 @@ internal class ClientRepository<TDbContext> : IClientRepository
 
     public virtual async Task<int> DeleteClientSecretAsync(ClientSecret clientSecret)
     {
-        var secretToDelete = await DbContext.ClientSecrets.Where(x => x.Id == clientSecret.Id).SingleOrDefaultAsync();
+        var secretToDelete = await DbContext.ClientSecrets.SingleOrDefaultAsync(x => x.Id == clientSecret.Id);
 
         DbContext.ClientSecrets.Remove(secretToDelete);
 
@@ -269,7 +265,7 @@ internal class ClientRepository<TDbContext> : IClientRepository
 
     public virtual async Task<int> DeleteClientClaimAsync(ClientClaim clientClaim)
     {
-        var claimToDelete = await DbContext.ClientClaims.Where(x => x.Id == clientClaim.Id).SingleOrDefaultAsync();
+        var claimToDelete = await DbContext.ClientClaims.SingleOrDefaultAsync(x => x.Id == clientClaim.Id);
 
         DbContext.ClientClaims.Remove(claimToDelete);
         return await AutoSaveChangesAsync();
@@ -277,7 +273,7 @@ internal class ClientRepository<TDbContext> : IClientRepository
 
     public virtual async Task<int> DeleteClientPropertyAsync(ClientProperty clientProperty)
     {
-        var propertyToDelete = await DbContext.ClientProperties.Where(x => x.Id == clientProperty.Id).SingleOrDefaultAsync();
+        var propertyToDelete = await DbContext.ClientProperties.SingleOrDefaultAsync(x => x.Id == clientProperty.Id);
 
         DbContext.ClientProperties.Remove(propertyToDelete);
         return await AutoSaveChangesAsync();
@@ -292,12 +288,12 @@ internal class ClientRepository<TDbContext> : IClientRepository
     {
         if (client.Id == 0 || isCloned)
         {
-            var existsWithClientName = await DbContext.Clients.Where(x => x.ClientId == client.ClientId).SingleOrDefaultAsync();
+            var existsWithClientName = await DbContext.Clients.SingleOrDefaultAsync(x => x.ClientId == client.ClientId);
             return existsWithClientName == null;
         }
         else
         {
-            var existsWithClientName = await DbContext.Clients.Where(x => x.ClientId == client.ClientId && x.Id != client.Id).SingleOrDefaultAsync();
+            var existsWithClientName = await DbContext.Clients.SingleOrDefaultAsync(x => x.ClientId == client.ClientId && x.Id != client.Id);
             return existsWithClientName == null;
         }
     }
@@ -402,9 +398,7 @@ internal class ClientRepository<TDbContext> : IClientRepository
 
         await AutoSaveChangesAsync();
 
-        var id = clientToClone.Id;
-
-        return id;
+        return clientToClone.Id;
     }
 
     private async Task RemoveClientRelationsAsync(Client client, bool updateClientClaims,

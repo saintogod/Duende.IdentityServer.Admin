@@ -3,6 +3,8 @@
 
 using Microsoft.AspNetCore.Razor.TagHelpers;
 
+using Skoruba.Duende.IdentityServer.Shared.Helpers;
+
 namespace Skoruba.Duende.IdentityServer.Admin.UI.Helpers.TagHelpers;
 
 [HtmlTargetElement("img-gravatar")]
@@ -24,7 +26,7 @@ public class GravatarTagHelper : TagHelper
     {
         if (!string.IsNullOrWhiteSpace(Email))
         {
-            var hash = Md5HashHelper.GetHash(Email);
+            var hash = Email.GetHash();
 
             output.TagName = "img";
             if (!string.IsNullOrWhiteSpace(Class))

@@ -34,7 +34,7 @@
 </head>
 <body>
 
-  <div class="menu d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 border-bottom box-shadow">
+  <header class="menu d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 border-bottom box-shadow">
     <!--Site name -->
     <h3 class="menu-logo my-0 mr-md-auto font-weight-normal"><a class="logo" asp-area="@CommonConsts.AdminUIArea" asp-controller="Home" asp-action="Index">@AdminConfiguration.PageTitle</a></h3>
 
@@ -95,26 +95,26 @@
     <a class="my-2 btn btn-outline-primary menu-button" href="#">
       <span class="oi oi-menu" title="menu" aria-hidden="true"></span> @Localizer["MenuButton"]
     </a>
-  </div>
+  </header>
 
-  <div class="container">
+  <main class="container">
     @RenderBody()
 
-    <footer class="pt-4 my-md-5 pt-md-5 border-top">
-      <div class="row">
-        <div class="col-6 col-md">
-          @AdminConfiguration.PageTitle
-          <small class="d-block mb-3 text-muted">@Localizer["FooterCopyright"] @DateTime.Now.Year - @await Html.PartialAsync("Common/ApplicationVersion")</small>
-        </div>
-        <div class="col-md-3 text-right">
-          @await Html.PartialAsync("Common/SelectTheme")
-        </div>
-        <div class="col-md-3 text-right">
-          @await Html.PartialAsync("Common/SelectLanguage")
-        </div>
+  </main>
+  <footer class="container pt-4 my-md-5 pt-md-5 border-top">
+    <div class="row">
+      <div class="col-6 col-md">
+        @AdminConfiguration.PageTitle
+        <small class="d-block mb-3 text-muted">@Localizer["FooterCopyright"] @DateTime.Now.Year - @await Html.PartialAsync("Common/ApplicationVersion")</small>
       </div>
-    </footer>
-  </div>
+      <div class="col-md-3 text-right">
+        @await Html.PartialAsync("Common/SelectTheme")
+      </div>
+      <div class="col-md-3 text-right">
+        @await Html.PartialAsync("Common/SelectLanguage")
+      </div>
+    </div>
+  </footer>
 
   <environment include="Development">
     <script src="~/dist/js/bundle.min.js" asp-append-version="true"></script>

@@ -27,22 +27,24 @@ internal class ApiResourceRepository<TDbContext> : IApiResourceRepository
 
     public virtual async Task<PagedList<ApiResource>> GetApiResourcesAsync(string search, int page = 1, int pageSize = 10)
     {
-        var pagedList = new PagedList<ApiResource>();
         Expression<Func<ApiResource, bool>> searchCondition = x => x.Name.Contains(search);
 
-        var apiResources = await DbContext.ApiResources.WhereIf(!string.IsNullOrEmpty(search), searchCondition).PageBy(x => x.Name, page, pageSize).ToListAsync();
+        var apiResources = await DbContext.ApiResources
+            .WhereIf(!string.IsNullOrEmpty(search), searchCondition)
+            .PageBy(x => x.Name, page, pageSize)
+            .ToListAsync();
 
-        pagedList.Data.AddRange(apiResources);
-        pagedList.TotalCount = await DbContext.ApiResources.WhereIf(!string.IsNullOrEmpty(search), searchCondition).CountAsync();
-        pagedList.PageSize = pageSize;
-
-        return pagedList;
+        return new ()
+        {
+            Data = apiResources,
+            TotalCount = await DbContext.ApiResources.WhereIf(!string.IsNullOrEmpty(search), searchCondition).CountAsync(),
+            PageSize = pageSize
+        };
     }
 
     public virtual Task<ApiResource> GetApiResourceAsync(int apiResourceId)
     {
         return DbContext.ApiResources
-            .Include(x => x.UserClaims)
             .Include(x => x.Scopes)
             .Where(x => x.Id == apiResourceId)
             .AsNoTracking()
@@ -51,16 +53,17 @@ internal class ApiResourceRepository<TDbContext> : IApiResourceRepository
 
     public virtual async Task<PagedList<ApiResourceProperty>> GetApiResourcePropertiesAsync(int apiResourceId, int page = 1, int pageSize = 10)
     {
-        var pagedList = new PagedList<ApiResourceProperty>();
-
-        var properties = await DbContext.ApiResourceProperties.Where(x => x.ApiResource.Id == apiResourceId).PageBy(x => x.Id, page, pageSize)
+        var properties = await DbContext.ApiResourceProperties
+            .Where(x => x.ApiResource.Id == apiResourceId)
+            .PageBy(x => x.Id, page, pageSize)
             .ToListAsync();
 
-        pagedList.Data.AddRange(properties);
-        pagedList.TotalCount = await DbContext.ApiResourceProperties.Where(x => x.ApiResource.Id == apiResourceId).CountAsync();
-        pagedList.PageSize = pageSize;
-
-        return pagedList;
+        return new ()
+        {
+            Data = (properties),
+            TotalCount = await DbContext.ApiResourceProperties.CountAsync(x => x.ApiResource.Id == apiResourceId),
+            PageSize = pageSize
+        };
     }
 
     public virtual Task<ApiResourceProperty> GetApiResourcePropertyAsync(int apiResourcePropertyId)
@@ -73,7 +76,7 @@ internal class ApiResourceRepository<TDbContext> : IApiResourceRepository
 
     public virtual async Task<int> AddApiResourcePropertyAsync(int apiResourceId, ApiResourceProperty apiResourceProperty)
     {
-        var apiResource = await DbContext.ApiResources.Where(x => x.Id == apiResourceId).SingleOrDefaultAsync();
+        var apiResource = await DbContext.ApiResources.SingleOrDefaultAsync(x => x.Id == apiResourceId);
 
         apiResourceProperty.ApiResource = apiResource;
         await DbContext.ApiResourceProperties.AddAsync(apiResourceProperty);
@@ -83,7 +86,7 @@ internal class ApiResourceRepository<TDbContext> : IApiResourceRepository
 
     public virtual async Task<int> DeleteApiResourcePropertyAsync(ApiResourceProperty apiResourceProperty)
     {
-        var propertyToDelete = await DbContext.ApiResourceProperties.Where(x => x.Id == apiResourceProperty.Id).SingleOrDefaultAsync();
+        var propertyToDelete = await DbContext.ApiResourceProperties.SingleOrDefaultAsync(x => x.Id == apiResourceProperty.Id);
 
         DbContext.ApiResourceProperties.Remove(propertyToDelete);
         return await AutoSaveChangesAsync();
@@ -93,20 +96,21 @@ internal class ApiResourceRepository<TDbContext> : IApiResourceRepository
     {
         if (apiResource.Id == 0)
         {
-            var existsWithSameName = await DbContext.ApiResources.Where(x => x.Name == apiResource.Name).SingleOrDefaultAsync();
+            var existsWithSameName = await DbContext.ApiResources.SingleOrDefaultAsync(x => x.Name == apiResource.Name);
             return existsWithSameName == null;
         }
         else
         {
-            var existsWithSameName = await DbContext.ApiResources.Where(x => x.Name == apiResource.Name && x.Id != apiResource.Id).SingleOrDefaultAsync();
+            var existsWithSameName = await DbContext.ApiResources.SingleOrDefaultAsync(x => x.Name == apiResource.Name && x.Id != apiResource.Id);
             return existsWithSameName == null;
         }
     }
 
     public virtual async Task<bool> CanInsertApiResourcePropertyAsync(ApiResourceProperty apiResourceProperty)
     {
-        var existsWithSameName = await DbContext.ApiResourceProperties.Where(x => x.Key == apiResourceProperty.Key
-                                                                                   && x.ApiResource.Id == apiResourceProperty.ApiResourceId).SingleOrDefaultAsync();
+        var existsWithSameName = await DbContext.ApiResourceProperties
+            .SingleOrDefaultAsync(x => x.Key == apiResourceProperty.Key
+                                    && x.ApiResource.Id == apiResourceProperty.ApiResourceId);
         return existsWithSameName == null;
     }
 
@@ -152,7 +156,7 @@ internal class ApiResourceRepository<TDbContext> : IApiResourceRepository
 
     public virtual async Task<int> DeleteApiResourceAsync(ApiResource apiResource)
     {
-        var resource = await DbContext.ApiResources.Where(x => x.Id == apiResource.Id).SingleOrDefaultAsync();
+        var resource = await DbContext.ApiResources.SingleOrDefaultAsync();
 
         DbContext.Remove(resource);
 
@@ -162,14 +166,14 @@ internal class ApiResourceRepository<TDbContext> : IApiResourceRepository
 
     public virtual async Task<PagedList<ApiResourceSecret>> GetApiSecretsAsync(int apiResourceId, int page = 1, int pageSize = 10)
     {
-        var pagedList = new PagedList<ApiResourceSecret>();
         var apiSecrets = await DbContext.ApiSecrets.Where(x => x.ApiResource.Id == apiResourceId).PageBy(x => x.Id, page, pageSize).ToListAsync();
 
-        pagedList.Data.AddRange(apiSecrets);
-        pagedList.TotalCount = await DbContext.ApiSecrets.Where(x => x.ApiResource.Id == apiResourceId).CountAsync();
-        pagedList.PageSize = pageSize;
-
-        return pagedList;
+        return new ()
+        {
+            Data = apiSecrets,
+            TotalCount = await DbContext.ApiSecrets.Where(x => x.ApiResource.Id == apiResourceId).CountAsync(),
+            PageSize = pageSize
+        };
     }
 
     public virtual Task<ApiResourceSecret> GetApiSecretAsync(int apiSecretId)
@@ -183,7 +187,7 @@ internal class ApiResourceRepository<TDbContext> : IApiResourceRepository
 
     public virtual async Task<int> AddApiSecretAsync(int apiResourceId, ApiResourceSecret apiSecret)
     {
-        apiSecret.ApiResource = await DbContext.ApiResources.Where(x => x.Id == apiResourceId).SingleOrDefaultAsync();
+        apiSecret.ApiResource = await DbContext.ApiResources.SingleOrDefaultAsync(x => x.Id == apiResourceId);
         await DbContext.ApiSecrets.AddAsync(apiSecret);
 
         return await AutoSaveChangesAsync();
@@ -191,7 +195,7 @@ internal class ApiResourceRepository<TDbContext> : IApiResourceRepository
 
     public virtual async Task<int> DeleteApiSecretAsync(ApiResourceSecret apiSecret)
     {
-        var apiSecretToDelete = await DbContext.ApiSecrets.Where(x => x.Id == apiSecret.Id).SingleOrDefaultAsync();
+        var apiSecretToDelete = await DbContext.ApiSecrets.SingleOrDefaultAsync(x => x.Id == apiSecret.Id);
         DbContext.ApiSecrets.Remove(apiSecretToDelete);
 
         return await AutoSaveChangesAsync();
@@ -209,8 +213,9 @@ internal class ApiResourceRepository<TDbContext> : IApiResourceRepository
 
     public virtual async Task<string> GetApiResourceNameAsync(int apiResourceId)
     {
-        var apiResourceName = await DbContext.ApiResources.Where(x => x.Id == apiResourceId).Select(x => x.Name).SingleOrDefaultAsync();
+        var apiResource = await DbContext.ApiResources
+            .SingleOrDefaultAsync(x => x.Id == apiResourceId);
 
-        return apiResourceName;
+        return apiResource.Name;
     }
 }

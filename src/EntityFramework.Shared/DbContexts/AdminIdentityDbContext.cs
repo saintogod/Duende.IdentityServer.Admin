@@ -22,7 +22,7 @@ public class AdminIdentityDbContext : IdentityDbContext<UserIdentity, UserIdenti
         ConfigureIdentityContext(builder);
     }
 
-    private void ConfigureIdentityContext(ModelBuilder builder)
+    private static void ConfigureIdentityContext(ModelBuilder builder)
     {
         builder.Entity<UserIdentityRole>().ToTable(TableConsts.IdentityRoles);
         builder.Entity<UserIdentityRoleClaim>().ToTable(TableConsts.IdentityRoleClaims);

@@ -19,14 +19,14 @@ namespace Skoruba.Duende.IdentityServer.Admin.UnitTests.Repositories;
 public class IdentityResourceRepositoryTests
 {
 
-    private IIdentityResourceRepository GetIdentityResourceRepository(IdentityServerConfigurationDbContext context)
+    private static IIdentityResourceRepository GetIdentityResourceRepository(IdentityServerConfigurationDbContext context)
     {
         IIdentityResourceRepository identityResourceRepository = new IdentityResourceRepository<IdentityServerConfigurationDbContext>(context);
 
         return identityResourceRepository;
     }
 
-    private IdentityServerConfigurationDbContext GetDbContext()
+    private static IdentityServerConfigurationDbContext GetDbContext()
     {
         var serviceCollection = new ServiceCollection();
 

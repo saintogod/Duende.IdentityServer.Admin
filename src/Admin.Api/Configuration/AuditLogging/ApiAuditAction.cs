@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Http.Extensions;
 
 using Skoruba.AuditLogging.Events;
 
-namespace Skoruba.Duende.IdentityServer.Admin.Api.Configuration.AuditLogging;
+namespace Skoruba.Duende.IdentityServer.Admin.Api.Configuration;
 
 public class ApiAuditAction : IAuditAction
 {

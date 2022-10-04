@@ -6,7 +6,7 @@ using System.Text.Json.Nodes;
 
 using IdentityModel;
 
-using Skoruba.Duende.IdentityServer.STS.Identity.Configuration.Constants;
+using Skoruba.Duende.IdentityServer.STS.Identity.Configuration;
 
 namespace Skoruba.Duende.IdentityServer.STS.Identity.Helpers;
 

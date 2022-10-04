@@ -23,13 +23,13 @@ public class ControllerExceptionFilterAttribute : ExceptionFilterAttribute
         ProcessException(context);
     }
 
-    void SetTraceId(string traceIdentifier, ProblemDetails problemDetails)
+    private static void SetTraceId(string traceIdentifier, ProblemDetails problemDetails)
     {
         var traceId = Activity.Current?.Id ?? traceIdentifier;
         problemDetails.Extensions["traceId"] = traceId;
     }
 
-    private void ProcessException(ExceptionContext context)
+    private static void ProcessException(ExceptionContext context)
     {
         var problemDetails = new ValidationProblemDetails(context.ModelState)
         {
@@ -51,11 +51,11 @@ public class ControllerExceptionFilterAttribute : ExceptionFilterAttribute
         context.Result = exceptionResult;
     }
 
-    private void HandleUserFriendlyViewException(ExceptionContext context)
+    private static void HandleUserFriendlyViewException(ExceptionContext context)
     {
         if (context.Exception is UserFriendlyViewException userFriendlyViewException)
         {
-            if (userFriendlyViewException.ErrorMessages != null && userFriendlyViewException.ErrorMessages.Any())
+            if (userFriendlyViewException.ErrorMessages?.Any() == true)
             {
                 foreach (var message in userFriendlyViewException.ErrorMessages)
                 {

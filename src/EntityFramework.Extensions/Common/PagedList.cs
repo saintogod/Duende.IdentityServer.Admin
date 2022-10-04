@@ -5,7 +5,7 @@ namespace Skoruba.Duende.IdentityServer.Admin.EntityFramework.Extensions;
 
 public sealed record PagedList<T> where T : class
 {
-    public List<T> Data { get; init; } = new ();
+    public List<T> Data { get; set; } = new ();
 
     public int TotalCount { get; set; }
 

@@ -33,16 +33,18 @@ internal class LogRepository<TDbContext> : ILogRepository
 
     public virtual async Task<PagedList<Log>> GetLogsAsync(string search, int page = 1, int pageSize = 10)
     {
-        var pagedList = new PagedList<Log>();
         Expression<Func<Log, bool>> searchCondition = x => x.LogEvent.Contains(search) || x.Message.Contains(search) || x.Exception.Contains(search);
         var logs = await DbContext.Logs
             .WhereIf(!string.IsNullOrEmpty(search), searchCondition)
             .PageBy(x => x.Id, page, pageSize)
             .ToListAsync();
 
-        pagedList.Data.AddRange(logs);
-        pagedList.PageSize = pageSize;
-        pagedList.TotalCount = await DbContext.Logs.WhereIf(!string.IsNullOrEmpty(search), searchCondition).CountAsync();
+        var pagedList = new PagedList<Log>
+        {
+            Data = logs,
+            PageSize = pageSize,
+            TotalCount = await DbContext.Logs.WhereIf(!string.IsNullOrEmpty(search), searchCondition).CountAsync()
+        };
 
         return pagedList;
     }

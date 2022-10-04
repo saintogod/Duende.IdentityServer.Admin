@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
-using Skoruba.Duende.IdentityServer.Admin.UI.Configuration.Constants;
+using Skoruba.Duende.IdentityServer.Admin.UI.Configuration;
 
 namespace Skoruba.Duende.IdentityServer.Admin.UI.Areas.AdminUI.Controllers;
 
@@ -22,7 +22,7 @@ public class AccountController : BaseController
         return View();
     }
 
-    public IActionResult Logout()
+    public static IActionResult Logout()
     {
         return new SignOutResult(new List<string> { AuthenticationConsts.SignInScheme, AuthenticationConsts.OidcAuthenticationScheme });
     }

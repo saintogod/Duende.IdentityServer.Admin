@@ -58,7 +58,7 @@ public class PickerTagHelper : TagHelper
         AddHiddenField(output);
     }
 
-    private void AddWrapper(TagHelperOutput output)
+    private static void AddWrapper(TagHelperOutput output)
     {
         output.TagMode = TagMode.StartTagAndEndTag;
         output.TagName = "div";

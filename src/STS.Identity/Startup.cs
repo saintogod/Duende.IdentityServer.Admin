@@ -3,7 +3,6 @@ using HealthChecks.UI.Client;
 using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Shared.DbContexts;
 using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Shared.Entities.Identity;
 using Skoruba.Duende.IdentityServer.STS.Identity.Configuration;
-using Skoruba.Duende.IdentityServer.STS.Identity.Configuration.Constants;
 
 namespace Skoruba.Duende.IdentityServer.STS.Identity;
 

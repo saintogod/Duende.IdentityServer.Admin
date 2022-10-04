@@ -7,83 +7,63 @@ namespace Skoruba.Duende.IdentityServer.Admin.EntityFramework.Constants;
 
 public static class ClientConsts
 {
-    public static List<string> GetSecretTypes()
+    public static IEnumerable<string> GetSecretTypes()
     {
-        var secretTypes = new List<string>
-        {
-            "SharedSecret",
-            "X509Thumbprint",
-            "X509Name",
-            "X509CertificateBase64",
-            "JWK"
-        };
-
-        return secretTypes;
+        yield return "SharedSecret";
+        yield return "X509Thumbprint";
+        yield return "X509Name";
+        yield return "X509CertificateBase64";
+        yield return "JWK";
     }
 
-    public static List<string> GetStandardClaims()
+    /// <summary>
+    /// http://openid.net/specs/openid-connect-core-1_0.html#StandardClaims
+    /// </summary>
+    public static IEnumerable<string> GetStandardClaims()
     {
-        //http://openid.net/specs/openid-connect-core-1_0.html#StandardClaims
-        var standardClaims = new List<string>
-        {
-            "name",
-            "given_name",
-            "family_name",
-            "middle_name",
-            "nickname",
-            "preferred_username",
-            "profile",
-            "picture",
-            "website",
-            "gender",
-            "birthdate",
-            "zoneinfo",
-            "locale",
-            "address",
-            "updated_at"
-        };
-
-        return standardClaims;
+        yield return "name";
+        yield return "given_name";
+        yield return "family_name";
+        yield return "middle_name";
+        yield return "nickname";
+        yield return "preferred_username";
+        yield return "profile";
+        yield return "picture";
+        yield return "website";
+        yield return "gender";
+        yield return "birthdate";
+        yield return "zoneinfo";
+        yield return "locale";
+        yield return "address";
+        yield return "updated_at";
     }
 
-    public static List<string> GetGrantTypes()
+    public static IEnumerable<string> GetGrantTypes()
     {
-        var allowedGrantypes = new List<string>
-        {
-            "implicit",
-            "client_credentials",
-            "authorization_code",
-            "hybrid",
-            "password",
-            "urn:ietf:params:oauth:grant-type:device_code",
-            "delegation"
-        };
-
-        return allowedGrantypes;
+        yield return "implicit";
+        yield return "client_credentials";
+        yield return "authorization_code";
+        yield return "hybrid";
+        yield return "password";
+        yield return "urn:ietf:params:oauth:grant-type:device_code";
+        yield return "delegation";
     }
 
-    public static List<string> SigningAlgorithms()
+    public static IEnumerable<string> SigningAlgorithms()
     {
-        var signingAlgorithms = new List<string>
-        {
-            "RS256",
-            "RS384",
-            "RS512",
-            "PS256",
-            "PS384",
-            "PS512",
-            "ES256",
-            "ES384",
-            "ES512"
-        };
-
-        return signingAlgorithms;
+        yield return "RS256";
+        yield return "RS384";
+        yield return "RS512";
+        yield return "PS256";
+        yield return "PS384";
+        yield return "PS512";
+        yield return "ES256";
+        yield return "ES384";
+        yield return "ES512";
     }
 
-    public static List<SelectItem> GetProtocolTypes()
+    public static IEnumerable<SelectItem> GetProtocolTypes()
     {
-        var protocolTypes = new List<SelectItem> { new SelectItem("oidc", "OpenID Connect") };
-
-        return protocolTypes;
+        yield return new SelectItem("oidc", "OpenID Connect");
     }
 }

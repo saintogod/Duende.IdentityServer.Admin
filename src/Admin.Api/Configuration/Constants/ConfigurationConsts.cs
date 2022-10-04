@@ -1,9 +1,9 @@
 ﻿// Copyright (c) Jan Škoruba. All Rights Reserved.
 // Licensed under the Apache License, Version 2.0.
 
-namespace Skoruba.Duende.IdentityServer.Admin.Api.Configuration.Constants;
+namespace Skoruba.Duende.IdentityServer.Admin.Api.Configuration;
 
-public class ConfigurationConsts
+public static class ConfigurationConsts
 {
     public const string ConfigurationDbConnectionStringKey = "ConfigurationDbConnection";
 

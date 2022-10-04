@@ -3,4 +3,9 @@
 
 namespace Skoruba.Duende.IdentityServer.Shared.Configuration.Configuration.Identity;
 
-public sealed record RegisterConfiguration(bool Enabled = true);
+public sealed record RegisterConfiguration(bool Enabled)
+{
+    public RegisterConfiguration() : this(true)
+    {
+    }
+}

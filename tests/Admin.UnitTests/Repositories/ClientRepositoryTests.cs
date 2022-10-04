@@ -19,7 +19,7 @@ namespace Skoruba.Duende.IdentityServer.Admin.UnitTests.Repositories;
 
 public class ClientRepositoryTests
 {
-    private IdentityServerConfigurationDbContext GetDbContext()
+    private static IdentityServerConfigurationDbContext GetDbContext()
     {
         var serviceCollection = new ServiceCollection();
 
@@ -34,28 +34,28 @@ public class ClientRepositoryTests
         return context;
     }
 
-    private IClientRepository GetClientRepository(IdentityServerConfigurationDbContext context)
+    private static IClientRepository GetClientRepository(IdentityServerConfigurationDbContext context)
     {
         IClientRepository clientRepository = new ClientRepository<IdentityServerConfigurationDbContext>(context);
 
         return clientRepository;
     }
 
-    private IApiResourceRepository GetApiResourceRepository(IdentityServerConfigurationDbContext context)
+    private static IApiResourceRepository GetApiResourceRepository(IdentityServerConfigurationDbContext context)
     {
         IApiResourceRepository apiResourceRepository = new ApiResourceRepository<IdentityServerConfigurationDbContext>(context);
 
         return apiResourceRepository;
     }
 
-    private IApiScopeRepository GetApiScopeRepository(IdentityServerConfigurationDbContext context)
+    private static IApiScopeRepository GetApiScopeRepository(IdentityServerConfigurationDbContext context)
     {
         IApiScopeRepository apiScopeRepository = new ApiScopeRepository<IdentityServerConfigurationDbContext>(context);
 
         return apiScopeRepository;
     }
 
-    private IIdentityResourceRepository GetIdentityResourceRepository(IdentityServerConfigurationDbContext context)
+    private static IIdentityResourceRepository GetIdentityResourceRepository(IdentityServerConfigurationDbContext context)
     {
         IIdentityResourceRepository identityResourceRepository = new IdentityResourceRepository<IdentityServerConfigurationDbContext>(context);
 
@@ -771,7 +771,7 @@ public class ClientRepositoryTests
         apiScopes[0].Should().Be(apiScope.Name);
     }
 
-    private void ClientCloneCompare(Client cloneClientEntity, Client clientToCompare, bool cloneClientCorsOrigins = true, bool cloneClientGrantTypes = true, bool cloneClientIdPRestrictions = true, bool cloneClientPostLogoutRedirectUris = true, bool cloneClientScopes = true, bool cloneClientRedirectUris = true, bool cloneClientClaims = true, bool cloneClientProperties = true)
+    private static void ClientCloneCompare(Client cloneClientEntity, Client clientToCompare, bool cloneClientCorsOrigins = true, bool cloneClientGrantTypes = true, bool cloneClientIdPRestrictions = true, bool cloneClientPostLogoutRedirectUris = true, bool cloneClientScopes = true, bool cloneClientRedirectUris = true, bool cloneClientClaims = true, bool cloneClientProperties = true)
     {
         //Assert cloned client
         clientToCompare.Should().BeEquivalentTo(cloneClientEntity,
@@ -886,7 +886,7 @@ public class ClientRepositoryTests
         cloneClientEntity.ClientSecrets.Should().BeEmpty();
     }
 
-    private void ClientAssert(Client client, Client clientToCompare)
+    private static void ClientAssert(Client client, Client clientToCompare)
     {
         clientToCompare.Should().BeEquivalentTo(client,
             options => options.Excluding(o => o.Id)

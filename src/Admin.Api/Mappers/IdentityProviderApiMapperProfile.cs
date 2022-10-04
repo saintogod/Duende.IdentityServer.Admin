@@ -40,7 +40,7 @@ public class IdentityProviderApiMapperProfile : Profile
             .ReverseMap();
     }
 
-    class PropertiesConverter :
+    private class PropertiesConverter :
         IValueConverter<Dictionary<int, IdentityProviderPropertyDto>, Dictionary<string, string>>,
         IValueConverter<Dictionary<string, string>, Dictionary<int, IdentityProviderPropertyDto>>
     {

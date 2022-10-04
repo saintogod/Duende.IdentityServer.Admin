@@ -6,7 +6,7 @@ using System.Net;
 using FluentAssertions;
 
 using Skoruba.Duende.IdentityServer.Admin.IntegrationTests.Tests.Base;
-using Skoruba.Duende.IdentityServer.Admin.UI.Configuration.Constants;
+using Skoruba.Duende.IdentityServer.Admin.UI.Configuration;
 
 using Xunit;
 

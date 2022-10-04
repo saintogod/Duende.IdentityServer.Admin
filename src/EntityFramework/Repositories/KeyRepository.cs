@@ -22,18 +22,16 @@ internal class KeyRepository<TDbContext> : IKeyRepository
 
     public virtual async Task<PagedList<Key>> GetKeysAsync(int page = 1, int pageSize = 10, CancellationToken cancellationToken = default)
     {
-        var pagedList = new PagedList<Key>();
-
         var clients = await DbContext.Keys.PageBy(x => x.Id, page, pageSize)
             .AsNoTracking()
             .ToListAsync(cancellationToken: cancellationToken);
 
-        pagedList.Data.AddRange(clients);
-
-        pagedList.TotalCount = await DbContext.Keys.CountAsync(cancellationToken: cancellationToken);
-        pagedList.PageSize = pageSize;
-
-        return pagedList;
+        return new ()
+        {
+            Data = (clients),
+            TotalCount = await DbContext.Keys.CountAsync(cancellationToken: cancellationToken),
+            PageSize = pageSize
+        };
     }
 
     public virtual async Task<Key> GetKeyAsync(string id, CancellationToken cancellationToken = default)
@@ -45,7 +43,7 @@ internal class KeyRepository<TDbContext> : IKeyRepository
 
     public virtual async Task DeleteKeyAsync(string id, CancellationToken cancellationToken = default)
     {
-        var keyToDelete = await DbContext.Keys.Where(x => x.Id == id).SingleOrDefaultAsync(cancellationToken: cancellationToken);
+        var keyToDelete = await DbContext.Keys.SingleOrDefaultAsync(x => x.Id == id, cancellationToken: cancellationToken);
 
         DbContext.Keys.Remove(keyToDelete);
 

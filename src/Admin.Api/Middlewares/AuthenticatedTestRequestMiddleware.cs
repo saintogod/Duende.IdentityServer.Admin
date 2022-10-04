@@ -12,23 +12,23 @@ namespace Skoruba.Duende.IdentityServer.Admin.Api.Middlewares;
 
 public class AuthenticatedTestRequestMiddleware
 {
-    private readonly RequestDelegate _next;
+    private readonly RequestDelegate next;
     public static readonly string TestAuthorizationHeader = "FakeAuthorization";
     public AuthenticatedTestRequestMiddleware(RequestDelegate next)
     {
-        _next = next;
+        this.next = next;
     }
 
     public async Task Invoke(HttpContext context)
     {
-        if (context.Request.Headers.Keys.Contains(TestAuthorizationHeader))
+        if (context.Request.Headers.TryGetValue(TestAuthorizationHeader, out var tokens))
         {
-            var token = context.Request.Headers[TestAuthorizationHeader].Single();
+            var token = tokens.Single();
             var jwt = new JwtSecurityToken(token);
             var claimsIdentity = new ClaimsIdentity(jwt.Claims, JwtBearerDefaults.AuthenticationScheme, JwtClaimTypes.Name, JwtClaimTypes.Role);
             context.User = new ClaimsPrincipal(claimsIdentity);
         }
 
-        await _next(context);
+        await next(context);
     }
 }

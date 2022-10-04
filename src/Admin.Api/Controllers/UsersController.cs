@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
-using Skoruba.Duende.IdentityServer.Admin.Api.Configuration.Constants;
+using Skoruba.Duende.IdentityServer.Admin.Api.Configuration;
 using Skoruba.Duende.IdentityServer.Admin.Api.Dtos.Roles;
 using Skoruba.Duende.IdentityServer.Admin.Api.Dtos.Users;
 using Skoruba.Duende.IdentityServer.Admin.Api.ExceptionHandling;

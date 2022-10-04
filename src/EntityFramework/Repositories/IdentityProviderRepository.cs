@@ -22,15 +22,19 @@ public class IdentityProviderRepository<TDbContext> : IIdentityProviderRepositor
 
     public virtual async Task<PagedList<IdentityProvider>> GetIdentityProvidersAsync(string search, int page = 1, int pageSize = 10)
     {
-        var pagedList = new PagedList<IdentityProvider>();
-
         Expression<Func<IdentityProvider, bool>> searchCondition = x => x.Scheme.Contains(search) || x.DisplayName.Contains(search);
 
-        var identityProviders = await DbContext.IdentityProviders.WhereIf(!string.IsNullOrEmpty(search), searchCondition).PageBy(x => x.Scheme, page, pageSize).ToListAsync();
+        var identityProviders = await DbContext.IdentityProviders
+            .WhereIf(!string.IsNullOrEmpty(search), searchCondition)
+            .PageBy(x => x.Scheme, page, pageSize)
+            .ToListAsync();
 
-        pagedList.Data.AddRange(identityProviders);
-        pagedList.TotalCount = await DbContext.IdentityProviders.WhereIf(!string.IsNullOrEmpty(search), searchCondition).CountAsync();
-        pagedList.PageSize = pageSize;
+        var pagedList = new PagedList<IdentityProvider>
+        {
+            Data = identityProviders,
+            TotalCount = await DbContext.IdentityProviders.WhereIf(!string.IsNullOrEmpty(search), searchCondition).CountAsync(),
+            PageSize = pageSize
+        };
 
         return pagedList;
     }
@@ -61,19 +65,19 @@ public class IdentityProviderRepository<TDbContext> : IIdentityProviderRepositor
     {
         if (identityProvider.Id == 0)
         {
-            var existsWithSameName = await DbContext.IdentityProviders.Where(x => x.Scheme == identityProvider.Scheme).SingleOrDefaultAsync();
+            var existsWithSameName = await DbContext.IdentityProviders.SingleOrDefaultAsync(x => x.Scheme == identityProvider.Scheme);
             return existsWithSameName == null;
         }
         else
         {
-            var existsWithSameName = await DbContext.IdentityProviders.Where(x => x.Scheme == identityProvider.Scheme && x.Id != identityProvider.Id).SingleOrDefaultAsync();
+            var existsWithSameName = await DbContext.IdentityProviders.SingleOrDefaultAsync(x => x.Scheme == identityProvider.Scheme && x.Id != identityProvider.Id);
             return existsWithSameName == null;
         }
     }
 
     public virtual async Task<int> DeleteIdentityProviderAsync(IdentityProvider identityProvider)
     {
-        var identityProviderToDelete = await DbContext.IdentityProviders.Where(x => x.Id == identityProvider.Id).SingleOrDefaultAsync();
+        var identityProviderToDelete = await DbContext.IdentityProviders.SingleOrDefaultAsync(x => x.Id == identityProvider.Id);
 
         DbContext.IdentityProviders.Remove(identityProviderToDelete);
         return await AutoSaveChangesAsync();

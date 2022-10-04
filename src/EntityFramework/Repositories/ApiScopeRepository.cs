@@ -97,7 +97,6 @@ internal class ApiScopeRepository<TDbContext> : IApiScopeRepository
 
     public virtual async Task<PagedList<ApiScope>> GetApiScopesAsync(string search, int page = 1, int pageSize = 10)
     {
-        var pagedList = new PagedList<ApiScope>();
         Expression<Func<ApiScope, bool>> searchCondition = x => x.Name.Contains(search);
 
         var filteredApiScopes = DbContext.ApiScopes
@@ -106,9 +105,12 @@ internal class ApiScopeRepository<TDbContext> : IApiScopeRepository
         var apiScopes = await filteredApiScopes
             .PageBy(x => x.Name, page, pageSize).ToListAsync();
 
-        pagedList.Data.AddRange(apiScopes);
-        pagedList.TotalCount = await filteredApiScopes.CountAsync();
-        pagedList.PageSize = pageSize;
+        var pagedList = new PagedList<ApiScope>
+        {
+            Data = (apiScopes),
+            TotalCount = await filteredApiScopes.CountAsync(),
+            PageSize = pageSize
+        };
 
         return pagedList;
     }
@@ -167,7 +169,7 @@ internal class ApiScopeRepository<TDbContext> : IApiScopeRepository
 
     public virtual async Task<int> DeleteApiScopeAsync(ApiScope apiScope)
     {
-        var apiScopeToDelete = await DbContext.ApiScopes.Where(x => x.Id == apiScope.Id).SingleOrDefaultAsync();
+        var apiScopeToDelete = await DbContext.ApiScopes.SingleOrDefaultAsync(x => x.Id == apiScope.Id);
         DbContext.ApiScopes.Remove(apiScopeToDelete);
 
         return await AutoSaveChangesAsync();

@@ -37,7 +37,6 @@ using Skoruba.Duende.IdentityServer.Admin.EntityFramework;
 using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Repositories;
 using Skoruba.Duende.IdentityServer.Admin.UI.Configuration;
 using Skoruba.Duende.IdentityServer.Admin.UI.Configuration.ApplicationParts;
-using Skoruba.Duende.IdentityServer.Admin.UI.Configuration.Constants;
 using Skoruba.Duende.IdentityServer.Admin.UI.ExceptionHandling;
 using Skoruba.Duende.IdentityServer.Admin.UI.Helpers.Localization;
 using Skoruba.Duende.IdentityServer.Admin.UI.Middlewares;
@@ -100,18 +99,7 @@ public static class StartupHelpers
     /// Register DbContexts for IdentityServer ConfigurationStore and PersistedGrants, Identity and Logging
     /// Configure the connection strings in AppSettings.json
     /// </summary>
-    /// <typeparam name="TConfigurationDbContext"></typeparam>
-    /// <typeparam name="TPersistedGrantDbContext"></typeparam>
-    /// <typeparam name="TLogDbContext"></typeparam>
-    /// <typeparam name="TIdentityDbContext"></typeparam>
-    /// <typeparam name="TAuditLoggingDbContext"></typeparam>
-    /// <typeparam name="TDataProtectionDbContext"></typeparam>
-    /// <typeparam name="TAuditLog"></typeparam>
-    /// <param name="services"></param>
-    /// <param name="connectionStrings"></param>
-    /// <param name="databaseProvider"></param>
-    /// <param name="databaseMigrations"></param>
-    public static void RegisterDbContexts<TIdentityDbContext, TConfigurationDbContext, TPersistedGrantDbContext,
+    public static IServiceCollection RegisterDbContexts<TIdentityDbContext, TConfigurationDbContext, TPersistedGrantDbContext,
         TLogDbContext, TAuditLoggingDbContext, TDataProtectionDbContext, TAuditLog>(
         this IServiceCollection services,
         ConnectionStringsConfiguration connectionStrings,
@@ -125,30 +113,18 @@ public static class StartupHelpers
         where TDataProtectionDbContext : DbContext, IDataProtectionKeyContext
         where TAuditLog : AuditLog
     {
-        switch (databaseProvider.ProviderType)
+        return databaseProvider.ProviderType switch
         {
-            case DatabaseProviderType.PostgreSQL:
-                services.RegisterNpgSqlDbContexts<TIdentityDbContext, TConfigurationDbContext, TPersistedGrantDbContext, TLogDbContext, TAuditLoggingDbContext, TDataProtectionDbContext, TAuditLog>(connectionStrings, databaseMigrations);
-                break;
-            case DatabaseProviderType.MySql:
-                services.RegisterMySqlDbContexts<TIdentityDbContext, TConfigurationDbContext, TPersistedGrantDbContext, TLogDbContext, TAuditLoggingDbContext, TDataProtectionDbContext, TAuditLog>(connectionStrings, databaseMigrations);
-                break;
-            default:
-                throw new ArgumentOutOfRangeException(nameof(databaseProvider.ProviderType), $@"The value needs to be one of {string.Join(", ", Enum.GetNames(typeof(DatabaseProviderType)))}.");
-        }
+            DatabaseProviderType.PostgreSQL => services.RegisterNpgSqlDbContexts<TIdentityDbContext, TConfigurationDbContext, TPersistedGrantDbContext, TLogDbContext, TAuditLoggingDbContext, TDataProtectionDbContext, TAuditLog>(connectionStrings, databaseMigrations),
+            DatabaseProviderType.MySql => services.RegisterMySqlDbContexts<TIdentityDbContext, TConfigurationDbContext, TPersistedGrantDbContext, TLogDbContext, TAuditLoggingDbContext, TDataProtectionDbContext, TAuditLog>(connectionStrings, databaseMigrations),
+            _ => throw new ArgumentOutOfRangeException(nameof(databaseProvider.ProviderType), $@"The value needs to be one of {string.Join(", ", Enum.GetNames(typeof(DatabaseProviderType)))}."),
+        };
     }
 
     /// <summary>
     /// Register in memory DbContexts for IdentityServer ConfigurationStore and PersistedGrants, Identity and Logging
-    /// For testing purpose only
     /// </summary>
-    /// <typeparam name="TConfigurationDbContext"></typeparam>
-    /// <typeparam name="TPersistedGrantDbContext"></typeparam>
-    /// <typeparam name="TLogDbContext"></typeparam>
-    /// <typeparam name="TIdentityDbContext"></typeparam>
-    /// <typeparam name="TAuditLoggingDbContext"></typeparam>
-    /// <typeparam name="TDataProtectionDbContext"></typeparam>
-    /// <param name="services"></param>
+    /// <remarks>For testing purpose only</remarks>
     public static void RegisterDbContextsStaging<TIdentityDbContext, TConfigurationDbContext, TPersistedGrantDbContext, TLogDbContext, TAuditLoggingDbContext, TDataProtectionDbContext, TAuditLog>(this IServiceCollection services)
         where TIdentityDbContext : DbContext
         where TPersistedGrantDbContext : DbContext, IAdminPersistedGrantDbContext

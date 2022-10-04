@@ -10,7 +10,6 @@ using Microsoft.OpenApi.Models;
 
 using Skoruba.AuditLogging.EntityFramework.Entities;
 using Skoruba.Duende.IdentityServer.Admin.Api.Configuration;
-using Skoruba.Duende.IdentityServer.Admin.Api.Configuration.Authorization;
 using Skoruba.Duende.IdentityServer.Admin.Api.ExceptionHandling;
 using Skoruba.Duende.IdentityServer.Admin.Api.Helpers;
 using Skoruba.Duende.IdentityServer.Admin.Api.Mappers;
@@ -24,16 +23,16 @@ namespace Skoruba.Duende.IdentityServer.Admin.Api;
 
 public class Startup
 {
+    public IConfiguration Configuration { get; }
+
+    public IWebHostEnvironment HostingEnvironment { get; }
+
     public Startup(IWebHostEnvironment env, IConfiguration configuration)
     {
         JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
         HostingEnvironment = env;
         Configuration = configuration;
     }
-
-    public IConfiguration Configuration { get; }
-
-    public IWebHostEnvironment HostingEnvironment { get; }
 
     public void ConfigureServices(IServiceCollection services)
     {

@@ -25,17 +25,20 @@ internal class IdentityResourceRepository<TDbContext> : IIdentityResourceReposit
 
     public virtual async Task<PagedList<IdentityResource>> GetIdentityResourcesAsync(string search, int page = 1, int pageSize = 10)
     {
-        var pagedList = new PagedList<IdentityResource>();
 
         Expression<Func<IdentityResource, bool>> searchCondition = x => x.Name.Contains(search);
 
-        var identityResources = await DbContext.IdentityResources.WhereIf(!string.IsNullOrEmpty(search), searchCondition).PageBy(x => x.Name, page, pageSize).ToListAsync();
+        var identityResources = await DbContext.IdentityResources
+            .WhereIf(!string.IsNullOrEmpty(search), searchCondition)
+            .PageBy(x => x.Name, page, pageSize)
+            .ToListAsync();
 
-        pagedList.Data.AddRange(identityResources);
-        pagedList.TotalCount = await DbContext.IdentityResources.WhereIf(!string.IsNullOrEmpty(search), searchCondition).CountAsync();
-        pagedList.PageSize = pageSize;
-
-        return pagedList;
+        return new ()
+        {
+            Data = identityResources,
+            TotalCount = await DbContext.IdentityResources.WhereIf(!string.IsNullOrEmpty(search), searchCondition).CountAsync(),
+            PageSize = pageSize
+        };
     }
 
     public virtual Task<IdentityResource> GetIdentityResourceAsync(int identityResourceId)
@@ -49,29 +52,29 @@ internal class IdentityResourceRepository<TDbContext> : IIdentityResourceReposit
 
     public virtual async Task<PagedList<IdentityResourceProperty>> GetIdentityResourcePropertiesAsync(int identityResourceId, int page = 1, int pageSize = 10)
     {
-        var pagedList = new PagedList<IdentityResourceProperty>();
-
-        var properties = await DbContext.IdentityResourceProperties.Where(x => x.IdentityResource.Id == identityResourceId).PageBy(x => x.Id, page, pageSize)
+        var properties = await DbContext.IdentityResourceProperties
+            .Where(x => x.IdentityResource.Id == identityResourceId)
+            .PageBy(x => x.Id, page, pageSize)
             .ToListAsync();
 
-        pagedList.Data.AddRange(properties);
-        pagedList.TotalCount = await DbContext.IdentityResourceProperties.Where(x => x.IdentityResource.Id == identityResourceId).CountAsync();
-        pagedList.PageSize = pageSize;
-
-        return pagedList;
+        return new ()
+        {
+            Data = properties,
+            TotalCount = await DbContext.IdentityResourceProperties.CountAsync(x => x.IdentityResource.Id == identityResourceId),
+            PageSize = pageSize
+        };
     }
 
     public virtual Task<IdentityResourceProperty> GetIdentityResourcePropertyAsync(int identityResourcePropertyId)
     {
         return DbContext.IdentityResourceProperties
             .Include(x => x.IdentityResource)
-            .Where(x => x.Id == identityResourcePropertyId)
-            .SingleOrDefaultAsync();
+            .SingleOrDefaultAsync(x => x.Id == identityResourcePropertyId);
     }
 
     public virtual async Task<int> AddIdentityResourcePropertyAsync(int identityResourceId, IdentityResourceProperty identityResourceProperty)
     {
-        var identityResource = await DbContext.IdentityResources.Where(x => x.Id == identityResourceId).SingleOrDefaultAsync();
+        var identityResource = await DbContext.IdentityResources.SingleOrDefaultAsync(x => x.Id == identityResourceId);
 
         identityResourceProperty.IdentityResource = identityResource;
         await DbContext.IdentityResourceProperties.AddAsync(identityResourceProperty);
@@ -81,7 +84,7 @@ internal class IdentityResourceRepository<TDbContext> : IIdentityResourceReposit
 
     public virtual async Task<int> DeleteIdentityResourcePropertyAsync(IdentityResourceProperty identityResourceProperty)
     {
-        var propertyToDelete = await DbContext.IdentityResourceProperties.Where(x => x.Id == identityResourceProperty.Id).SingleOrDefaultAsync();
+        var propertyToDelete = await DbContext.IdentityResourceProperties.SingleOrDefaultAsync(x => x.Id == identityResourceProperty.Id);
 
         DbContext.IdentityResourceProperties.Remove(propertyToDelete);
         return await AutoSaveChangesAsync();
@@ -89,8 +92,9 @@ internal class IdentityResourceRepository<TDbContext> : IIdentityResourceReposit
 
     public virtual async Task<bool> CanInsertIdentityResourcePropertyAsync(IdentityResourceProperty identityResourceProperty)
     {
-        var existsWithSameName = await DbContext.IdentityResourceProperties.Where(x => x.Key == identityResourceProperty.Key
-                                                                                   && x.IdentityResource.Id == identityResourceProperty.IdentityResourceId).SingleOrDefaultAsync();
+        var existsWithSameName = await DbContext.IdentityResourceProperties
+            .SingleOrDefaultAsync(x => x.Key == identityResourceProperty.Key
+                                    && x.IdentityResource.Id == identityResourceProperty.IdentityResourceId);
         return existsWithSameName == null;
     }
 
@@ -112,12 +116,12 @@ internal class IdentityResourceRepository<TDbContext> : IIdentityResourceReposit
     {
         if (identityResource.Id == 0)
         {
-            var existsWithSameName = await DbContext.IdentityResources.Where(x => x.Name == identityResource.Name).SingleOrDefaultAsync();
+            var existsWithSameName = await DbContext.IdentityResources.SingleOrDefaultAsync(x => x.Name == identityResource.Name);
             return existsWithSameName == null;
         }
         else
         {
-            var existsWithSameName = await DbContext.IdentityResources.Where(x => x.Name == identityResource.Name && x.Id != identityResource.Id).SingleOrDefaultAsync();
+            var existsWithSameName = await DbContext.IdentityResources.SingleOrDefaultAsync(x => x.Name == identityResource.Name && x.Id != identityResource.Id);
             return existsWithSameName == null;
         }
     }
@@ -130,7 +134,7 @@ internal class IdentityResourceRepository<TDbContext> : IIdentityResourceReposit
 
     public virtual async Task<int> DeleteIdentityResourceAsync(IdentityResource identityResource)
     {
-        var identityResourceToDelete = await DbContext.IdentityResources.Where(x => x.Id == identityResource.Id).SingleOrDefaultAsync();
+        var identityResourceToDelete = await DbContext.IdentityResources.SingleOrDefaultAsync(x => x.Id == identityResource.Id);
 
         DbContext.IdentityResources.Remove(identityResourceToDelete);
         return await AutoSaveChangesAsync();

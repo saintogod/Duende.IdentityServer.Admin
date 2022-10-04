@@ -745,7 +745,7 @@ public class ConfigurationControllerTests
         apiSecret.Should().BeNull();
     }
 
-    private ConfigurationController PrepareConfigurationController(IServiceProvider serviceProvider)
+    private static ConfigurationController PrepareConfigurationController(IServiceProvider serviceProvider)
     {
         // Arrange
         var identityResourceService = serviceProvider.GetRequiredService<IIdentityResourceService>();
@@ -767,7 +767,7 @@ public class ConfigurationControllerTests
         return controller;
     }
 
-    private async Task<Client> GenerateClient(IdentityServerConfigurationDbContext dbContext)
+    private static async Task<Client> GenerateClient(IdentityServerConfigurationDbContext dbContext)
     {
         var client = ClientMock.GenerateRandomClient(id: 0);
 
@@ -777,7 +777,7 @@ public class ConfigurationControllerTests
         return client;
     }
 
-    private IServiceProvider GetServices()
+    private static IServiceProvider GetServices()
     {
         var services = new ServiceCollection();
 

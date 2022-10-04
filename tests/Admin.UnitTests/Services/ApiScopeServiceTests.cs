@@ -54,7 +54,7 @@ public class ApiScopeServiceTests
         return apiScopeService;
     }
 
-    private IApiScopeService GetApiScopeService(IdentityServerConfigurationDbContext context)
+    private static IApiScopeService GetApiScopeService(IdentityServerConfigurationDbContext context)
     {
         var apiScopeRepository = GetApiScopeRepository(context);
 

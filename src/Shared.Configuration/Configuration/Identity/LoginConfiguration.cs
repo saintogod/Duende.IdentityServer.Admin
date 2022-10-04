@@ -3,4 +3,9 @@
 
 namespace Skoruba.Duende.IdentityServer.Shared.Configuration.Configuration.Identity;
 
-public sealed record LoginConfiguration(LoginResolutionPolicy ResolutionPolicy = LoginResolutionPolicy.Username);
+public sealed record LoginConfiguration(LoginResolutionPolicy ResolutionPolicy)
+{
+    public LoginConfiguration(): this(LoginResolutionPolicy.Username)
+    {
+    }
+}

@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Logging;
 
-using Skoruba.Duende.IdentityServer.Admin.UI.Configuration.Constants;
+using Skoruba.Duende.IdentityServer.Admin.UI.Configuration;
 using Skoruba.Duende.IdentityServer.Admin.UI.Helpers;
 
 namespace Skoruba.Duende.IdentityServer.Admin.UI.Areas.AdminUI.Controllers;

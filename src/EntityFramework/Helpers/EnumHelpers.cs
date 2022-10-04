@@ -7,12 +7,11 @@ namespace Skoruba.Duende.IdentityServer.Admin.EntityFramework.Helpers;
 
 public static class EnumHelpers
 {
-    public static List<SelectItem> ToSelectList<T>() where T : struct, IComparable
+    public static List<SelectItem> ToSelectList<T>() where T : struct, Enum, IComparable
     {
-        var selectItems = Enum.GetValues(typeof(T))
+        return Enum.GetValues(typeof(T))
             .Cast<T>()
-            .Select(x => new SelectItem(Convert.ToInt16(x).ToString(), x.ToString())).ToList();
-
-        return selectItems;
+            .Select(x => new SelectItem(Convert.ToInt16(x).ToString(), x.ToString()))
+            .ToList();
     }
 }

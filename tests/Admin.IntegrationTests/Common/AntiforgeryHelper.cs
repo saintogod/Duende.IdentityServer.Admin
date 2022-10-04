@@ -12,13 +12,13 @@ public class AntiforgeryHelper
     public static readonly string AntiForgeryFieldName = "__AFTField";
     public static readonly string AntiForgeryCookieName = "AFTCookie";
 
-    public async Task<(string fieldValue, string cookieValue)> ExtractAntiForgeryValues(HttpResponseMessage response)
+    public static async Task<(string fieldValue, string cookieValue)> ExtractAntiForgeryValues(HttpResponseMessage response)
     {
         return (ExtractAntiForgeryToken(await response.Content.ReadAsStringAsync()),
             ExtractAntiForgeryCookieValueFrom(response));
     }
 
-    private string ExtractAntiForgeryCookieValueFrom(HttpResponseMessage response)
+    private static string ExtractAntiForgeryCookieValueFrom(HttpResponseMessage response)
     {
         var antiForgeryCookie = response.Headers.GetValues("Set-Cookie").FirstOrDefault(x => x.Contains(AntiForgeryCookieName));
 
@@ -32,7 +32,7 @@ public class AntiforgeryHelper
         return antiForgeryCookieValue.Value;
     }
 
-    private string ExtractAntiForgeryToken(string htmlBody)
+    private static string ExtractAntiForgeryToken(string htmlBody)
     {
         var requestVerificationTokenMatch = Regex.Match(htmlBody, $@"\<input name=""{AntiForgeryFieldName}"" type=""hidden"" value=""([^""]+)"" \/\>");
 

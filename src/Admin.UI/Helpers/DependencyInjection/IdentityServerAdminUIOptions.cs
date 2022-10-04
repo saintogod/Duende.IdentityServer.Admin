@@ -7,7 +7,6 @@ using Microsoft.Extensions.DependencyInjection;
 
 using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Configuration.Configuration;
 using Skoruba.Duende.IdentityServer.Admin.UI.Configuration;
-using Skoruba.Duende.IdentityServer.Admin.UI.Configuration.Constants;
 
 namespace Skoruba.Duende.IdentityServer.Admin.UI.Helpers.DependencyInjection;
 

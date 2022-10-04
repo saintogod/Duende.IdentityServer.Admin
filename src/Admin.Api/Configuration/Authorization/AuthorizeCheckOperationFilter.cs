@@ -7,9 +7,9 @@ using Microsoft.OpenApi.Models;
 
 using Swashbuckle.AspNetCore.SwaggerGen;
 
-namespace Skoruba.Duende.IdentityServer.Admin.Api.Configuration.Authorization;
+namespace Skoruba.Duende.IdentityServer.Admin.Api.Configuration;
 
-public class AuthorizeCheckOperationFilter : IOperationFilter
+internal sealed class AuthorizeCheckOperationFilter : IOperationFilter
 {
     private readonly AdminApiConfiguration adminApiConfiguration;
 
@@ -20,7 +20,7 @@ public class AuthorizeCheckOperationFilter : IOperationFilter
 
     public void Apply(OpenApiOperation operation, OperationFilterContext context)
     {
-        var hasAuthorize = context.MethodInfo.DeclaringType != null
+        var hasAuthorize = context.MethodInfo.DeclaringType is not null
             && (context.MethodInfo.DeclaringType.GetCustomAttributes(true).OfType<AuthorizeAttribute>().Any() // the controller has [Authorize]
                 || context.MethodInfo.GetCustomAttributes(true).OfType<AuthorizeAttribute>().Any());// the method has [Authorize]
 
@@ -39,7 +39,6 @@ public class AuthorizeCheckOperationFilter : IOperationFilter
                     }
                 }
             };
-
         }
     }
 }

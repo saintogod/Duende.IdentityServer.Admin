@@ -6,7 +6,7 @@ using System.Net.Mime;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-using Skoruba.Duende.IdentityServer.Admin.Api.Configuration.Constants;
+using Skoruba.Duende.IdentityServer.Admin.Api.Configuration;
 using Skoruba.Duende.IdentityServer.Admin.Api.Dtos.ApiScopes;
 using Skoruba.Duende.IdentityServer.Admin.Api.ExceptionHandling;
 using Skoruba.Duende.IdentityServer.Admin.Api.Mappers;

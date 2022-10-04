@@ -5,6 +5,9 @@ using Skoruba.Duende.IdentityServer.Admin.EntityFramework.Configuration.Configur
 
 namespace Skoruba.Duende.IdentityServer.Admin.EntityFramework.Configuration.Configuration;
 
+/// <summary>
+/// Seed data for identity related data.
+/// </summary>
 public sealed record IdentityData
 {
     public Role[] Roles { get; set; } = Array.Empty<Role>();

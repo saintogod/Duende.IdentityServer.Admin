@@ -20,7 +20,7 @@ public class GenericControllerLocalizer<TResourceSource> : IGenericControllerLoc
     /// <param name="factory">The <see cref="T:Microsoft.Extensions.Localization.IStringLocalizerFactory" /> to use.</param>
     public GenericControllerLocalizer(IStringLocalizerFactory factory)
     {
-        if (factory == null) throw new ArgumentNullException(nameof(factory));
+        ArgumentNullException.ThrowIfNull(factory);
 
         var type = typeof(TResourceSource);
         var assemblyName = type.GetTypeInfo().Assembly.GetName().Name;
@@ -34,8 +34,7 @@ public class GenericControllerLocalizer<TResourceSource> : IGenericControllerLoc
     {
         get
         {
-            if (name == null)
-                throw new ArgumentNullException(nameof(name));
+            ArgumentNullException.ThrowIfNull(name);
             return localizer[name];
         }
     }
@@ -44,8 +43,7 @@ public class GenericControllerLocalizer<TResourceSource> : IGenericControllerLoc
     {
         get
         {
-            if (name == null)
-                throw new ArgumentNullException(nameof(name));
+            ArgumentNullException.ThrowIfNull(name);
             return localizer[name, arguments];
         }
     }

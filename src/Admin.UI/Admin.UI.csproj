@@ -33,6 +33,7 @@
     <ProjectReference Include="..\BusinessLogic\BusinessLogic.csproj" />
     <ProjectReference Include="..\EntityFramework.Configuration\EntityFramework.Configuration.csproj" />
     <ProjectReference Include="..\Shared.Configuration\Shared.Configuration.csproj" />
+    <ProjectReference Include="..\Shared\Shared.csproj" />
   </ItemGroup>
   
 </Project>

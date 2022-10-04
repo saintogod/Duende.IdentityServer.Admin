@@ -40,7 +40,7 @@ public class IdentityServiceTests
 
     private readonly DbContextOptions<AdminIdentityDbContext> _dbContextOptions;
 
-    private IIdentityRepository<UserIdentity, UserIdentityRole, string,
+    private static IIdentityRepository<UserIdentity, UserIdentityRole, string,
         UserIdentityUserClaim, UserIdentityUserRole, UserIdentityUserLogin, UserIdentityRoleClaim,
         UserIdentityUserToken> GetIdentityRepository(AdminIdentityDbContext dbContext,
         UserManager<UserIdentity> userManager,
@@ -52,7 +52,7 @@ public class IdentityServiceTests
             UserIdentityUserToken>(dbContext, userManager, roleManager, mapper);
     }
 
-    private IIdentityService<UserDto<string>, RoleDto<string>, UserIdentity,
+    private static IIdentityService<UserDto<string>, RoleDto<string>, UserIdentity,
         UserIdentityRole, string,
         UserIdentityUserClaim, UserIdentityUserRole, UserIdentityUserLogin, UserIdentityRoleClaim,
         UserIdentityUserToken,
@@ -71,7 +71,7 @@ public class IdentityServiceTests
             RoleClaimsDto<RoleClaimDto<string>, string>, UserClaimDto<string>, RoleClaimDto<string>>(identityRepository, identityServiceResources, mapper, auditEventLogger);
     }
 
-    private IMapper GetMapper()
+    private static IMapper GetMapper()
     {
         return new MapperConfiguration(cfg => cfg.AddProfile<IdentityMapperProfile<UserDto<string>, RoleDto<string>, UserIdentity, UserIdentityRole, string,
                     UserIdentityUserClaim, UserIdentityUserRole, UserIdentityUserLogin, UserIdentityRoleClaim,
@@ -82,21 +82,21 @@ public class IdentityServiceTests
             .CreateMapper();
     }
 
-    private UserManager<UserIdentity> GetTestUserManager(AdminIdentityDbContext context)
+    private static UserManager<UserIdentity> GetTestUserManager(AdminIdentityDbContext context)
     {
         var testUserManager = IdentityMock.TestUserManager(new UserStore<UserIdentity, UserIdentityRole, AdminIdentityDbContext, string, UserIdentityUserClaim, UserIdentityUserRole, UserIdentityUserLogin, UserIdentityUserToken, UserIdentityRoleClaim>(context, new IdentityErrorDescriber()));
 
         return testUserManager;
     }
 
-    private RoleManager<UserIdentityRole> GetTestRoleManager(AdminIdentityDbContext context)
+    private static RoleManager<UserIdentityRole> GetTestRoleManager(AdminIdentityDbContext context)
     {
         var testRoleManager = IdentityMock.TestRoleManager(new RoleStore<UserIdentityRole, AdminIdentityDbContext, string, UserIdentityUserRole, UserIdentityRoleClaim>(context, new IdentityErrorDescriber()));
 
         return testRoleManager;
     }
 
-    private IIdentityService<UserDto<string>, RoleDto<string>, UserIdentity,
+    private static IIdentityService<UserDto<string>, RoleDto<string>, UserIdentity,
         UserIdentityRole, string,
         UserIdentityUserClaim, UserIdentityUserRole, UserIdentityUserLogin, UserIdentityRoleClaim,
         UserIdentityUserToken,

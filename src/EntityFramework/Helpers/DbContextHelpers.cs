@@ -20,13 +20,10 @@ public static class DbContextHelpers
         where TDbContext : DbContext
     {
         var db = serviceProvider.GetService<TDbContext>();
-        if (db != null)
-        {
-            var entityType = entityTypeName != null ? db.Model.FindEntityType(entityTypeName) : db.Model.GetEntityTypes().FirstOrDefault();
-            if (entityType != null)
-                return entityType.GetTableName();
-        }
-
-        return null;
+        if (db == null)
+            return null;
+        
+        var entityType = entityTypeName is null ? db.Model.GetEntityTypes().FirstOrDefault() : db.Model.FindEntityType(entityTypeName);
+        return entityType?.GetTableName();
     }
 }

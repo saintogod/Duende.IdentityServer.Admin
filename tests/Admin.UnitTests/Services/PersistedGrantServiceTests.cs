@@ -37,7 +37,7 @@ public class PersistedGrantServiceTests
 
     private readonly DbContextOptions<AdminIdentityDbContext> _identityDbContextOptions;
 
-    private IdentityServerPersistedGrantDbContext GetDbContext()
+    private static IdentityServerPersistedGrantDbContext GetDbContext()
     {
         var serviceCollection = new ServiceCollection();
 
@@ -52,14 +52,14 @@ public class PersistedGrantServiceTests
         return context;
     }
 
-    private IPersistedGrantAspNetIdentityRepository GetPersistedGrantRepository(AdminIdentityDbContext identityDbContext, IdentityServerPersistedGrantDbContext context)
+    private static IPersistedGrantAspNetIdentityRepository GetPersistedGrantRepository(AdminIdentityDbContext identityDbContext, IdentityServerPersistedGrantDbContext context)
     {
         var persistedGrantRepository = new PersistedGrantAspNetIdentityRepository<AdminIdentityDbContext, IdentityServerPersistedGrantDbContext, UserIdentity, UserIdentityRole, string, UserIdentityUserClaim, UserIdentityUserRole, UserIdentityUserLogin, UserIdentityRoleClaim, UserIdentityUserToken>(identityDbContext, context);
 
         return persistedGrantRepository;
     }
 
-    private IPersistedGrantAspNetIdentityService
+    private static IPersistedGrantAspNetIdentityService
         GetPersistedGrantService(IPersistedGrantAspNetIdentityRepository repository, IPersistedGrantAspNetIdentityServiceResources persistedGrantServiceResources, IAuditEventLogger auditEventLogger)
     {
         var persistedGrantService = new PersistedGrantAspNetIdentityService(repository,

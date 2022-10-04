@@ -3,7 +3,7 @@
 
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 
-namespace Skoruba.Duende.IdentityServer.Admin.Api.Configuration.ApplicationParts;
+namespace Skoruba.Duende.IdentityServer.Admin.Api.Configuration;
 
 public class GenericControllerRouteConvention : IControllerModelConvention
 {
@@ -16,8 +16,8 @@ public class GenericControllerRouteConvention : IControllerModelConvention
             // as well as remove the 'Controller' at the end of string
 
             var name = controller.ControllerType.Name;
-            var nameWithoutArity = name.Substring(0, name.IndexOf('`'));
-            controller.ControllerName = nameWithoutArity.Substring(0, nameWithoutArity.LastIndexOf("Controller"));
+            var nameWithoutArity = name[..name.IndexOf('`')];
+            controller.ControllerName = nameWithoutArity[..nameWithoutArity.LastIndexOf("Controller")];
         }
     }
 }

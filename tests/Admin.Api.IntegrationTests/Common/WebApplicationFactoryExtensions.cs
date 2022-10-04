@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 
-using Skoruba.Duende.IdentityServer.Admin.Api.Configuration.Test;
+using Skoruba.Duende.IdentityServer.Admin.Api.Configuration;
 
 namespace Skoruba.Duende.IdentityServer.Admin.Api.IntegrationTests.Common;
 

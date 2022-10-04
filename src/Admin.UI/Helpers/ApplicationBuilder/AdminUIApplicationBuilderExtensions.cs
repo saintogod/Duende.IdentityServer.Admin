@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 
 using Skoruba.Duende.IdentityServer.Admin.UI.Configuration;
-using Skoruba.Duende.IdentityServer.Admin.UI.Configuration.Constants;
 
 namespace Skoruba.Duende.IdentityServer.Admin.UI.Helpers.ApplicationBuilder;
 
@@ -19,8 +18,6 @@ public static class AdminUIApplicationBuilderExtensions
     /// Adds the Skoruba Duende IdentityServer Admin UI to the pipeline of this application. This method must be called 
     /// between UseRouting() and UseEndpoints().
     /// </summary>
-    /// <param name="app"></param>
-    /// <returns></returns>
     public static IApplicationBuilder UseIdentityServerAdminUI(this IApplicationBuilder app)
     {
         return app.UseRoutingDependentMiddleware(app.ApplicationServices.GetRequiredService<TestingConfiguration>());
@@ -29,8 +26,6 @@ public static class AdminUIApplicationBuilderExtensions
     /// <summary>
     /// Maps the Skoruba Duende IdentityServer Admin UI to the routes of this application.
     /// </summary>
-    /// <param name="endpoint"></param>
-    /// <param name="patternPrefix"></param>
     public static IEndpointConventionBuilder MapIdentityServerAdminUI(this IEndpointRouteBuilder endpoint, string patternPrefix = "/")
     {
         return endpoint.MapAreaControllerRoute(CommonConsts.AdminUIArea, CommonConsts.AdminUIArea, patternPrefix + "{controller=Home}/{action=Index}/{id?}");
@@ -39,8 +34,6 @@ public static class AdminUIApplicationBuilderExtensions
     /// <summary>
     /// Maps the Skoruba Duende IdentityServer Admin UI health checks to the routes of this application.
     /// </summary>
-    /// <param name="endpoint"></param>
-    /// <param name="pattern"></param>
     public static IEndpointConventionBuilder MapIdentityServerAdminUIHealthChecks(this IEndpointRouteBuilder endpoint, string pattern = "/health", Action<HealthCheckOptions> configureAction = null)
     {
         HealthCheckOptions options = new() { ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse };

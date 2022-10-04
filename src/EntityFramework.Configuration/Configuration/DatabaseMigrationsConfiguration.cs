@@ -5,8 +5,6 @@ namespace Skoruba.Duende.IdentityServer.Admin.EntityFramework.Configuration.Conf
 
 public sealed record DatabaseMigrationsConfiguration
 {
-    public bool ApplyDatabaseMigrations { get; set; } = false;
-
     public string ConfigurationDbMigrationsAssembly { get; set; }
 
     public string PersistedGrantDbMigrationsAssembly { get; set; }

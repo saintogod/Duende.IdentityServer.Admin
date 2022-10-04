@@ -99,13 +99,6 @@ public class ControllerExceptionFilterAttribute : ExceptionFilterAttribute
 
     protected static void CreateNotification(NotificationHelpers.AlertType type, ITempDataDictionary tempData, string message, string title = "")
     {
-        var toast = new NotificationHelpers.Alert
-        {
-            Type = type,
-            Message = message,
-            Title = title
-        };
-
         var alerts = new List<NotificationHelpers.Alert>();
 
         if (tempData.ContainsKey(NotificationHelpers.NotificationKey))
@@ -114,7 +107,12 @@ public class ControllerExceptionFilterAttribute : ExceptionFilterAttribute
             tempData.Remove(NotificationHelpers.NotificationKey);
         }
 
-        alerts.Add(toast);
+        alerts.Add(new ()
+        {
+            Type = type,
+            Message = message,
+            Title = title
+        });
 
         var alertJson = JsonSerializer.Serialize(alerts);
 

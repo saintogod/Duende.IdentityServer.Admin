@@ -40,7 +40,7 @@ namespace Skoruba.Duende.IdentityServer.Admin.UnitTests.Controllers;
 
 public class IdentityControllerTests
 {
-    private IIdentityService<UserDto<string>, RoleDto<string>,
+    private static IIdentityService<UserDto<string>, RoleDto<string>,
         UserIdentity, UserIdentityRole, string, UserIdentityUserClaim, UserIdentityUserRole,
         UserIdentityUserLogin, UserIdentityRoleClaim, UserIdentityUserToken,
         UsersDto<UserDto<string>, string>, RolesDto<RoleDto<string>, string>, UserRolesDto<RoleDto<string>, string>,
@@ -554,7 +554,7 @@ public class IdentityControllerTests
         userProvider.Should().BeNull();
     }
 
-    private IdentityController<UserDto<string>, RoleDto<string>,
+    private static IdentityController<UserDto<string>, RoleDto<string>,
         UserIdentity, UserIdentityRole, string, UserIdentityUserClaim, UserIdentityUserRole,
         UserIdentityUserLogin, UserIdentityRoleClaim, UserIdentityUserToken,
         UsersDto<UserDto<string>, string>, RolesDto<RoleDto<string>, string>, UserRolesDto<RoleDto<string>, string>,
@@ -588,7 +588,7 @@ public class IdentityControllerTests
         return controller;
     }
 
-    private IServiceProvider GetServices()
+    private static IServiceProvider GetServices()
     {
         var services = new ServiceCollection();
 
@@ -659,7 +659,7 @@ public class IdentityControllerTests
         return services.BuildServiceProvider();
     }
 
-    private void ProvideControllerContextWithClaimsPrincipal(ControllerBase controller, params Claim[] claims)
+    private static void ProvideControllerContextWithClaimsPrincipal(ControllerBase controller, params Claim[] claims)
     {
         controller.ControllerContext = new ControllerContext
         {

@@ -75,7 +75,7 @@ public class Startup
         }
 
         // Set migration assembly for application of db migrations
-        var migrationsAssembly = MigrationAssemblyConfiguration.GetMigrationAssemblyByProvider(options.DatabaseProvider);
+        var migrationsAssembly = options.DatabaseProvider.GetMigrationAssemblyByProvider();
         options.DatabaseMigrations.SetMigrationsAssemblies(migrationsAssembly);
 
         // Use production DbContexts and auth services.

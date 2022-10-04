@@ -25,35 +25,35 @@ namespace Skoruba.Duende.IdentityServer.Admin.UnitTests.Services;
 
 public class ApiResourceServiceTests
 {
-    private IClientRepository GetClientRepository(IdentityServerConfigurationDbContext context)
+    private static IClientRepository GetClientRepository(IdentityServerConfigurationDbContext context)
     {
         IClientRepository clientRepository = new ClientRepository<IdentityServerConfigurationDbContext>(context);
 
         return clientRepository;
     }
 
-    private IApiResourceRepository GetApiResourceRepository(IdentityServerConfigurationDbContext context)
+    private static IApiResourceRepository GetApiResourceRepository(IdentityServerConfigurationDbContext context)
     {
         IApiResourceRepository apiResourceRepository = new ApiResourceRepository<IdentityServerConfigurationDbContext>(context);
 
         return apiResourceRepository;
     }
 
-    private IClientService GetClientService(IClientRepository repository, IClientServiceResources resources, IAuditEventLogger auditEventLogger)
+    private static IClientService GetClientService(IClientRepository repository, IClientServiceResources resources, IAuditEventLogger auditEventLogger)
     {
         IClientService clientService = new ClientService(repository, resources, auditEventLogger);
 
         return clientService;
     }
 
-    private IApiResourceService GetApiResourceService(IApiResourceRepository repository, IApiResourceServiceResources resources, IClientService clientService, IAuditEventLogger auditEventLogger)
+    private static IApiResourceService GetApiResourceService(IApiResourceRepository repository, IApiResourceServiceResources resources, IClientService clientService, IAuditEventLogger auditEventLogger)
     {
         IApiResourceService apiResourceService = new ApiResourceService(repository, resources, clientService, auditEventLogger);
 
         return apiResourceService;
     }
 
-    private IApiResourceService GetApiResourceService(IdentityServerConfigurationDbContext context)
+    private static IApiResourceService GetApiResourceService(IdentityServerConfigurationDbContext context)
     {
         var apiResourceRepository = GetApiResourceRepository(context);
         var clientRepository = GetClientRepository(context);
@@ -73,7 +73,7 @@ public class ApiResourceServiceTests
         return apiResourceService;
     }
 
-    private IdentityServerConfigurationDbContext GetDbContext()
+    private static IdentityServerConfigurationDbContext GetDbContext()
     {
         var serviceCollection = new ServiceCollection();
 

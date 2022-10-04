@@ -7,6 +7,9 @@ using Client = Skoruba.Duende.IdentityServer.Admin.EntityFramework.Configuration
 
 namespace Skoruba.Duende.IdentityServer.Admin.EntityFramework.Configuration.Configuration;
 
+/// <summary>
+/// Seed data for identity related data.
+/// </summary>
 public sealed record IdentityServerData
 {
     public Client[] Clients { get; init; } = Array.Empty<Client>();

@@ -24,7 +24,7 @@ public class AdminLogDbContext : DbContext, IAdminLogDbContext
         ConfigureLogContext(builder);
     }
 
-    private void ConfigureLogContext(ModelBuilder builder)
+    private static void ConfigureLogContext(ModelBuilder builder)
     {
         builder.Entity<Log>(log =>
         {

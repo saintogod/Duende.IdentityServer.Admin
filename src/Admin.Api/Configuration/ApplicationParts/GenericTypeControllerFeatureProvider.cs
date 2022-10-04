@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc.Controllers;
 
 using Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Identity.Dtos.Identity;
 
-namespace Skoruba.Duende.IdentityServer.Admin.Api.Configuration.ApplicationParts;
+namespace Skoruba.Duende.IdentityServer.Admin.Api.Configuration;
 
 public class GenericTypeControllerFeatureProvider<TUserDto, TRoleDto, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken,
     TUsersDto, TRolesDto, TUserRolesDto, TUserClaimsDto,
@@ -26,7 +26,6 @@ public class GenericTypeControllerFeatureProvider<TUserDto, TRoleDto, TUser, TRo
     where TRoleClaim : IdentityRoleClaim<TKey>
     where TUserToken : IdentityUserToken<TKey>
 
-
     where TUsersDto : UsersDto<TUserDto, TKey>
     where TRolesDto : RolesDto<TRoleDto, TKey>
     where TUserRolesDto : UserRolesDto<TRoleDto, TKey>
@@ -40,24 +39,21 @@ public class GenericTypeControllerFeatureProvider<TUserDto, TRoleDto, TUser, TRo
 {
     public void PopulateFeature(IEnumerable<ApplicationPart> parts, ControllerFeature feature)
     {
-        var currentAssembly = typeof(GenericTypeControllerFeatureProvider<TUserDto, TRoleDto, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken,
-            TUsersDto, TRolesDto, TUserRolesDto, TUserClaimsDto,
-            TUserProviderDto, TUserProvidersDto, TUserChangePasswordDto, TRoleClaimsDto, TUserClaimDto, TRoleClaimDto>).Assembly;
-        var controllerTypes = currentAssembly.GetExportedTypes()
-                                             .Where(t => typeof(ControllerBase).IsAssignableFrom(t) && t.IsGenericTypeDefinition)
-                                             .Select(t => t.GetTypeInfo());
+        var type = GetType();
+        var controllerTypes = type.Assembly.GetExportedTypes()
+            .Where(t => typeof(ControllerBase).IsAssignableFrom(t) && t.IsGenericTypeDefinition)
+            .Select(t => t.GetTypeInfo());
 
-        var type = this.GetType();
         var genericType = type.GetGenericTypeDefinition().GetTypeInfo();
         var parameters = genericType.GenericTypeParameters
-                                    .Select((p, i) => new { p.Name, Index = i })
-                                    .ToDictionary(a => a.Name, a => type.GenericTypeArguments[a.Index]);
+            .Select((p, i) => new { p.Name, Index = i })
+            .ToDictionary(a => a.Name, a => type.GenericTypeArguments[a.Index]);
 
         foreach (var controllerType in controllerTypes)
         {
             var typeArguments = controllerType.GenericTypeParameters
-                                              .Select(p => parameters[p.Name])
-                                              .ToArray();
+                .Select(p => parameters[p.Name])
+                .ToArray();
 
             feature.Controllers.Add(controllerType.MakeGenericType(typeArguments).GetTypeInfo());
         }

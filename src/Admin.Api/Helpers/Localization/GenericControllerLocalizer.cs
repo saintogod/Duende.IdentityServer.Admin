@@ -5,6 +5,7 @@
 // Modified by Jan Škoruba
 
 using System.Reflection;
+using System.Xml.Linq;
 
 using Microsoft.Extensions.Localization;
 
@@ -12,7 +13,7 @@ namespace Skoruba.Duende.IdentityServer.Admin.Api.Helpers.Localization;
 
 public class GenericControllerLocalizer<TResourceSource> : IGenericControllerLocalizer<TResourceSource>
 {
-    private readonly IStringLocalizer _localizer;
+    private readonly IStringLocalizer localizer;
 
     /// <summary>
     /// Creates a new <see cref="T:Microsoft.Extensions.Localization.StringLocalizer`1" />.
@@ -20,23 +21,22 @@ public class GenericControllerLocalizer<TResourceSource> : IGenericControllerLoc
     /// <param name="factory">The <see cref="T:Microsoft.Extensions.Localization.IStringLocalizerFactory" /> to use.</param>
     public GenericControllerLocalizer(IStringLocalizerFactory factory)
     {
-        if (factory == null) throw new ArgumentNullException(nameof(factory));
+        ArgumentNullException.ThrowIfNull(factory);
 
         var type = typeof(TResourceSource);
         var assemblyName = type.GetTypeInfo().Assembly.GetName().Name;
         var typeName = type.Name.Remove(type.Name.IndexOf('`'));
-        var baseName = (type.Namespace + "." + typeName).Substring(assemblyName.Length).Trim('.');
+        var baseName = (type.Namespace + "." + typeName)[assemblyName.Length..].Trim('.');
 
-        _localizer = factory.Create(baseName, assemblyName);
+        localizer = factory.Create(baseName, assemblyName);
     }
 
     public virtual LocalizedString this[string name]
     {
         get
         {
-            if (name == null)
-                throw new ArgumentNullException(nameof(name));
-            return _localizer[name];
+            ArgumentNullException.ThrowIfNull(name);
+            return localizer[name];
         }
     }
 
@@ -44,14 +44,13 @@ public class GenericControllerLocalizer<TResourceSource> : IGenericControllerLoc
     {
         get
         {
-            if (name == null)
-                throw new ArgumentNullException(nameof(name));
-            return _localizer[name, arguments];
+            ArgumentNullException.ThrowIfNull(name);
+            return localizer[name, arguments];
         }
     }
 
     public IEnumerable<LocalizedString> GetAllStrings(bool includeParentCultures)
     {
-        return _localizer.GetAllStrings(includeParentCultures);
+        return localizer.GetAllStrings(includeParentCultures);
     }
 }

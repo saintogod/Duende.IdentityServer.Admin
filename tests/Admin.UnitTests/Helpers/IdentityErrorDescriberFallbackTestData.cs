@@ -7,7 +7,7 @@ using Skoruba.Duende.IdentityServer.Admin.UI.Helpers.Identity;
 
 namespace Skoruba.Duende.IdentityServer.Admin.UnitTests.Helpers;
 
-class IdentityErrorDescriberFallbackTestData : IEnumerable<object[]>
+internal class IdentityErrorDescriberFallbackTestData : IEnumerable<object[]>
 {
     public IEnumerator<object[]> GetEnumerator()
     {

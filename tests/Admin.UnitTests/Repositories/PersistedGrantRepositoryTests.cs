@@ -32,7 +32,7 @@ public class PersistedGrantRepositoryTests
 
     private readonly DbContextOptions<AdminIdentityDbContext> _identityDbContextOptions;
 
-    private IdentityServerPersistedGrantDbContext GetDbContext()
+    private static IdentityServerPersistedGrantDbContext GetDbContext()
     {
         var serviceCollection = new ServiceCollection();
 
@@ -47,7 +47,7 @@ public class PersistedGrantRepositoryTests
         return context;
     }
 
-    private IPersistedGrantAspNetIdentityRepository GetPersistedGrantRepository(AdminIdentityDbContext identityDbContext, IdentityServerPersistedGrantDbContext context)
+    private static IPersistedGrantAspNetIdentityRepository GetPersistedGrantRepository(AdminIdentityDbContext identityDbContext, IdentityServerPersistedGrantDbContext context)
     {
         var persistedGrantRepository = new PersistedGrantAspNetIdentityRepository<AdminIdentityDbContext, IdentityServerPersistedGrantDbContext, UserIdentity, UserIdentityRole, string, UserIdentityUserClaim, UserIdentityUserRole, UserIdentityUserLogin, UserIdentityRoleClaim, UserIdentityUserToken>(identityDbContext, context);
 

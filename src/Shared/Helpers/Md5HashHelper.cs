@@ -4,7 +4,7 @@
 using System.Security.Cryptography;
 using System.Text;
 
-namespace Skoruba.Duende.IdentityServer.Admin.UI.Helpers;
+namespace Skoruba.Duende.IdentityServer.Shared.Helpers;
 
 /// <summary>
 /// Helper-class to create Md5hashes from strings
@@ -14,20 +14,10 @@ public static class Md5HashHelper
     /// <summary>
     /// Computes a Md5-hash of the submitted string and returns the corresponding hash
     /// </summary>
-    /// <param name="input"></param>
-    /// <returns></returns>
-    public static string GetHash(string input)
+    public static string GetHash(this string input)
     {
         using var md5 = MD5.Create();
         var bytes = md5.ComputeHash(Encoding.UTF8.GetBytes(input));
-
-        var sBuilder = new StringBuilder();
-
-        foreach (var dataByte in bytes)
-        {
-            sBuilder.Append(dataByte.ToString("x2"));
-        }
-
-        return sBuilder.ToString();
+        return Convert.ToHexString(bytes);
     }
 }

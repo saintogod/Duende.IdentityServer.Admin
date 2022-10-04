@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.HttpOverrides;
 
-using Skoruba.Duende.IdentityServer.STS.Identity.Configuration.Constants;
+using Skoruba.Duende.IdentityServer.STS.Identity.Configuration;
 
 namespace Microsoft.AspNetCore.Builder;
 

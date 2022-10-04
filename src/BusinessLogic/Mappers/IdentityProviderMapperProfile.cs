@@ -26,7 +26,7 @@ public class IdentityProviderMapperProfile : Profile
             .ForMember(x => x.Properties, opts => opts.ConvertUsing(PropertiesConverter.Converter, x => x.Properties));
     }
 
-    class PropertiesConverter :
+    private class PropertiesConverter :
         IValueConverter<Dictionary<int, IdentityProviderPropertyDto>, string>,
         IValueConverter<string, Dictionary<int, IdentityProviderPropertyDto>>
     {

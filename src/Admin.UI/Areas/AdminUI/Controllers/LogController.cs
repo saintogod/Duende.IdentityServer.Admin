@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging;
 using Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Dtos.Log;
 using Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Services;
 using Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Services.Interfaces;
-using Skoruba.Duende.IdentityServer.Admin.UI.Configuration.Constants;
+using Skoruba.Duende.IdentityServer.Admin.UI.Configuration;
 
 namespace Skoruba.Duende.IdentityServer.Admin.UI.Areas.AdminUI.Controllers;
 

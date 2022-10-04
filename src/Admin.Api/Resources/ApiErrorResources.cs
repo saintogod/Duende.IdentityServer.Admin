@@ -7,5 +7,5 @@ namespace Skoruba.Duende.IdentityServer.Admin.Api.Resources;
 
 public class ApiErrorResources : IApiErrorResources
 {
-    public virtual ApiError CannotSetId() => new ApiError(nameof(CannotSetId), ApiErrorResource.CannotSetId);
+    public virtual ApiError CannotSetId() => new(nameof(CannotSetId), ApiErrorResource.CannotSetId);
 }

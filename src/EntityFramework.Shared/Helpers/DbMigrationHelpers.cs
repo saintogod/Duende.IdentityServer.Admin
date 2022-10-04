@@ -39,22 +39,22 @@ public static class DbMigrationHelpers
         where TRole : IdentityRole, new()
     {
         var migrationComplete = false;
-
-        using var serviceScope = sp.CreateScope();
-
-        var databaseMigrations = configuration.GetNamedSection<DatabaseMigrationsConfiguration>();
-
-        if (databaseMigrations.ApplyDatabaseMigrations)
         {
-            migrationComplete = await EnsureDatabasesMigratedAsync<TIdentityDbContext, TIdentityServerDbContext, TPersistedGrantDbContext, TLogDbContext, TAuditLogDbContext, TDataProtectionDbContext>(serviceScope.ServiceProvider);
+            using var serviceScope = sp.CreateScope();
+
+            if (configuration.GetValue("ApplyMigrations", false))
+            {
+                migrationComplete = await EnsureDatabasesMigratedAsync<TIdentityDbContext, TIdentityServerDbContext, TPersistedGrantDbContext, TLogDbContext, TAuditLogDbContext, TDataProtectionDbContext>(serviceScope.ServiceProvider);
+            }
         }
-
-        var seedConfiguration = configuration.GetNamedSection<SeedConfiguration>();
-        if (seedConfiguration.ApplySeed)
         {
-            var seedComplete = await EnsureSeedDataAsync<TIdentityServerDbContext, TUser, TRole>(serviceScope.ServiceProvider);
+            using var serviceScope = sp.CreateScope();
+            if (configuration.GetValue("ApplySeed", false))
+            {
+                var seedComplete = await EnsureSeedDataAsync<TIdentityServerDbContext, TUser, TRole>(serviceScope.ServiceProvider);
 
-            return migrationComplete && seedComplete;
+                return migrationComplete && seedComplete;
+            }
         }
         return migrationComplete;
     }

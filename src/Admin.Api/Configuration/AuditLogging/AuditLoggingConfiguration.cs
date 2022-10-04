@@ -1,15 +1,15 @@
 ﻿// Copyright (c) Jan Škoruba. All Rights Reserved.
 // Licensed under the Apache License, Version 2.0.
 
-namespace Skoruba.Duende.IdentityServer.Admin.Api.Configuration.AuditLogging;
+namespace Skoruba.Duende.IdentityServer.Admin.Api.Configuration;
 
-public class AuditLoggingConfiguration
+public sealed record AuditLoggingConfiguration
 {
-    public string Source { get; set; }
+    public string Source { get; init; }
 
-    public string SubjectIdentifierClaim { get; set; }
+    public string SubjectIdentifierClaim { get; init; }
 
-    public string SubjectNameClaim { get; set; }
+    public string SubjectNameClaim { get; init; }
 
-    public string ClientIdClaim { get; set; }
+    public string ClientIdClaim { get; init; }
 }

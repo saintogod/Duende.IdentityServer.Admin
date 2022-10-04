@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 
 using Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Dtos.IdentityProvider;
 using Skoruba.Duende.IdentityServer.Admin.BusinessLogic.Services.Interfaces;
-using Skoruba.Duende.IdentityServer.Admin.UI.Configuration.Constants;
+using Skoruba.Duende.IdentityServer.Admin.UI.Configuration;
 using Skoruba.Duende.IdentityServer.Admin.UI.ExceptionHandling;
 using Skoruba.Duende.IdentityServer.Admin.UI.Helpers;
 

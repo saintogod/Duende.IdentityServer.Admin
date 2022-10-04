@@ -12,7 +12,7 @@ namespace Skoruba.Duende.IdentityServer.Admin.Configuration.Database;
 
 public static class MigrationAssemblyConfiguration
 {
-    public static string GetMigrationAssemblyByProvider(DatabaseProviderConfiguration databaseProvider)
+    public static string GetMigrationAssemblyByProvider(this DatabaseProviderConfiguration databaseProvider)
     {
         return databaseProvider.ProviderType switch
         {
